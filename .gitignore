@@ -1,5 +1,6 @@
 .DS_Store
 .eclipse.buildship.core.prefs
+.env
 .gradle/
 .idea/
 .kubernetes-manifests-*/
