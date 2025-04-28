@@ -1,0 +1,125 @@
+
+
+services:
+  redis-cart:
+    image: redis:alpine
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis-data:/data
+
+  cartservice:
+    build:
+      context: ./src/cartservice/src
+      dockerfile: Dockerfile.debug
+    environment:
+      - REDIS_ADDR=redis-cart:${REDIS_PORT}
+      - PORT=${CARTSERVICE_PORT}
+    depends_on:
+      - redis-cart
+
+  productcatalogservice:
+    build: ./src/productcatalogservice
+    environment:
+      - PORT=${PRODUCTCATALOGSERVICE_PORT}
+
+  currencyservice:
+    build: ./src/currencyservice
+    environment:
+      - PORT=${CURRENCYSERVICE_PORT}
+      - PROJECT_ID=${PROJECT_ID}
+      - DISABLE_PROFILER=${DISABLE_PROFILER}
+
+  emailservice:
+    build: ./src/emailservice
+    environment:
+      - PORT=${EMAILSERVICE_PORT}
+      - DISABLE_PROFILER=${DISABLE_PROFILER}
+
+  paymentservice:
+    build: ./src/paymentservice
+    environment:
+      - PORT=${PAYMENTSERVICE_PORT}
+      - PROJECT_ID=${PROJECT_ID}
+      - DISABLE_PROFILER=${DISABLE_PROFILER}
+
+  shippingservice:
+    build: ./src/shippingservice
+    environment:
+      - PORT=${SHIPPINGSERVICE_PORT}
+
+  recommendationservice:
+    build: ./src/recommendationservice
+    environment:
+      - PORT=${RECOMMENDATIONSERVICE_PORT}
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:${PRODUCTCATALOGSERVICE_PORT}
+      - DISABLE_PROFILER=${DISABLE_PROFILER}
+
+  adservice:
+    build: ./src/adservice
+    environment:
+      - PORT=${ADSERVICE_PORT}
+
+  checkoutservice:
+    build: ./src/checkoutservice
+    environment:
+      - PORT=${CHECKOUTSERVICE_PORT}
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:${PRODUCTCATALOGSERVICE_PORT}
+      - SHIPPING_SERVICE_ADDR=shippingservice:${SHIPPINGSERVICE_PORT}
+      - PAYMENT_SERVICE_ADDR=paymentservice:${PAYMENTSERVICE_PORT}
+      - EMAIL_SERVICE_ADDR=emailservice:${EMAILSERVICE_PORT}
+      - CURRENCY_SERVICE_ADDR=currencyservice:${CURRENCYSERVICE_PORT}
+      - CART_SERVICE_ADDR=cartservice:${CARTSERVICE_PORT}
+
+  shoppingassistantservice:
+    build: ./src/shoppingassistantservice
+    environment:
+      - PORT=${SHOPPINGASSISTANTSERVICE_PORT}
+      - PROJECT_ID=${PROJECT_ID}
+      - REGION=${REGION}
+      - ALLOYDB_DATABASE_NAME=${ALLOYDB_DATABASE_NAME}
+      - ALLOYDB_TABLE_NAME=${ALLOYDB_TABLE_NAME}
+      - ALLOYDB_CLUSTER_NAME=${ALLOYDB_CLUSTER_NAME}
+      - ALLOYDB_INSTANCE_NAME=${ALLOYDB_INSTANCE_NAME}
+      - ALLOYDB_SECRET_NAME=${ALLOYDB_SECRET_NAME}
+      - PGPASSWORD=${PGPASSWORD}
+
+  frontend:
+    build: ./src/frontend
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      - PORT=${FRONTEND_PORT}
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:${PRODUCTCATALOGSERVICE_PORT}
+      - CURRENCY_SERVICE_ADDR=currencyservice:${CURRENCYSERVICE_PORT}
+      - CART_SERVICE_ADDR=cartservice:${CARTSERVICE_PORT}
+      - RECOMMENDATION_SERVICE_ADDR=recommendationservice:${RECOMMENDATIONSERVICE_PORT}
+      - SHIPPING_SERVICE_ADDR=shippingservice:${SHIPPINGSERVICE_PORT}
+      - CHECKOUT_SERVICE_ADDR=checkoutservice:${CHECKOUTSERVICE_PORT}
+      - AD_SERVICE_ADDR=adservice:${ADSERVICE_PORT}
+      - SHOPPING_ASSISTANT_SERVICE_ADDR=shoppingassistantservice:${SHOPPINGASSISTANTSERVICE_PORT}
+    depends_on:
+      - cartservice
+      - productcatalogservice
+      - currencyservice
+      - recommendationservice
+      - shippingservice
+      - checkoutservice
+      - adservice
+      - shoppingassistantservice
+
+  # loadgenerator:
+  #   build: ./src/loadgenerator
+  #   environment:
+  #     - FRONTEND_ADDR=frontend:${FRONTEND_PORT}
+  #     - USERS=${LOADGEN_USERS}
+  #     - RATE=${LOADGEN_RATE}
+  #   depends_on:
+  #     - frontend
+
+volumes:
+  redis-data:
+
+networks:
+  default:
+    driver: bridge
