@@ -114,7 +114,7 @@ jsonpointer==3.0.0
     # via jsonpatch
 langchain==0.3.21
     # via -r requirements.in
-langchain-core==0.3.49
+langchain-core==0.3.47
     # via
     #   langchain
     #   langchain-google-alloydb-pg
@@ -229,3 +229,5 @@ yarl==1.18.3
     # via aiohttp
 zstandard==0.23.0
     # via langsmith
+langgraph==0.3.34
+    # via langchain-google-alloydb-pg
