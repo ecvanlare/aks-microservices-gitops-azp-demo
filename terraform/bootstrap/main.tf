@@ -1,10 +1,10 @@
 resource "azurerm_resource_group" "bootstrap" {
-  name     = "rg-online-boutique-bootstrap"
-  location = "uksouth"
+  name     = var.resource_group_name
+  location = var.resource_group_location
 }
 
 resource "azurerm_storage_account" "tfstate" {
-  name                     = "stonlineboutiquetfstate"
+  name                     = var.storage_account_name
   resource_group_name      = azurerm_resource_group.bootstrap.name
   location                 = azurerm_resource_group.bootstrap.location
   account_tier             = "Standard"
@@ -18,7 +18,7 @@ resource "azurerm_storage_account" "tfstate" {
 }
 
 resource "azurerm_storage_container" "tfstate" {
-  name                  = "tfstate"
+  name                  = var.storage_container_name
   storage_account_name  = azurerm_storage_account.tfstate.name
   container_access_type = "private"
 } 
