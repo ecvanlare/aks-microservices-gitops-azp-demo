@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  description = "The name of the resource group for the Online Boutique project"
+  description = "The name of the resource group for the Online Boutique bootstrap infrastructure"
   type        = string
   default     = "rg-online-boutique-bootstrap"
 }
@@ -7,19 +7,13 @@ variable "resource_group_name" {
 variable "resource_group_location" {
   description = "The Azure region where the resource group will be created"
   type        = string
-  default     = "uksouth"  # London region
+  default     = "uksouth" # UK South region
 }
 
 variable "storage_account_name" {
-  description = "The name of the storage account for Terraform state"
+  description = "The name of the storage account used to store Terraform state"
   type        = string
   default     = "stonlineboutiquebootstf"
-}
-
-variable "storage_container_name" {
-  description = "The name of the storage container for Terraform state"
-  type        = string
-  default     = "online-boutique-bootstrap-tfstate"
 }
 
 variable "tags" {
@@ -46,4 +40,4 @@ variable "storage_account_tags" {
   default = {
     purpose = "terraform-state"
   }
-} 
+}
