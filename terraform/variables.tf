@@ -42,3 +42,63 @@ variable "acr_admin_enabled" {
   type        = bool
   default     = true
 }
+
+variable "aks_name" {
+  description = "The name of the AKS cluster"
+  type        = string
+  default     = "aks-online-boutique"
+}
+
+variable "aks_dns_prefix" {
+  description = "The DNS prefix for the AKS cluster"
+  type        = string
+  default     = "online-boutique"
+}
+
+variable "aks_node_count" {
+  description = "The number of nodes in the AKS cluster"
+  type        = number
+  default     = 2
+}
+
+variable "aks_vm_size" {
+  description = "The size of the VM for AKS nodes"
+  type        = string
+  default     = "Standard_D2s_v3"
+}
+
+variable "aks_os_disk_size_gb" {
+  description = "The size of the OS disk for AKS nodes in GB"
+  type        = number
+  default     = 30
+}
+
+variable "aks_enable_auto_scaling" {
+  description = "Enable auto scaling for the AKS cluster"
+  type        = bool
+  default     = true
+}
+
+variable "aks_min_count" {
+  description = "Minimum number of nodes for auto scaling"
+  type        = number
+  default     = 1
+}
+
+variable "aks_max_count" {
+  description = "Maximum number of nodes for auto scaling"
+  type        = number
+  default     = 3
+}
+
+variable "aks_network_plugin" {
+  description = "Network plugin to use for AKS"
+  type        = string
+  default     = "kubenet"
+}
+
+variable "aks_network_policy" {
+  description = "Network policy to use for AKS"
+  type        = string
+  default     = "calico"
+}
