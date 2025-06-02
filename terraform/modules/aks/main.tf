@@ -1,7 +1,7 @@
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = var.aks_name
-  location            = azurerm_resource_group.rg_online_boutique.location
-  resource_group_name = azurerm_resource_group.rg_online_boutique.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
   dns_prefix          = var.aks_dns_prefix
 
   default_node_pool {
@@ -12,6 +12,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_auto_scaling = var.aks_enable_auto_scaling
     min_count           = var.aks_min_count
     max_count           = var.aks_max_count
+    vnet_subnet_id      = var.subnet_id
   }
 
   identity {
@@ -25,21 +26,4 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   tags = var.tags
-}
-
-# Output the AKS cluster credentials
-output "aks_kube_config" {
-  description = "The kubeconfig for the AKS cluster"
-  value       = azurerm_kubernetes_cluster.aks.kube_config_raw
-  sensitive   = true
-}
-
-output "aks_cluster_name" {
-  description = "The name of the AKS cluster"
-  value       = azurerm_kubernetes_cluster.aks.name
-}
-
-output "aks_cluster_id" {
-  description = "The ID of the AKS cluster"
-  value       = azurerm_kubernetes_cluster.aks.id
 } 
