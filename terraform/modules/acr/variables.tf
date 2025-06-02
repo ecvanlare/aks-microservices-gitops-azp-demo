@@ -4,29 +4,27 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  description = "Location of the ACR"
+  description = "Azure region"
   type        = string
 }
 
-variable "acr_name" {
-  description = "Name of the Azure Container Registry"
+variable "name" {
+  description = "Name of the container registry"
   type        = string
 }
 
-variable "acr_sku" {
-  description = "SKU of the Azure Container Registry"
+variable "sku" {
+  description = "SKU of the container registry"
   type        = string
-  default     = "Standard"
 }
 
-variable "acr_admin_enabled" {
-  description = "Enable admin user for the Azure Container Registry"
+variable "admin_enabled" {
+  description = "Enable admin access to the container registry"
   type        = bool
-  default     = true
 }
 
 variable "tags" {
-  description = "Tags to be applied to the ACR"
+  description = "Resource tags"
   type        = map(string)
   default     = {}
 } 
