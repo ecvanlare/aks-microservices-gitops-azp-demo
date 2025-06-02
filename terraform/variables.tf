@@ -1,116 +1,147 @@
+# Resource Group Variables
 variable "resource_group_name" {
-  description = "The name of the resource group for the Online Boutique project"
+  description = "Name of the resource group"
   type        = string
   default     = "rg-online-boutique"
 }
 
-variable "resource_group_location" {
-  description = "The Azure region where the resource group will be created"
+variable "location" {
+  description = "Azure region"
   type        = string
-  default     = "uksouth"  # London region
+  default     = "uksouth"
 }
 
 variable "tags" {
-  description = "Common tags to be applied to all resources"
+  description = "Resource tags"
   type        = map(string)
   default = {
     environment = "prod"
     project     = "online-boutique"
     managed_by  = "terraform"
-    owner       = "devops-team"
-    cost_center = "TBD" 
-    department  = "engineering"
-    created_by  = "terraform"
-    version     = "1.0.0"
   }
 }
 
+# Network Variables
+variable "vnet_name" {
+  description = "Name of the virtual network"
+  type        = string
+  default     = "vnet-online-boutique"
+}
+
+variable "vnet_address_space" {
+  description = "Address space for the virtual network"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "subnets" {
+  description = "Subnet configurations"
+  type = map(object({
+    name             = string
+    address_prefixes = list(string)
+    service_endpoints = list(string)
+  }))
+  default = {
+    aks = {
+      name             = "snet-aks"
+      address_prefixes = ["10.0.0.0/24"]
+      service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
+    }
+    appgw = {
+      name             = "snet-appgw"
+      address_prefixes = ["10.0.1.0/24"]
+      service_endpoints = []
+    }
+  }
+}
+
+# ACR Variables
 variable "acr_name" {
-  description = "The name of the Azure Container Registry"
+  description = "Name of the container registry"
   type        = string
   default     = "acronlineboutique"
 }
 
 variable "acr_sku" {
-  description = "The SKU of the Azure Container Registry"
+  description = "SKU of the container registry"
   type        = string
   default     = "Standard"
 }
 
 variable "acr_admin_enabled" {
-  description = "Enable admin user for Azure Container Registry"
+  description = "Enable admin access to the container registry"
   type        = bool
-  default     = true
+  default     = false
 }
 
+# AKS Variables
 variable "aks_name" {
-  description = "The name of the AKS cluster"
+  description = "Name of the AKS cluster"
   type        = string
   default     = "aks-online-boutique"
 }
 
 variable "aks_dns_prefix" {
-  description = "The DNS prefix for the AKS cluster"
+  description = "DNS prefix for the AKS cluster"
   type        = string
   default     = "online-boutique"
 }
 
-variable "aks_node_count" {
-  description = "The number of nodes in the AKS cluster"
-  type        = number
-  default     = 2
-}
-
-variable "aks_vm_size" {
-  description = "The size of the VM for AKS nodes"
-  type        = string
-  default     = "Standard_D2s_v3"
-}
-
-variable "aks_os_disk_size_gb" {
-  description = "The size of the OS disk for AKS nodes in GB"
-  type        = number
-  default     = 30
-}
-
-variable "aks_enable_auto_scaling" {
-  description = "Enable auto scaling for the AKS cluster"
-  type        = bool
-  default     = true
-}
-
-variable "aks_min_count" {
-  description = "Minimum number of nodes for auto scaling"
-  type        = number
-  default     = 1
-}
-
-variable "aks_max_count" {
-  description = "Maximum number of nodes for auto scaling"
-  type        = number
-  default     = 3
+variable "aks_node_pool" {
+  description = "Node pool configuration for AKS"
+  type = object({
+    name                = string
+    node_count         = number
+    vm_size            = string
+    enable_auto_scaling = bool
+    os_disk_size_gb    = number
+  })
+  default = {
+    name                = "default"
+    node_count         = 2
+    vm_size            = "Standard_D2s_v3"
+    enable_auto_scaling = false
+    os_disk_size_gb    = 30
+  }
 }
 
 variable "aks_network_plugin" {
-  description = "Network plugin to use for AKS"
+  description = "Network plugin for AKS"
   type        = string
   default     = "kubenet"
 }
 
 variable "aks_network_policy" {
-  description = "Network policy to use for AKS"
+  description = "Network policy for AKS"
   type        = string
   default     = "calico"
 }
 
-variable "vnet_address_space" {
-  description = "The address space for the virtual network"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "aks_subnet_prefix" {
-  description = "The address prefix for the AKS subnet"
-  type        = string
-  default     = "10.0.0.0/24"
+# NSG Variables
+variable "nsg_rules" {
+  description = "Network security group rules"
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_range     = string
+    source_address_prefix      = string
+    destination_address_prefix = string
+  }))
+  default = [
+    {
+      name                       = "allow-https"
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+  ]
 }
