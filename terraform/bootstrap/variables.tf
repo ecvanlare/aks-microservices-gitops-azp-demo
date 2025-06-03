@@ -16,6 +16,18 @@ variable "storage_account_name" {
   default     = "stonlineboutiquebootstf"
 }
 
+variable "storage_container_name" {
+  description = "The name of the storage container used to store Terraform state"
+  type        = string
+  default     = "tfstate"
+}
+
+variable "storage_container_access_type" {
+  description = "The access type for the storage container"
+  type        = string
+  default     = "private"
+}
+
 variable "tags" {
   description = "Common tags to be applied to all resources"
   type        = map(string)
