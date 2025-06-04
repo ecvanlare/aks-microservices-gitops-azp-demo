@@ -1,7 +1,7 @@
 variable "resource_group_name" {
-  description = "The name of the resource group for the Online Boutique infrastructure infrastructure"
+  description = "The name of the resource group for the Online Boutique infrastructure"
   type        = string
-  default     = "rg-online-boutique-infrastructure"
+  default     = "rg-online-boutique-infra"
 }
 
 variable "resource_group_location" {
@@ -13,13 +13,13 @@ variable "resource_group_location" {
 variable "storage_account_name" {
   description = "The name of the storage account used to store Terraform state"
   type        = string
-  default     = "stonlineboutiquebootstf"
+  default     = "stonlineboutiqueinfratf"
 }
 
 variable "storage_container_name" {
   description = "The name of the storage container used to store Terraform state"
   type        = string
-  default     = "tfstate"
+  default     = "tfstate-online-boutique"
 }
 
 variable "storage_container_access_type" {
