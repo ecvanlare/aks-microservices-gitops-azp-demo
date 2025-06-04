@@ -1,7 +1,7 @@
 variable "resource_group_name" {
-  description = "The name of the resource group for the Online Boutique bootstrap infrastructure"
+  description = "The name of the resource group for the Online Boutique infrastructure infrastructure"
   type        = string
-  default     = "rg-online-boutique-bootstrap"
+  default     = "rg-online-boutique-infrastructure"
 }
 
 variable "resource_group_location" {
@@ -32,7 +32,7 @@ variable "tags" {
   description = "Common tags to be applied to all resources"
   type        = map(string)
   default = {
-    environment = "bootstrap"
+    environment = "infrastructure"
     project     = "online-boutique"
     managed_by  = "terraform"
   }
