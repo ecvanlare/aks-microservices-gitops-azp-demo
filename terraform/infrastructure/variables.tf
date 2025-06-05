@@ -19,7 +19,7 @@ variable "storage_account_name" {
 variable "storage_container_name" {
   description = "The name of the storage container used to store Terraform state"
   type        = string
-  default     = "tfstate-online-boutique"
+  default     = "tfstate"
 }
 
 variable "storage_container_access_type" {
