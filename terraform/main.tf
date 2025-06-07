@@ -74,9 +74,11 @@ module "aks" {
   dns_prefix         = var.aks_dns_prefix
   node_pool          = var.aks_node_pool
   network = {
-    plugin    = var.aks_network_plugin
-    policy    = var.aks_network_policy
-    subnet_id = module.aks_subnet.subnet_id
+    plugin          = var.aks_network_plugin
+    policy          = var.aks_network_policy
+    subnet_id       = module.aks_subnet.subnet_id
+    service_cidr    = var.aks_service_cidr
+    dns_service_ip  = var.aks_dns_service_ip
   }
   tags = var.tags
 }

@@ -117,6 +117,18 @@ variable "aks_network_policy" {
   default     = "calico"
 }
 
+variable "aks_service_cidr" {
+  description = "Service CIDR for AKS cluster"
+  type        = string
+  default     = "172.16.0.0/16"
+}
+
+variable "aks_dns_service_ip" {
+  description = "DNS service IP for AKS cluster (must be within service_cidr)"
+  type        = string
+  default     = "172.16.0.10"
+}
+
 # NSG Variables
 variable "nsg_rules" {
   description = "Network security group rules"
