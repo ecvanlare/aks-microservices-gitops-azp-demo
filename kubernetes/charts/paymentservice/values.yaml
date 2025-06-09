@@ -11,13 +11,11 @@ service:
 
 resources:
   limits:
-    cpu: 200m
-    memory: 256Mi
-  requests:
     cpu: 100m
     memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
 
 env:
-  PORT: "50051"
-  PROJECT_ID: ""
-  DISABLE_PROFILER: "1" 
+  PORT: "50051" 
