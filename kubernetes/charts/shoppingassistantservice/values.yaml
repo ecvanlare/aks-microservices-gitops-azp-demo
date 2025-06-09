@@ -1,0 +1,59 @@
+replicaCount: 1
+
+image:
+  repository: shoppingassistantservice
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+env:
+  PORT: "8080"
+  PROJECT_ID: ""
+  REGION: ""
+  ALLOYDB_DATABASE_NAME: ""
+  ALLOYDB_TABLE_NAME: ""
+  ALLOYDB_CLUSTER_NAME: ""
+  ALLOYDB_INSTANCE_NAME: ""
+  ALLOYDB_SECRET_NAME: ""
+  PGPASSWORD: ""
+
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+  runAsNonRoot: true
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3 
