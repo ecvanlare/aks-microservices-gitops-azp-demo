@@ -11,14 +11,11 @@ service:
 
 resources:
   limits:
-    cpu: 200m
-    memory: 256Mi
-  requests:
     cpu: 100m
     memory: 128Mi
-
-env:
-  PORT: "9555"
+  requests:
+    cpu: 50m
+    memory: 64Mi
 
 podSecurityContext:
   fsGroup: 1000

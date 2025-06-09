@@ -7,15 +7,15 @@ image:
 
 service:
   type: ClusterIP
-  port: 6379  # Default Redis port
+  port: 6379
 
 resources:
   limits:
-    cpu: 200m
-    memory: 256Mi
-  requests:
     cpu: 100m
     memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
 
 podSecurityContext:
   fsGroup: 1000
@@ -31,7 +31,7 @@ securityContext:
 
 persistence:
   enabled: true
-  size: 1Gi
+  size: 100Mi
   storageClass: "standard"
   accessMode: ReadWriteOnce
 
