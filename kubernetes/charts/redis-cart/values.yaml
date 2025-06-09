@@ -1,0 +1,57 @@
+replicaCount: 1
+
+image:
+  repository: redis
+  tag: alpine
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 6379  # Default Redis port
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+  runAsNonRoot: true
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false  # Redis needs write access
+
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: "standard"
+  accessMode: ReadWriteOnce
+
+livenessProbe:
+  tcpSocket:
+    port: 6379
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  tcpSocket:
+    port: 6379
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+command:
+  - "redis-server"
+  - "--appendonly"
+  - "yes" 
