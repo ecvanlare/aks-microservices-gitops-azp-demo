@@ -1,16 +1,47 @@
+# Number of replicas to deploy
 replicaCount: 1
 
+# Container image configuration
 image:
   repository: currencyservice
-  # tag and pullPolicy are inherited from global.image
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
+# Service configuration
 service:
-  # type is inherited from global.service.type
+  type: {{ .Values.global.service.type }}
   port: 7000
 
-# resources are inherited from global.resources unless overridden in the umbrella chart
+# Resource configuration
+resources:
+  limits:
+    cpu: {{ .Values.global.resources.limits.cpu }}
+    memory: {{ .Values.global.resources.limits.memory }}
+  requests:
+    cpu: {{ .Values.global.resources.requests.cpu }}
+    memory: {{ .Values.global.resources.requests.memory }}
 
+# Environment variables
 env:
-  # PORT is inherited from global.env.PORT
-  PROJECT_ID: ""
-  DISABLE_PROFILER: "1"
+  PORT: {{ .Values.global.env.PORT }}
+  PROJECT_ID: {{ .Values.currencyservice.env.PROJECT_ID }}
+  ALLOWED_CURRENCIES: {{ .Values.currencyservice.env.ALLOWED_CURRENCIES }}
+
+# Health check configuration
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 7000
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 7000
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3

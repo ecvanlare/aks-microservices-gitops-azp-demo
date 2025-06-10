@@ -1,23 +1,48 @@
+# Number of replicas to deploy
 replicaCount: 1
 
+# Container image configuration
 image:
   repository: recommendationservice
-  # tag and pullPolicy are inherited from global.image
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
+# Service configuration
 service:
-  # type is inherited from global.service.type
+  type: {{ .Values.global.service.type }}
   port: 8080
 
-# resources are inherited from global.resources unless overridden in the umbrella chart
+# Resource configuration
+resources:
+  limits:
+    cpu: {{ .Values.global.resources.limits.cpu }}
+    memory: {{ .Values.global.resources.limits.memory }}
+  requests:
+    cpu: {{ .Values.global.resources.requests.cpu }}
+    memory: {{ .Values.global.resources.requests.memory }}
 
+# Environment variables
 env:
-  # PORT is inherited from global.env.PORT
-  PRODUCT_CATALOG_SERVICE_ADDR: "{{ .Values.global.serviceAddresses.PRODUCT_CATALOG_SERVICE_ADDR }}"
-  DISABLE_PROFILER: "1"
-  CURRENCY_SERVICE_ADDR: "currencyservice:7000"
-  CART_SERVICE_ADDR: "cartservice:7070"
-  RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
-  SHIPPING_SERVICE_ADDR: "shippingservice:50051"
-  CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
-  AD_SERVICE_ADDR: "adservice:9555"
-  SHOPPING_ASSISTANT_SERVICE_ADDR: "shoppingassistantservice:8080" 
+  PORT: {{ .Values.global.env.PORT }}
+  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
+  PRODUCT_CATALOG_SERVICE_ADDR: {{ .Values.global.serviceAddresses.PRODUCT_CATALOG_SERVICE_ADDR }}
+  CURRENCY_SERVICE_ADDR: {{ .Values.global.serviceAddresses.CURRENCY_SERVICE_ADDR }}
+
+# Health check configuration
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3 
