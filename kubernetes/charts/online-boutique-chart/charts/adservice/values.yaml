@@ -1,27 +1,41 @@
+# Number of replicas to deploy
 replicaCount: 1
 
+# Container image configuration
 image:
   repository: adservice
-  # tag and pullPolicy are inherited from global.image
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
+# Service configuration
 service:
-  # type is inherited from global.service.type
+  type: {{ .Values.global.service.type }}
   port: 9555
 
-# resources are inherited from global.resources unless overridden in the umbrella chart
+# Resource configuration
+resources:
+  limits:
+    cpu: {{ .Values.global.resources.limits.cpu }}
+    memory: {{ .Values.global.resources.limits.memory }}
+  requests:
+    cpu: {{ .Values.global.resources.requests.cpu }}
+    memory: {{ .Values.global.resources.requests.memory }}
 
+# Environment variables
+env:
+  PORT: {{ .Values.global.env.PORT }}
+  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
+  MAX_ADS_TO_SERVE: {{ .Values.adservice.env.MAX_ADS_TO_SERVE }}
+
+# Security context
 podSecurityContext:
-  fsGroup: 1000
-  runAsUser: 1000
-  runAsNonRoot: true
+  fsGroup: {{ .Values.adservice.podSecurityContext.fsGroup }}
 
 securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
-  readOnlyRootFilesystem: true
+  runAsUser: {{ .Values.adservice.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.adservice.securityContext.runAsNonRoot }}
 
+# Health check configuration
 livenessProbe:
   httpGet:
     path: /health
@@ -38,9 +52,4 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 3
-
-env:
-  # PORT is inherited from global.env.PORT
-  DISABLE_PROFILER: "1"
-  MAX_ADS_TO_SERVE: "5" 
+  failureThreshold: 3 

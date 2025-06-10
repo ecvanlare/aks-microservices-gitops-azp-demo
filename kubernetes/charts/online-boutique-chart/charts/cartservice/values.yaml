@@ -1,25 +1,56 @@
+# Number of replicas to deploy
 replicaCount: 1
 
+# Container image configuration
 image:
   repository: cartservice
-  # tag and pullPolicy are inherited from global.image
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
+# Service configuration
 service:
-  # type is inherited from global.service.type
+  type: {{ .Values.global.service.type }}
   port: 7070
 
-# resources are inherited from global.resources unless overridden in the umbrella chart
+# Resource configuration
+resources:
+  limits:
+    cpu: {{ .Values.global.resources.limits.cpu }}
+    memory: {{ .Values.global.resources.limits.memory }}
+  requests:
+    cpu: {{ .Values.global.resources.requests.cpu }}
+    memory: {{ .Values.global.resources.requests.memory }}
 
+# Environment variables
 env:
-  # PORT is inherited from global.env.PORT
-  REDIS_ADDR: "redis-cart:6379"
+  PORT: {{ .Values.global.env.PORT }}
+  REDIS_ADDR: {{ .Values.cartservice.env.REDIS_ADDR }}
 
+# Health check configuration
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 7070
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 7070
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Redis configuration
 redis-cart:
-  enabled: true
   persistence:
-    enabled: true
-    size: 100Mi
-    storageClass: "standard"
-    accessMode: ReadWriteOnce
+    enabled: {{ .Values.redis-cart.persistence.enabled }}
+    size: {{ .Values.redis-cart.persistence.size }}
+    storageClass: {{ .Values.redis-cart.persistence.storageClass }}
+    accessMode: {{ .Values.redis-cart.persistence.accessMode }}
 
  
