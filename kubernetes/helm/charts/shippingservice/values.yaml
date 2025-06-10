@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: acronlineboutique.azurecr.io/shippingservice
-  tag: latest
-  pullPolicy: IfNotPresent
+  repository: shippingservice
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 service:
   type: ClusterIP

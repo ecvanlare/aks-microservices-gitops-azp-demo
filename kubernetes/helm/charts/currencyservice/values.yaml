@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: acronlineboutique.azurecr.io/currencyservice
-  tag: latest
-  pullPolicy: IfNotPresent
+  repository: currencyservice
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 service:
   type: ClusterIP
