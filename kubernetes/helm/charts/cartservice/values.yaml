@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: acronlineboutique.azurecr.io/cartservice
-  tag: latest
-  pullPolicy: IfNotPresent
+  repository: cartservice
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 service:
   type: ClusterIP

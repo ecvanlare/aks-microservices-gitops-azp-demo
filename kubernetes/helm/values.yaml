@@ -1,6 +1,7 @@
 # Global values shared across all services
 global:
   image:
+    registry: acronlineboutique.azurecr.io
     pullPolicy: IfNotPresent
     tag: latest
 

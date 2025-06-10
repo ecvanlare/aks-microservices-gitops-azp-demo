@@ -1,9 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-adservice
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
   labels:
-    app: adservice
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: service
   {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -15,4 +17,5 @@ spec:
       targetPort: {{ .Values.service.port }}
       protocol: TCP
   selector:
-    app: adservice 
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }} 
