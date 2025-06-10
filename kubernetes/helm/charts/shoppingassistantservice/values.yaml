@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: shoppingassistantservice
+  repository: acronlineboutique.azurecr.io/shoppingassistantservice
   tag: latest
   pullPolicy: IfNotPresent
 

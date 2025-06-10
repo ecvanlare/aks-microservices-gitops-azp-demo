@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: currencyservice
+  repository: acronlineboutique.azurecr.io/paymentservice
   tag: latest
   pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
-  port: 7000
+  port: 50051
 
 resources:
   limits:
@@ -18,6 +18,4 @@ resources:
     memory: 64Mi
 
 env:
-  PORT: "7000"
-  PROJECT_ID: ""
-  DISABLE_PROFILER: "1"
+  PORT: "50051" 

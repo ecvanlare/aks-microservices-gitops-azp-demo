@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: emailservice
+  repository: acronlineboutique.azurecr.io/emailservice
   tag: latest
   pullPolicy: IfNotPresent
 

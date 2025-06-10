@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: paymentservice
+  repository: acronlineboutique.azurecr.io/cartservice
   tag: latest
   pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
-  port: 50051
+  port: 7070
 
 resources:
   limits:
@@ -18,4 +18,7 @@ resources:
     memory: 64Mi
 
 env:
-  PORT: "50051" 
+  PORT: "7070"
+  REDIS_ADDR: "redis-cart:6379"
+
+ 

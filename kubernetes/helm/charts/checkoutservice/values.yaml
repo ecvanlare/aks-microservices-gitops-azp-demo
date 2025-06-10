@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: acronlineboutique.azurecr.io/checkoutservice
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5050
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+env:
+  PORT: "5050"
+  PRODUCT_CATALOG_SERVICE_ADDR: "{{ .Values.serviceAddresses.PRODUCT_CATALOG_SERVICE_ADDR }}"
+  SHIPPING_SERVICE_ADDR: "{{ .Values.serviceAddresses.SHIPPING_SERVICE_ADDR }}"
+  PAYMENT_SERVICE_ADDR: "{{ .Values.serviceAddresses.PAYMENT_SERVICE_ADDR }}"
+  EMAIL_SERVICE_ADDR: "{{ .Values.serviceAddresses.EMAIL_SERVICE_ADDR }}"
+  CURRENCY_SERVICE_ADDR: "{{ .Values.serviceAddresses.CURRENCY_SERVICE_ADDR }}"
+  CART_SERVICE_ADDR: "{{ .Values.serviceAddresses.CART_SERVICE_ADDR }}" 
