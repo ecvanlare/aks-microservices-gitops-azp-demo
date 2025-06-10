@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: recommendationservice
+  repository: acronlineboutique.azurecr.io/recommendationservice
   tag: latest
   pullPolicy: IfNotPresent
 

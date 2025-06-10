@@ -1,0 +1,40 @@
+# Global values shared across all services
+global:
+  image:
+    pullPolicy: IfNotPresent
+    tag: latest
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+  serviceAddresses:
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    CART_SERVICE_ADDR: "cartservice:7070"
+    RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
+    SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+    CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
+    AD_SERVICE_ADDR: "adservice:9555"
+    SHOPPING_ASSISTANT_SERVICE_ADDR: "shoppingassistantservice:8080"
+
+# Service-specific overrides
+frontend:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+redis-cart:
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: "standard"
+    accessMode: ReadWriteOnce 

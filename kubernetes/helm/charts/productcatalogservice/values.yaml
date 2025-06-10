@@ -1,24 +1,24 @@
 replicaCount: 1
 
 image:
-  repository: frontend
+  repository: acronlineboutique.azurecr.io/productcatalogservice
   tag: latest
   pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
-  port: 8080
+  port: 3550
 
 resources:
   limits:
-    cpu: 200m
-    memory: 256Mi
-  requests:
     cpu: 100m
     memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
 
 env:
-  PORT: "8080"
+  PORT: "3550"
   PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
   CURRENCY_SERVICE_ADDR: "currencyservice:7000"
   CART_SERVICE_ADDR: "cartservice:7070"
