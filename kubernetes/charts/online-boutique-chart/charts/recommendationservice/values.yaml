@@ -1,26 +1,19 @@
 replicaCount: 1
 
 image:
-  repository: emailservice
-  tag: {{ .Values.global.image.tag }}
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  repository: recommendationservice
+  # tag and pullPolicy are inherited from global.image
 
 service:
-  type: ClusterIP
+  # type is inherited from global.service.type
   port: 8080
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
+# resources are inherited from global.resources unless overridden in the umbrella chart
 
 env:
-  PORT: "8080"
+  # PORT is inherited from global.env.PORT
+  PRODUCT_CATALOG_SERVICE_ADDR: "{{ .Values.global.serviceAddresses.PRODUCT_CATALOG_SERVICE_ADDR }}"
   DISABLE_PROFILER: "1"
-  PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
   CURRENCY_SERVICE_ADDR: "currencyservice:7000"
   CART_SERVICE_ADDR: "cartservice:7070"
   RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"

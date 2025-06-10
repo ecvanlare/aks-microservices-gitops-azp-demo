@@ -5,6 +5,7 @@ global:
     pullPolicy: IfNotPresent
     tag: latest
 
+  # Common resource configurations
   resources:
     limits:
       cpu: 100m
@@ -13,6 +14,15 @@ global:
       cpu: 50m
       memory: 64Mi
 
+  # Common service configurations
+  service:
+    type: ClusterIP
+
+  # Common environment variables
+  env:
+    PORT: "8080"
+
+  # Service addresses for inter-service communication
   serviceAddresses:
     PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
     CURRENCY_SERVICE_ADDR: "currencyservice:7000"
@@ -32,6 +42,40 @@ frontend:
     requests:
       cpu: 100m
       memory: 128Mi
+  service:
+    port: 8080
+
+productcatalogservice:
+  service:
+    port: 3550
+
+currencyservice:
+  service:
+    port: 7000
+
+cartservice:
+  service:
+    port: 7070
+
+recommendationservice:
+  service:
+    port: 8080
+
+shippingservice:
+  service:
+    port: 50051
+
+checkoutservice:
+  service:
+    port: 5050
+
+adservice:
+  service:
+    port: 9555
+
+shoppingassistantservice:
+  service:
+    port: 8080
 
 redis-cart:
   persistence:

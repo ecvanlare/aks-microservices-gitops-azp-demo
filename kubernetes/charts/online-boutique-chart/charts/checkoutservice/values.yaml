@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repository: checkoutservice
+  # tag and pullPolicy are inherited from global.image
+
+service:
+  # type is inherited from global.service.type
+  port: 5050
+
+# resources are inherited from global.resources unless overridden in the umbrella chart
+
+env:
+  # PORT is inherited from global.env.PORT
+  CURRENCY_SERVICE_ADDR: "{{ .Values.global.serviceAddresses.CURRENCY_SERVICE_ADDR }}"
+  SHIPPING_SERVICE_ADDR: "{{ .Values.global.serviceAddresses.SHIPPING_SERVICE_ADDR }}"
+  EMAIL_SERVICE_ADDR: "{{ .Values.global.serviceAddresses.EMAIL_SERVICE_ADDR }}"
+  PAYMENT_SERVICE_ADDR: "{{ .Values.global.serviceAddresses.PAYMENT_SERVICE_ADDR }}" 
