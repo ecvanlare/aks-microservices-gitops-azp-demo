@@ -2,20 +2,13 @@ replicaCount: 1
 
 image:
   repository: adservice
-  tag: {{ .Values.global.image.tag }}
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  # tag and pullPolicy are inherited from global.image
 
 service:
-  type: ClusterIP
+  # type is inherited from global.service.type
   port: 9555
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
+# resources are inherited from global.resources unless overridden in the umbrella chart
 
 podSecurityContext:
   fsGroup: 1000
@@ -48,6 +41,6 @@ readinessProbe:
   failureThreshold: 3
 
 env:
-  PORT: "9555"
+  # PORT is inherited from global.env.PORT
   DISABLE_PROFILER: "1"
   MAX_ADS_TO_SERVE: "5" 

@@ -1,0 +1,16 @@
+replicaCount: 1
+
+image:
+  repository: currencyservice
+  # tag and pullPolicy are inherited from global.image
+
+service:
+  # type is inherited from global.service.type
+  port: 7000
+
+# resources are inherited from global.resources unless overridden in the umbrella chart
+
+env:
+  # PORT is inherited from global.env.PORT
+  PROJECT_ID: ""
+  DISABLE_PROFILER: "1"

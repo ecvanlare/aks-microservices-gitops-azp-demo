@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: cartservice
+  # tag and pullPolicy are inherited from global.image
+
+service:
+  # type is inherited from global.service.type
+  port: 7070
+
+# resources are inherited from global.resources unless overridden in the umbrella chart
+
+env:
+  # PORT is inherited from global.env.PORT
+  REDIS_ADDR: "redis-cart:6379"
+
+redis-cart:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: "standard"
+    accessMode: ReadWriteOnce
+
+ 

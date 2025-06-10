@@ -1,0 +1,14 @@
+replicaCount: 1
+
+image:
+  repository: paymentservice
+  # tag and pullPolicy are inherited from global.image
+
+service:
+  # type is inherited from global.service.type
+  port: 50051
+
+# resources are inherited from global.resources unless overridden in the umbrella chart
+
+env:
+  # PORT is inherited from global.env.PORT 
