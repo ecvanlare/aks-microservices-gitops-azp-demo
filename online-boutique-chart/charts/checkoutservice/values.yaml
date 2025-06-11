@@ -3,14 +3,14 @@ replicaCount: 1
 
 # Container image configuration
 image:
-  repository: emailservice
+  repository: checkoutservice
   tag: {{ .Values.global.image.tag }}
   pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 # Service configuration
 service:
   type: {{ .Values.global.service.type }}
-  port: 8080
+  port: 5050
 
 # Resource configuration
 resources:
@@ -24,13 +24,24 @@ resources:
 # Environment variables
 env:
   PORT: {{ .Values.global.env.PORT }}
-  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
+  CURRENCY_SERVICE_ADDR: {{ .Values.global.serviceAddresses.CURRENCY_SERVICE_ADDR }}
+  SHIPPING_SERVICE_ADDR: {{ .Values.global.serviceAddresses.SHIPPING_SERVICE_ADDR }}
+  EMAIL_SERVICE_ADDR: {{ .Values.global.serviceAddresses.EMAIL_SERVICE_ADDR }}
+  PAYMENT_SERVICE_ADDR: {{ .Values.global.serviceAddresses.PAYMENT_SERVICE_ADDR }}
+
+# Security context
+podSecurityContext:
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+  
+securityContext:
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
 
 # Health check configuration
 livenessProbe:
   httpGet:
     path: /health
-    port: 8080
+    port: 5050
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -39,10 +50,8 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 8080
+    port: 5050
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 3
-
-# env values are inherited from global.env and service-specific overrides in the umbrella chart 
+  failureThreshold: 3 

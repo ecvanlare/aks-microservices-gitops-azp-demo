@@ -3,14 +3,14 @@ replicaCount: 1
 
 # Container image configuration
 image:
-  repository: paymentservice
+  repository: adservice
   tag: {{ .Values.global.image.tag }}
   pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 # Service configuration
 service:
   type: {{ .Values.global.service.type }}
-  port: 50051
+  port: 9555
 
 # Resource configuration
 resources:
@@ -24,12 +24,22 @@ resources:
 # Environment variables
 env:
   PORT: {{ .Values.global.env.PORT }}
+  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
+  MAX_ADS_TO_SERVE: {{ .Values.global.env.MAX_ADS_TO_SERVE }}
+
+# Security context
+podSecurityContext:
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+
+securityContext:
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
 
 # Health check configuration
 livenessProbe:
   httpGet:
     path: /health
-    port: 50051
+    port: 9555
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -38,10 +48,8 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 50051
+    port: 9555
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 3
-
-# env values are inherited from global.env and service-specific overrides in the umbrella chart 
+  failureThreshold: 3 

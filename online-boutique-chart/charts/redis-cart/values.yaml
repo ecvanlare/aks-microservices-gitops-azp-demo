@@ -3,24 +3,27 @@ replicaCount: 1
 image:
   repository: redis
   tag: alpine
-  pullPolicy: IfNotPresent
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
 
+# Service configuration
 service:
-  type: ClusterIP
+  type: {{ .Values.global.service.type }}
   port: 6379
 
+# Resource configuration
 resources:
   limits:
-    cpu: 100m
-    memory: 128Mi
+    cpu: {{ .Values.global.resources.limits.cpu }}
+    memory: {{ .Values.global.resources.limits.memory }}
   requests:
-    cpu: 50m
-    memory: 64Mi
+    cpu: {{ .Values.global.resources.requests.cpu }}
+    memory: {{ .Values.global.resources.requests.memory }}
 
+# Security context inherited from global
 podSecurityContext:
-  fsGroup: 1000
-  runAsUser: 1000
-  runAsNonRoot: true
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
 
 securityContext:
   allowPrivilegeEscalation: false
