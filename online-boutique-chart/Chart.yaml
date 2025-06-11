@@ -8,37 +8,37 @@ appVersion: "1.0.0"
 dependencies:
   - name: frontend
     version: "0.1.0"
-    repository: "file://../frontend"
+    repository: "file://charts/frontend"
   - name: adservice
     version: "0.1.0"
-    repository: "file://../adservice"
+    repository: "file://charts/adservice"
   - name: cartservice
     version: "0.1.0"
-    repository: "file://../cartservice"
+    repository: "file://charts/cartservice"
   - name: checkoutservice
     version: "0.1.0"
-    repository: "file://../checkoutservice"
+    repository: "file://charts/checkoutservice"
   - name: currencyservice
     version: "0.1.0"
-    repository: "file://../currencyservice"
+    repository: "file://charts/currencyservice"
   - name: emailservice
     version: "0.1.0"
-    repository: "file://../emailservice"
+    repository: "file://charts/emailservice"
   - name: paymentservice
     version: "0.1.0"
-    repository: "file://../paymentservice"
+    repository: "file://charts/paymentservice"
   - name: productcatalogservice
     version: "0.1.0"
-    repository: "file://../productcatalogservice"
+    repository: "file://charts/productcatalogservice"
   - name: recommendationservice
     version: "0.1.0"
-    repository: "file://../recommendationservice"
+    repository: "file://charts/recommendationservice"
   - name: redis-cart
     version: "0.1.0"
-    repository: "file://../redis-cart"
+    repository: "file://charts/redis-cart"
   - name: shippingservice
     version: "0.1.0"
-    repository: "file://../shippingservice"
+    repository: "file://charts/shippingservice"
   - name: shoppingassistantservice
     version: "0.1.0"
-    repository: "file://../shoppingassistantservice" 
+    repository: "file://charts/shoppingassistantservice" 

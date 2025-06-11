@@ -3,14 +3,14 @@ replicaCount: 1
 
 # Container image configuration
 image:
-  repository: currencyservice
+  repository: cartservice
   tag: {{ .Values.global.image.tag }}
   pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 # Service configuration
 service:
   type: {{ .Values.global.service.type }}
-  port: 7000
+  port: 7070
 
 # Resource configuration
 resources:
@@ -24,14 +24,21 @@ resources:
 # Environment variables
 env:
   PORT: {{ .Values.global.env.PORT }}
-  PROJECT_ID: {{ .Values.currencyservice.env.PROJECT_ID }}
-  ALLOWED_CURRENCIES: {{ .Values.currencyservice.env.ALLOWED_CURRENCIES }}
+  REDIS_ADDR: {{ .Values.global.env.REDIS_ADDR }}
+
+# Security context
+podSecurityContext:
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+
+securityContext:
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
 
 # Health check configuration
 livenessProbe:
   httpGet:
     path: /health
-    port: 7000
+    port: 7070
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -40,8 +47,18 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 7000
+    port: 7070
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
+
+# Redis configuration
+redis-cart:
+  persistence:
+    enabled: {{ .Values.redis-cart.persistence.enabled }}
+    size: {{ .Values.redis-cart.persistence.size }}
+    storageClass: {{ .Values.redis-cart.persistence.storageClass }}
+    accessMode: {{ .Values.redis-cart.persistence.accessMode }}
+
+ 

@@ -1,0 +1,72 @@
+# Global values shared across all services
+# These values are inherited by all subcharts unless overridden
+global:
+  # Number of replicas to deploy
+  replicaCount: 1
+
+  # Image configuration shared across all services
+  image:
+    registry: acronlineboutique.azurecr.io  # Container registry URL
+    pullPolicy: IfNotPresent               # Image pull policy
+    tag: latest                            # Image tag
+
+  # Common service configuration
+  service:
+    type: ClusterIP  # Default service type
+
+  # Default resource limits and requests for all services
+  # Can be overridden per service in their respective sections
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+  # Common environment variables shared across services
+  env:
+    # Common settings
+    PORT: "8080"              # Default service port
+    DISABLE_PROFILER: "1"     # Disable profiler by default
+
+    # Ad Service
+    MAX_ADS_TO_SERVE: "5"     # Maximum number of ads to serve
+
+    # Cart Service
+    REDIS_ADDR: "redis-cart:6379"  # Redis connection address
+
+    # Checkout Service
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+    EMAIL_SERVICE_ADDR: "emailservice:8080"
+    PAYMENT_SERVICE_ADDR: "paymentservice:50051"
+
+    # Currency Service
+    ALLOWED_CURRENCIES: "USD,EUR,JPY,GBP,TRY"  # Supported currencies
+
+    # Recommendation Service
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+
+    # Shopping Assistant Service
+    PROJECT_ID: "online-boutique"  # Default project ID
+    REGION: "us-central1"          # Default region
+    ALLOYDB_DATABASE_NAME: "shopping_assistant"  # Default database name
+    ALLOYDB_TABLE_NAME: "shopping_history"       # Default table name
+    ALLOYDB_CLUSTER_NAME: "shopping-cluster"     # Default cluster name
+    ALLOYDB_INSTANCE_NAME: "shopping-instance"   # Default instance name
+    ALLOYDB_SECRET_NAME: "alloydb-credentials"   # Default secret name
+
+  # Common security context
+  podSecurityContext:
+    fsGroup: 1000
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+
+  # Common health check configuration
+  healthCheck:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3

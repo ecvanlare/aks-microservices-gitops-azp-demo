@@ -1,0 +1,55 @@
+# Number of replicas to deploy
+replicaCount: 1
+
+# Container image configuration
+image:
+  repository: productcatalogservice
+  tag: {{ .Values.global.image.tag }}
+  pullPolicy: {{ .Values.global.image.pullPolicy }}
+
+# Service configuration
+service:
+  type: {{ .Values.global.service.type }}
+  port: 3550
+
+# Resource configuration
+resources:
+  limits:
+    cpu: {{ .Values.global.resources.limits.cpu }}
+    memory: {{ .Values.global.resources.limits.memory }}
+  requests:
+    cpu: {{ .Values.global.resources.requests.cpu }}
+    memory: {{ .Values.global.resources.requests.memory }}
+
+# Environment variables
+env:
+  PORT: {{ .Values.global.env.PORT }}
+
+# Security context
+podSecurityContext:
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+
+securityContext:
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
+
+# Health check configuration
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3550
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3550
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# env values are inherited from global.env and service-specific overrides in the umbrella chart 

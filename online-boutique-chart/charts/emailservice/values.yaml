@@ -3,14 +3,14 @@ replicaCount: 1
 
 # Container image configuration
 image:
-  repository: productcatalogservice
+  repository: emailservice
   tag: {{ .Values.global.image.tag }}
   pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 # Service configuration
 service:
   type: {{ .Values.global.service.type }}
-  port: 3550
+  port: 8080
 
 # Resource configuration
 resources:
@@ -24,12 +24,21 @@ resources:
 # Environment variables
 env:
   PORT: {{ .Values.global.env.PORT }}
+  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
+
+# Security context
+podSecurityContext:
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+
+securityContext:
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
 
 # Health check configuration
 livenessProbe:
   httpGet:
     path: /health
-    port: 3550
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -38,7 +47,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 3550
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5

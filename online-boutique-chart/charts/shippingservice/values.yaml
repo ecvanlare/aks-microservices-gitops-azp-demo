@@ -24,7 +24,15 @@ resources:
 # Environment variables
 env:
   PORT: {{ .Values.global.env.PORT }}
-  ALLOWED_CURRENCIES: {{ .Values.shippingservice.env.ALLOWED_CURRENCIES }}
+  ALLOWED_CURRENCIES: {{ .Values.global.env.ALLOWED_CURRENCIES }}
+
+# Security context
+podSecurityContext:
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+
+securityContext:
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
 
 # Health check configuration
 livenessProbe:

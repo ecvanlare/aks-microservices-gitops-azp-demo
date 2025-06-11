@@ -3,14 +3,14 @@ replicaCount: 1
 
 # Container image configuration
 image:
-  repository: adservice
+  repository: shoppingassistantservice
   tag: {{ .Values.global.image.tag }}
   pullPolicy: {{ .Values.global.image.pullPolicy }}
 
 # Service configuration
 service:
   type: {{ .Values.global.service.type }}
-  port: 9555
+  port: 8080
 
 # Resource configuration
 resources:
@@ -25,21 +25,28 @@ resources:
 env:
   PORT: {{ .Values.global.env.PORT }}
   DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
-  MAX_ADS_TO_SERVE: {{ .Values.adservice.env.MAX_ADS_TO_SERVE }}
+  PROJECT_ID: {{ .Values.shoppingassistantservice.env.PROJECT_ID }}
+  REGION: {{ .Values.shoppingassistantservice.env.REGION }}
+  ALLOYDB_DATABASE_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_DATABASE_NAME }}
+  ALLOYDB_TABLE_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_TABLE_NAME }}
+  ALLOYDB_CLUSTER_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_CLUSTER_NAME }}
+  ALLOYDB_INSTANCE_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_INSTANCE_NAME }}
+  ALLOYDB_SECRET_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_SECRET_NAME }}
+  PGPASSWORD: {{ .Values.shoppingassistantservice.env.PGPASSWORD }}
 
 # Security context
 podSecurityContext:
-  fsGroup: {{ .Values.adservice.podSecurityContext.fsGroup }}
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
 
 securityContext:
-  runAsUser: {{ .Values.adservice.securityContext.runAsUser }}
-  runAsNonRoot: {{ .Values.adservice.securityContext.runAsNonRoot }}
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
 
 # Health check configuration
 livenessProbe:
   httpGet:
     path: /health
-    port: 9555
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -48,7 +55,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 9555
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5

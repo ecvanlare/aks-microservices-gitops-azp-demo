@@ -28,6 +28,14 @@ env:
   PRODUCT_CATALOG_SERVICE_ADDR: {{ .Values.global.serviceAddresses.PRODUCT_CATALOG_SERVICE_ADDR }}
   CURRENCY_SERVICE_ADDR: {{ .Values.global.serviceAddresses.CURRENCY_SERVICE_ADDR }}
 
+# Security context
+podSecurityContext:
+  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+
+securityContext:
+  runAsUser: {{ .Values.global.securityContext.runAsUser }}
+  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
+
 # Health check configuration
 livenessProbe:
   httpGet:
