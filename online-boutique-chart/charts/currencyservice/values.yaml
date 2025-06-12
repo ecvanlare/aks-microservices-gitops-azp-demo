@@ -19,6 +19,7 @@ resources:
     memory: 512Mi
 
 env:
+  PORT: "7000"
   PROJECT_ID: "online-boutique"
 
 podSecurityContext: {}
