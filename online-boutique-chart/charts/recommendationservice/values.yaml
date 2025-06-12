@@ -20,7 +20,7 @@ resources:
 
 env:
   PORT: "8080"
-  DISABLE_PROFILER: "0"
+  DISABLE_PROFILER: "1"
   PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
   CURRENCY_SERVICE_ADDR: "currencyservice:7000"
 

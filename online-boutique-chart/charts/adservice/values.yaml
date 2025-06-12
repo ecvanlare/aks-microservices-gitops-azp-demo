@@ -20,7 +20,7 @@ resources:
 
 env:
   PORT: "9555"
-  DISABLE_PROFILER: "0"
+  DISABLE_PROFILER: "1"
 
 podSecurityContext: {}
 securityContext: {}

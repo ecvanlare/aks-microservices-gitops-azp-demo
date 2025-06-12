@@ -7,7 +7,7 @@ global:
       cpu: 100m
       memory: 128Mi
     limits:
-      cpu: 500m
+      cpu: 300m
       memory: 512Mi
 
 adservice:
@@ -20,6 +20,9 @@ adservice:
     type: ClusterIP
     port: 9555
     annotations: {}
+  env:
+    PORT: "9555"
+    DISABLE_PROFILER: "1"
 
 cartservice:
   enabled: true
@@ -32,6 +35,7 @@ cartservice:
     port: 7070
     annotations: {}
   env:
+    PORT: "7070"
     REDIS_ADDR: "redis-cart:6379"
 
 checkoutservice:
@@ -44,6 +48,14 @@ checkoutservice:
     type: ClusterIP
     port: 5050
     annotations: {}
+  env:
+    PORT: "5050"
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+    PAYMENT_SERVICE_ADDR: "paymentservice:50051"
+    EMAIL_SERVICE_ADDR: "emailservice:8080"
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    CART_SERVICE_ADDR: "cartservice:7070"
 
 currencyservice:
   enabled: true
@@ -55,6 +67,9 @@ currencyservice:
     type: ClusterIP
     port: 7000
     annotations: {}
+  env:
+    PORT: "7000"
+    PROJECT_ID: "online-boutique"
 
 emailservice:
   enabled: true
@@ -66,6 +81,9 @@ emailservice:
     type: ClusterIP
     port: 8080
     annotations: {}
+  env:
+    PORT: "8080"
+    DISABLE_PROFILER: "1"
 
 frontend:
   enabled: true
@@ -77,6 +95,16 @@ frontend:
     type: ClusterIP
     port: 8080
     annotations: {}
+  env:
+    PORT: "8080"
+    AD_SERVICE_ADDR: "adservice:9555"
+    CART_SERVICE_ADDR: "cartservice:7070"
+    CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
+    SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+    SHOPPING_ASSISTANT_SERVICE_ADDR: "shoppingassistantservice:8080"
 
 paymentservice:
   enabled: true
@@ -88,6 +116,8 @@ paymentservice:
     type: ClusterIP
     port: 50051
     annotations: {}
+  env:
+    PORT: "50051"
 
 productcatalogservice:
   enabled: true
@@ -99,6 +129,8 @@ productcatalogservice:
     type: ClusterIP
     port: 3550
     annotations: {}
+  env:
+    PORT: "3550"
 
 recommendationservice:
   enabled: true
@@ -110,6 +142,11 @@ recommendationservice:
     type: ClusterIP
     port: 8080
     annotations: {}
+  env:
+    PORT: "8080"
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    DISABLE_PROFILER: "1"
 
 redis-cart:
   enabled: true
@@ -120,6 +157,18 @@ redis-cart:
   service:
     type: ClusterIP
     port: 6379
+  auth:
+    enabled: true
+    existingSecret: redis-password
+    existingSecretPasswordKey: redis-password
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: "standard"
+  command:
+    - "redis-server"
+    - "--appendonly"
+    - "yes"
 
 shippingservice:
   enabled: true
@@ -131,6 +180,8 @@ shippingservice:
     type: ClusterIP
     port: 50051
     annotations: {}
+  env:
+    PORT: "50051"
 
 shoppingassistantservice:
   enabled: true
@@ -142,3 +193,13 @@ shoppingassistantservice:
     type: ClusterIP
     port: 8080
     annotations: {}
+  env:
+    PORT: "8080"
+    PROJECT_ID: "online-boutique"
+    REGION: "uksouth"
+    DB_HOST: "online-boutique-postgres.postgres.database.azure.com"
+    DB_NAME: "shopping_assistant"
+    DB_USER: "postgres"
+    DB_PORT: "5432"
+    DB_SSL_MODE: "require"
+    DISABLE_PROFILER: "1"

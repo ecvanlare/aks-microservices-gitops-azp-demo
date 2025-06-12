@@ -11,24 +11,23 @@ service:
   annotations: {}
 
 resources:
-  limits:
+  requests:
     cpu: 100m
     memory: 128Mi
-  requests:
+  limits:
     cpu: 300m
     memory: 512Mi
 
 env:
   PORT: "8080"
-  DISABLE_PROFILER: "0"
   PROJECT_ID: "online-boutique"
-  REGION: "us-central1"
-  ALLOYDB_DATABASE_NAME: "online-boutique"
-  ALLOYDB_TABLE_NAME: "shopping-assistant"
-  ALLOYDB_CLUSTER_NAME: "online-boutique-cluster"
-  ALLOYDB_INSTANCE_NAME: "online-boutique-instance"
-  ALLOYDB_SECRET_NAME: "online-boutique-secret"
-  PGPASSWORD: "password"
+  REGION: "uksouth"
+  DB_HOST: "online-boutique-postgres.postgres.database.azure.com"
+  DB_NAME: "shopping_assistant"
+  DB_USER: "postgres"
+  DB_PORT: "5432"
+  DB_SSL_MODE: "require"
+  DISABLE_PROFILER: "1"
 
 podSecurityContext:
   fsGroup: {}
