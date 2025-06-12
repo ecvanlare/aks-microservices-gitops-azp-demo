@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: acronlineboutique.azurecr.io/adservice
+  repository: adservice
   tag: v0.1.0
   pullPolicy: IfNotPresent
 
@@ -18,7 +18,8 @@ resources:
     cpu: 300m
     memory: 512Mi
 
-env: {}
+env:
+  DISABLE_PROFILER: "0"
 
 podSecurityContext: {}
 securityContext: {}
