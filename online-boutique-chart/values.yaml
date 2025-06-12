@@ -1,4 +1,6 @@
 global:
+  image:
+    registry: acronlineboutique.azurecr.io
   imagePullPolicy: IfNotPresent
   resources:
     requests:
@@ -12,22 +14,22 @@ adservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/adservice
+    repository: adservice
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 8080      # HTTP port for adservice
+    port: 9555
     annotations: {}
 
 cartservice:
   enabled: true
   replicaCount: 2
   image:
-    repository: acronlineboutique.azurecr.io/cartservice
+    repository: cartservice
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 8080      # HTTP port for cartservice
+    port: 7070
     annotations: {}
   env:
     REDIS_ADDR: "redis-cart:6379"
@@ -36,29 +38,29 @@ checkoutservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/checkoutservice
+    repository: checkoutservice
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 8080
+    port: 5050
     annotations: {}
 
 currencyservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/currencyservice
+    repository: currencyservice
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 8080
+    port: 7000
     annotations: {}
 
 emailservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/emailservice
+    repository: emailservice
     tag: v0.1.0
   service:
     type: ClusterIP
@@ -69,41 +71,40 @@ frontend:
   enabled: true
   replicaCount: 2
   image:
-    repository: acronlineboutique.azurecr.io/frontend
+    repository: frontend
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 80        # Typical frontend port (can be 8080 or 80)
+    port: 8080
     annotations: {}
-
 
 paymentservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/paymentservice
+    repository: paymentservice
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 8080
+    port: 50051
     annotations: {}
 
 productcatalogservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/productcatalogservice
+    repository: productcatalogservice
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 8080
+    port: 3550
     annotations: {}
 
 recommendationservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/recommendationservice
+    repository: recommendationservice
     tag: v0.1.0
   service:
     type: ClusterIP
@@ -116,23 +117,26 @@ redis-cart:
   image:
     repository: bitnami/redis
     tag: v7.4.1
+  service:
+    type: ClusterIP
+    port: 6379
 
 shippingservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/shippingservice
+    repository: shippingservice
     tag: v0.1.0
   service:
     type: ClusterIP
-    port: 8080
+    port: 50051
     annotations: {}
 
 shoppingassistantservice:
   enabled: true
   replicaCount: 1
   image:
-    repository: acronlineboutique.azurecr.io/shoppingassistantservice
+    repository: shoppingassistantservice
     tag: v0.1.0
   service:
     type: ClusterIP
