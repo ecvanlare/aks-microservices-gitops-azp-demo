@@ -1,41 +1,28 @@
-# Number of replicas to deploy
 replicaCount: 1
 
-# Container image configuration
 image:
-  repository: adservice
-  tag: {{ .Values.global.image.tag }}
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  repository: acronlineboutique.azurecr.io/adservice
+  tag: v0.1.0
+  pullPolicy: IfNotPresent
 
-# Service configuration
 service:
-  type: {{ .Values.global.service.type }}
+  type: ClusterIP
   port: 9555
+  annotations: {}
 
-# Resource configuration
 resources:
-  limits:
-    cpu: {{ .Values.global.resources.limits.cpu }}
-    memory: {{ .Values.global.resources.limits.memory }}
   requests:
-    cpu: {{ .Values.global.resources.requests.cpu }}
-    memory: {{ .Values.global.resources.requests.memory }}
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
 
-# Environment variables
-env:
-  PORT: {{ .Values.global.env.PORT }}
-  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
-  MAX_ADS_TO_SERVE: {{ .Values.global.env.MAX_ADS_TO_SERVE }}
+env: {}
 
-# Security context
-podSecurityContext:
-  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+podSecurityContext: {}
+securityContext: {}
 
-securityContext:
-  runAsUser: {{ .Values.global.securityContext.runAsUser }}
-  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
-
-# Health check configuration
 livenessProbe:
   httpGet:
     path: /health
