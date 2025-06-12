@@ -1,72 +1,97 @@
-# Global values shared across all services
-# These values are inherited by all subcharts unless overridden
 global:
-  # Number of replicas to deploy
-  replicaCount: 1
-
-  # Image configuration shared across all services
-  image:
-    registry: acronlineboutique.azurecr.io  # Container registry URL
-    pullPolicy: IfNotPresent               # Image pull policy
-    tag: latest                            # Image tag
-
-  # Common service configuration
-  service:
-    type: ClusterIP  # Default service type
-
-  # Default resource limits and requests for all services
-  # Can be overridden per service in their respective sections
+  imagePullPolicy: IfNotPresent
   resources:
-    limits:
+    requests:
       cpu: 100m
       memory: 128Mi
-    requests:
-      cpu: 50m
-      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
-  # Common environment variables shared across services
+adservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/adservice
+    tag: v0.1.0
+
+cartservice:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: acronlineboutique.azurecr.io/cartservice
+    tag: v0.1.0
   env:
-    # Common settings
-    PORT: "8080"              # Default service port
-    DISABLE_PROFILER: "1"     # Disable profiler by default
+    REDIS_ADDR: "redis-cart:6379"
+  ports:
+    grpc: 7070
 
-    # Ad Service
-    MAX_ADS_TO_SERVE: "5"     # Maximum number of ads to serve
+checkoutservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/checkoutservice
+    tag: v0.1.0
 
-    # Cart Service
-    REDIS_ADDR: "redis-cart:6379"  # Redis connection address
+currencyservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/currencyservice
+    tag: v0.1.0
 
-    # Checkout Service
-    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
-    SHIPPING_SERVICE_ADDR: "shippingservice:50051"
-    EMAIL_SERVICE_ADDR: "emailservice:8080"
-    PAYMENT_SERVICE_ADDR: "paymentservice:50051"
+emailservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/emailservice
+    tag: v0.1.0
 
-    # Currency Service
-    ALLOWED_CURRENCIES: "USD,EUR,JPY,GBP,TRY"  # Supported currencies
+frontend:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: acronlineboutique.azurecr.io/frontend
+    tag: v0.1.0
 
-    # Recommendation Service
-    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+paymentservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/paymentservice
+    tag: v0.1.0
 
-    # Shopping Assistant Service
-    PROJECT_ID: "online-boutique"  # Default project ID
-    REGION: "us-central1"          # Default region
-    ALLOYDB_DATABASE_NAME: "shopping_assistant"  # Default database name
-    ALLOYDB_TABLE_NAME: "shopping_history"       # Default table name
-    ALLOYDB_CLUSTER_NAME: "shopping-cluster"     # Default cluster name
-    ALLOYDB_INSTANCE_NAME: "shopping-instance"   # Default instance name
-    ALLOYDB_SECRET_NAME: "alloydb-credentials"   # Default secret name
+productcatalogservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/productcatalogservice
+    tag: v0.1.0
 
-  # Common security context
-  podSecurityContext:
-    fsGroup: 1000
-  securityContext:
-    runAsUser: 1000
-    runAsNonRoot: true
+recommendationservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/recommendationservice
+    tag: v0.1.0
 
-  # Common health check configuration
-  healthCheck:
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 3
+redis-cart:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: bitnami/redis
+    tag: v0.1.0
+
+shippingservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/shippingservice
+    tag: v0.1.0
+
+shoppingassistantservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: acronlineboutique.azurecr.io/shoppingassistantservice
+    tag: v0.1.0
