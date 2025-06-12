@@ -1,36 +1,19 @@
-replicaCount: 1
-
 image:
-  repository: redis
-  tag: alpine
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  repository: bitnami/redis
+  tag: 7.4.1
+  pullPolicy: IfNotPresent
 
-# Service configuration
 service:
-  type: {{ .Values.global.service.type }}
+  type: ClusterIP
   port: 6379
 
-# Resource configuration
 resources:
-  limits:
-    cpu: {{ .Values.global.resources.limits.cpu }}
-    memory: {{ .Values.global.resources.limits.memory }}
   requests:
-    cpu: {{ .Values.global.resources.requests.cpu }}
-    memory: {{ .Values.global.resources.requests.memory }}
-
-# Security context inherited from global
-podSecurityContext:
-  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
-  runAsUser: {{ .Values.global.securityContext.runAsUser }}
-  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
-
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
-  readOnlyRootFilesystem: false  # Redis needs write access
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
 
 persistence:
   enabled: true
@@ -53,8 +36,3 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
-
-command:
-  - "redis-server"
-  - "--appendonly"
-  - "yes" 

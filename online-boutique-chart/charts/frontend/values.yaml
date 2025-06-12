@@ -1,34 +1,51 @@
-# Number of replicas to deploy
-replicaCount: 1
+replicaCount: 2
 
-# Container image configuration
 image:
   repository: frontend
-  tag: {{ .Values.global.image.tag }}
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  tag: v0.1.0
+  pullPolicy: IfNotPresent
 
-# Service configuration
 service:
-  type: {{ .Values.global.service.type }}
+  type: ClusterIP
   port: 8080
+  annotations: {}
 
-# Resource configuration
 resources:
-  limits:
-    cpu: {{ .Values.global.resources.limits.cpu }}
-    memory: {{ .Values.global.resources.limits.memory }}
   requests:
-    cpu: {{ .Values.global.resources.requests.cpu }}
-    memory: {{ .Values.global.resources.requests.memory }}
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
 
-# Environment variables
 env:
-  PORT: {{ .Values.global.env.PORT }}
-  PRODUCT_CATALOG_SERVICE_ADDR: {{ .Values.global.serviceAddresses.PRODUCT_CATALOG_SERVICE_ADDR }}
-  CURRENCY_SERVICE_ADDR: {{ .Values.global.serviceAddresses.CURRENCY_SERVICE_ADDR }}
-  CART_SERVICE_ADDR: {{ .Values.global.serviceAddresses.CART_SERVICE_ADDR }}
-  RECOMMENDATION_SERVICE_ADDR: {{ .Values.global.serviceAddresses.RECOMMENDATION_SERVICE_ADDR }}
-  SHIPPING_SERVICE_ADDR: {{ .Values.global.serviceAddresses.SHIPPING_SERVICE_ADDR }}
-  CHECKOUT_SERVICE_ADDR: {{ .Values.global.serviceAddresses.CHECKOUT_SERVICE_ADDR }}
-  AD_SERVICE_ADDR: {{ .Values.global.serviceAddresses.AD_SERVICE_ADDR }}
-  SHOPPING_ASSISTANT_SERVICE_ADDR: {{ .Values.global.serviceAddresses.SHOPPING_ASSISTANT_SERVICE_ADDR }} 
+  PORT: "8080"
+  PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+  CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+  CART_SERVICE_ADDR: "cartservice:7070"
+  RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
+  SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+  CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
+  AD_SERVICE_ADDR: "adservice:9555"
+  SHOPPING_ASSISTANT_SERVICE_ADDR: "shoppingassistantservice:8080" 
+
+podSecurityContext: {}
+securityContext: {}
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
