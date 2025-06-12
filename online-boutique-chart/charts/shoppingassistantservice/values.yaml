@@ -1,48 +1,42 @@
-# Number of replicas to deploy
 replicaCount: 1
 
-# Container image configuration
 image:
   repository: shoppingassistantservice
-  tag: {{ .Values.global.image.tag }}
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  tag: v0.1.0
+  pullPolicy: IfNotPresent
 
-# Service configuration
 service:
-  type: {{ .Values.global.service.type }}
+  type: ClusterIP
   port: 8080
+  annotations: {}
 
-# Resource configuration
 resources:
   limits:
-    cpu: {{ .Values.global.resources.limits.cpu }}
-    memory: {{ .Values.global.resources.limits.memory }}
+    cpu: 100m
+    memory: 128Mi
   requests:
-    cpu: {{ .Values.global.resources.requests.cpu }}
-    memory: {{ .Values.global.resources.requests.memory }}
+    cpu: 300m
+    memory: 512Mi
 
-# Environment variables
 env:
-  PORT: {{ .Values.global.env.PORT }}
-  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
-  PROJECT_ID: {{ .Values.shoppingassistantservice.env.PROJECT_ID }}
-  REGION: {{ .Values.shoppingassistantservice.env.REGION }}
-  ALLOYDB_DATABASE_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_DATABASE_NAME }}
-  ALLOYDB_TABLE_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_TABLE_NAME }}
-  ALLOYDB_CLUSTER_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_CLUSTER_NAME }}
-  ALLOYDB_INSTANCE_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_INSTANCE_NAME }}
-  ALLOYDB_SECRET_NAME: {{ .Values.shoppingassistantservice.env.ALLOYDB_SECRET_NAME }}
-  PGPASSWORD: {{ .Values.shoppingassistantservice.env.PGPASSWORD }}
+  PORT: "8080"
+  DISABLE_PROFILER: "0"
+  PROJECT_ID: "online-boutique"
+  REGION: "us-central1"
+  ALLOYDB_DATABASE_NAME: "online-boutique"
+  ALLOYDB_TABLE_NAME: "shopping-assistant"
+  ALLOYDB_CLUSTER_NAME: "online-boutique-cluster"
+  ALLOYDB_INSTANCE_NAME: "online-boutique-instance"
+  ALLOYDB_SECRET_NAME: "online-boutique-secret"
+  PGPASSWORD: "password"
 
-# Security context
 podSecurityContext:
-  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+  fsGroup: {}
 
 securityContext:
-  runAsUser: {{ .Values.global.securityContext.runAsUser }}
-  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
+  runAsUser: {}
+  runAsNonRoot: {}
 
-# Health check configuration
 livenessProbe:
   httpGet:
     path: /health

@@ -1,40 +1,29 @@
-# Number of replicas to deploy
 replicaCount: 1
 
-# Container image configuration
 image:
   repository: shippingservice
-  tag: {{ .Values.global.image.tag }}
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  tag: v0.1.0
+  pullPolicy: IfNotPresent
 
-# Service configuration
 service:
-  type: {{ .Values.global.service.type }}
+  type: ClusterIP
   port: 50051
+  annotations: {}
 
-# Resource configuration
 resources:
   limits:
-    cpu: {{ .Values.global.resources.limits.cpu }}
-    memory: {{ .Values.global.resources.limits.memory }}
+    cpu: 100m
+    memory: 128Mi
   requests:
-    cpu: {{ .Values.global.resources.requests.cpu }}
-    memory: {{ .Values.global.resources.requests.memory }}
+    cpu: 300m
+    memory: 512Mi
 
-# Environment variables
 env:
-  PORT: {{ .Values.global.env.PORT }}
-  ALLOWED_CURRENCIES: {{ .Values.global.env.ALLOWED_CURRENCIES }}
+  PORT: "50051"
 
-# Security context
-podSecurityContext:
-  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+podSecurityContext: {}
+securityContext: {}
 
-securityContext:
-  runAsUser: {{ .Values.global.securityContext.runAsUser }}
-  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
-
-# Health check configuration
 livenessProbe:
   httpGet:
     path: /health

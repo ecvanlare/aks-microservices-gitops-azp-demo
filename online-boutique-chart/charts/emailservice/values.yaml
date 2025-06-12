@@ -1,40 +1,30 @@
-# Number of replicas to deploy
 replicaCount: 1
 
-# Container image configuration
 image:
   repository: emailservice
-  tag: {{ .Values.global.image.tag }}
-  pullPolicy: {{ .Values.global.image.pullPolicy }}
+  tag: v0.1.0
+  pullPolicy: IfNotPresent
 
-# Service configuration
 service:
-  type: {{ .Values.global.service.type }}
+  type: ClusterIP
   port: 8080
+  annotations: {}
 
-# Resource configuration
 resources:
-  limits:
-    cpu: {{ .Values.global.resources.limits.cpu }}
-    memory: {{ .Values.global.resources.limits.memory }}
   requests:
-    cpu: {{ .Values.global.resources.requests.cpu }}
-    memory: {{ .Values.global.resources.requests.memory }}
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
 
-# Environment variables
 env:
-  PORT: {{ .Values.global.env.PORT }}
-  DISABLE_PROFILER: {{ .Values.global.env.DISABLE_PROFILER }}
+  PORT: "8080"
+  DISABLE_PROFILER: "1"
 
-# Security context
-podSecurityContext:
-  fsGroup: {{ .Values.global.podSecurityContext.fsGroup }}
+podSecurityContext: {}
+securityContext: {}
 
-securityContext:
-  runAsUser: {{ .Values.global.securityContext.runAsUser }}
-  runAsNonRoot: {{ .Values.global.securityContext.runAsNonRoot }}
-
-# Health check configuration
 livenessProbe:
   httpGet:
     path: /health
@@ -52,5 +42,3 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
-
-# env values are inherited from global.env and service-specific overrides in the umbrella chart 
