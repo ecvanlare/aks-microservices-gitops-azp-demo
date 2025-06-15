@@ -25,6 +25,18 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           command: {{ .Values.command }}
+          env:
+            {{- if .Values.allowEmptyPassword }}
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
+            {{- end }}
+            {{- if .Values.auth.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingSecret }}
+                  key: {{ .Values.auth.existingSecretPasswordKey }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:

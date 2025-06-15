@@ -18,8 +18,15 @@ resources:
 persistence:
   enabled: true
   size: 100Mi
-  storageClass: "standard"
+  storageClass: "managed-csi"
   accessMode: ReadWriteOnce
+
+auth:
+  enabled: false
+#   existingSecret: redis-password
+#   existingSecretPasswordKey: redis-password
+
+allowEmptyPassword: true
 
 livenessProbe:
   tcpSocket:

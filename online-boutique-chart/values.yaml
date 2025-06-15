@@ -157,18 +157,15 @@ redis-cart:
   service:
     type: ClusterIP
     port: 6379
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: "managed-csi"
+    accessMode: ReadWriteOnce
   auth:
     enabled: true
     existingSecret: redis-password
     existingSecretPasswordKey: redis-password
-  persistence:
-    enabled: true
-    size: 100Mi
-    storageClass: "standard"
-  command:
-    - "redis-server"
-    - "--appendonly"
-    - "yes"
 
 shippingservice:
   enabled: true
