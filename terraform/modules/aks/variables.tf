@@ -33,12 +33,22 @@ variable "node_pool" {
 variable "network" {
   description = "Network configuration"
   type = object({
-    plugin          = string
-    policy          = string
-    subnet_id       = string
-    service_cidr    = string
-    dns_service_ip  = string
+    plugin         = string
+    policy         = string
+    subnet_id      = string
+    service_cidr   = string
+    dns_service_ip = string
   })
+}
+
+variable "cluster_identity_id" {
+  description = "The ID of the user-assigned identity for the cluster"
+  type        = string
+}
+
+variable "kubelet_identity_id" {
+  description = "The ID of the user-assigned identity for the kubelet"
+  type        = string
 }
 
 variable "tags" {
