@@ -17,13 +17,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   identity {
     type = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.cluster.id]
+    identity_ids = [var.cluster_identity_id]
   }
 
   kubelet_identity {
-    user_assigned_identity_id = azurerm_user_assigned_identity.kubelet.id
-    client_id                 = azurerm_user_assigned_identity.kubelet.client_id
-    object_id                 = azurerm_user_assigned_identity.kubelet.principal_id
+    user_assigned_identity_id = var.kubelet_identity_id
   }
 
   network_profile {
