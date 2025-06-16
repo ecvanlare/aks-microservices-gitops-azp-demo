@@ -7,6 +7,29 @@ module "resource_group" {
   tags     = var.tags
 }
 
+# Create cluster identity first
+resource "azurerm_user_assigned_identity" "cluster" {
+  name                = "${var.aks_name}-cluster-identity"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+}
+
+# Create kubelet identity
+resource "azurerm_user_assigned_identity" "kubelet" {
+  name                = "${var.aks_name}-kubelet-identity"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+}
+
+# Allow cluster identity to manage kubelet identity
+module "kubelet_identity_role" {
+  source = "./modules/identity"
+
+  scope                = azurerm_user_assigned_identity.kubelet.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = azurerm_user_assigned_identity.cluster.principal_id
+}
+
 # Virtual Network Module
 module "vnet" {
   source = "./modules/network/vnet"
@@ -80,7 +103,10 @@ module "aks" {
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
-  tags = var.tags
+  cluster_identity_id = azurerm_user_assigned_identity.cluster.id
+  kubelet_identity_id = azurerm_user_assigned_identity.kubelet.id
+  tags                = var.tags
+  depends_on          = [module.kubelet_identity_role]
 }
 
 # Identity assignment for AKS to pull from ACR
@@ -89,15 +115,7 @@ module "identity" {
 
   scope                = module.acr.acr_id
   role_definition_name = "AcrPull"
-  principal_id         = module.aks.kubelet_identity.principal_id
-}
-
-# Allow AKS to manage the kubelet identity
-module "kubelet_identity_role" {
-  source = "./modules/identity"
-
-  scope                = module.aks.kubelet_identity.id
-  role_definition_name = "Managed Identity Operator"
-  principal_id         = module.aks.cluster_identity.principal_id
+  principal_id         = azurerm_user_assigned_identity.kubelet.principal_id
+  depends_on           = [module.aks]
 }
 
