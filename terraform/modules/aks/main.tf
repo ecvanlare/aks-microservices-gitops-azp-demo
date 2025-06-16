@@ -21,8 +21,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   # Kubelet identity for node operations (like pulling images)
   kubelet_identity {
-    client_id = azurerm_user_assigned_identity.kubelet.client_id
-    object_id = azurerm_user_assigned_identity.kubelet.principal_id
+    client_id                 = azurerm_user_assigned_identity.kubelet.client_id
+    object_id                 = azurerm_user_assigned_identity.kubelet.principal_id
+    user_assigned_identity_id = azurerm_user_assigned_identity.kubelet.id
   }
 
   network_profile {
