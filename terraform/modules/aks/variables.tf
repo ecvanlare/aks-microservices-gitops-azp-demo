@@ -41,11 +41,6 @@ variable "network" {
   })
 }
 
-variable "kubelet_identity_name" {
-  description = "Name of the user-assigned identity for AKS kubelet"
-  type        = string
-}
-
 variable "tags" {
   description = "Tags to be applied to the AKS cluster"
   type        = map(string)
