@@ -17,7 +17,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   identity {
     type = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.kubelet.id]
+    identity_ids = [azurerm_user_assigned_identity.cluster.id]
   }
 
   kubelet_identity {
@@ -37,7 +37,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   tags = var.tags
 }
 
-# Separate user-assigned identity for kubelet
+# User-assigned identity for the cluster
+resource "azurerm_user_assigned_identity" "cluster" {
+  name                = "${var.name}-cluster-identity"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+}
+
+# User-assigned identity for kubelet
 resource "azurerm_user_assigned_identity" "kubelet" {
   name                = "${var.name}-kubelet-identity"
   resource_group_name = var.resource_group_name

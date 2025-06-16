@@ -81,12 +81,6 @@ variable "aks_name" {
   default     = "aks-online-boutique"
 }
 
-variable "aks_kubelet_identity_name" {
-  description = "Name of the user-assigned identity for AKS kubelet"
-  type        = string
-  default     = "kubelet-identity"
-}
-
 variable "aks_dns_prefix" {
   description = "DNS prefix for the AKS cluster"
   type        = string

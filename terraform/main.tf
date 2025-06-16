@@ -80,8 +80,7 @@ module "aks" {
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
-  kubelet_identity_name = var.aks_kubelet_identity_name
-  tags                  = var.tags
+  tags = var.tags
 }
 
 # Identity assignment for AKS to pull from ACR
@@ -91,5 +90,14 @@ module "identity" {
   scope                = module.acr.acr_id
   role_definition_name = "AcrPull"
   principal_id         = module.aks.kubelet_identity.principal_id
+}
+
+# Allow AKS to manage the kubelet identity
+module "kubelet_identity_role" {
+  source = "./modules/identity"
+
+  scope                = module.aks.kubelet_identity.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = module.aks.cluster_identity.principal_id
 }
 
