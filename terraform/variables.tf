@@ -37,19 +37,19 @@ variable "vnet_address_space" {
 variable "subnets" {
   description = "Subnet configurations"
   type = map(object({
-    name             = string
-    address_prefixes = list(string)
+    name              = string
+    address_prefixes  = list(string)
     service_endpoints = list(string)
   }))
   default = {
     aks = {
-      name             = "snet-aks"
-      address_prefixes = ["10.0.0.0/24"]
+      name              = "snet-aks"
+      address_prefixes  = ["10.0.0.0/24"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
     appgw = {
-      name             = "snet-appgw"
-      address_prefixes = ["10.0.1.0/24"]
+      name              = "snet-appgw"
+      address_prefixes  = ["10.0.1.0/24"]
       service_endpoints = []
     }
   }
@@ -81,6 +81,12 @@ variable "aks_name" {
   default     = "aks-online-boutique"
 }
 
+variable "aks_kubelet_identity_name" {
+  description = "Name of the user-assigned identity for AKS kubelet"
+  type        = string
+  default     = "kubelet-identity"
+}
+
 variable "aks_dns_prefix" {
   description = "DNS prefix for the AKS cluster"
   type        = string
@@ -90,18 +96,20 @@ variable "aks_dns_prefix" {
 variable "aks_node_pool" {
   description = "Node pool configuration for AKS"
   type = object({
-    name                = string
-    node_count         = number
-    vm_size            = string
+    node_count          = number
+    vm_size             = string
+    os_disk_size_gb     = number
     enable_auto_scaling = bool
-    os_disk_size_gb    = number
+    min_count           = optional(number)
+    max_count           = optional(number)
   })
   default = {
-    name                = "default"
-    node_count         = 2
-    vm_size            = "Standard_D2s_v3"
-    enable_auto_scaling = false
-    os_disk_size_gb    = 30
+    node_count          = 2
+    vm_size             = "Standard_B2s"
+    os_disk_size_gb     = 30
+    enable_auto_scaling = true
+    min_count           = 1
+    max_count           = 5
   }
 }
 
