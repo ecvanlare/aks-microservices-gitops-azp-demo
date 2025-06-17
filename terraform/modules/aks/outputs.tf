@@ -24,6 +24,6 @@ output "cluster_identity" {
 output "kubelet_identity" {
   description = "The kubelet identity used by the AKS cluster"
   value = {
-    principal_id = azurerm_kubernetes_cluster.aks.kubelet_identity[0].principal_id
+    user_assigned_identity_id = azurerm_kubernetes_cluster.aks.kubelet_identity[0].user_assigned_identity_id
   }
 } 
