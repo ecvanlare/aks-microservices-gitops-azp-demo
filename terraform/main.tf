@@ -7,27 +7,32 @@ module "resource_group" {
   tags     = var.tags
 }
 
-# Create cluster identity first
+# Create managed identity for cluster operations
 resource "azurerm_user_assigned_identity" "cluster" {
-  name                = "${var.aks_name}-cluster-identity"
+  name                = "${var.aks_name}-cluster"
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
 }
 
-# Create kubelet identity
+# Create managed identity for kubelet operations
 resource "azurerm_user_assigned_identity" "kubelet" {
-  name                = "${var.aks_name}-kubelet-identity"
+  name                = "${var.aks_name}-kubelet"
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
 }
 
-# Allow cluster identity to manage kubelet identity
-module "kubelet_identity_role" {
-  source = "./modules/identity"
+# Create managed identity for ACR pull
+resource "azurerm_user_assigned_identity" "acr_pull" {
+  name                = "${var.aks_name}-acr-pull"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+}
 
-  scope                = azurerm_user_assigned_identity.kubelet.id
-  role_definition_name = "Managed Identity Operator"
-  principal_id         = azurerm_user_assigned_identity.cluster.principal_id
+# Create managed identity for ACR push (used by CI/CD)
+resource "azurerm_user_assigned_identity" "acr_push" {
+  name                = "${var.aks_name}-acr-push"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
 }
 
 # Virtual Network Module
@@ -87,6 +92,26 @@ module "acr" {
   tags                = var.tags
 }
 
+# Role assignment for AKS to pull from ACR
+module "acr_pull_role" {
+  source = "./modules/identity"
+
+  scope                = module.acr.acr_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.acr_pull.principal_id
+  depends_on           = [module.acr]
+}
+
+# Role assignment for CI/CD to push to ACR
+module "acr_push_role" {
+  source = "./modules/identity"
+
+  scope                = module.acr.acr_id
+  role_definition_name = "AcrPush"
+  principal_id         = azurerm_user_assigned_identity.acr_push.principal_id
+  depends_on           = [module.acr]
+}
+
 # Azure Kubernetes Service Module
 module "aks" {
   source = "./modules/aks"
@@ -103,19 +128,18 @@ module "aks" {
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
-  cluster_identity_id = azurerm_user_assigned_identity.cluster.id
+  cluster_identity_id  = azurerm_user_assigned_identity.cluster.id
   kubelet_identity_id = azurerm_user_assigned_identity.kubelet.id
+  acr_pull_identity_id = azurerm_user_assigned_identity.acr_pull.id
   tags                = var.tags
-  depends_on          = [module.kubelet_identity_role]
-}
 
-# Identity assignment for AKS to pull from ACR
-module "identity" {
-  source = "./modules/identity"
-
-  scope                = module.acr.acr_id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.kubelet.principal_id
-  depends_on           = [module.aks]
+  depends_on = [
+    module.acr,
+    module.acr_pull_role,
+    module.nsg,
+    azurerm_user_assigned_identity.cluster,
+    azurerm_user_assigned_identity.kubelet,
+    azurerm_user_assigned_identity.acr_pull
+  ]
 }
 

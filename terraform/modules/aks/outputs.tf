@@ -17,22 +17,17 @@ output "cluster_id" {
 output "cluster_identity" {
   description = "The cluster identity used by the AKS cluster"
   value = {
-    id           = azurerm_user_assigned_identity.cluster.id
-    client_id    = azurerm_user_assigned_identity.cluster.client_id
-    principal_id = azurerm_user_assigned_identity.cluster.principal_id
+    id           = azurerm_kubernetes_cluster.aks.identity[0].id
+    client_id    = azurerm_kubernetes_cluster.aks.identity[0].client_id
+    principal_id = azurerm_kubernetes_cluster.aks.identity[0].principal_id
   }
 }
 
 output "kubelet_identity" {
   description = "The kubelet identity used by the AKS cluster"
   value = {
-    id           = azurerm_user_assigned_identity.kubelet.id
-    client_id    = azurerm_user_assigned_identity.kubelet.client_id
-    principal_id = azurerm_user_assigned_identity.kubelet.principal_id
+    id           = azurerm_kubernetes_cluster.aks.kubelet_identity[0].id
+    client_id    = azurerm_kubernetes_cluster.aks.kubelet_identity[0].client_id
+    principal_id = azurerm_kubernetes_cluster.aks.kubelet_identity[0].principal_id
   }
-}
-
-output "system_assigned_identity_principal_id" {
-  description = "The principal ID of the system-assigned identity"
-  value       = azurerm_kubernetes_cluster.aks.identity[0].principal_id
 } 
