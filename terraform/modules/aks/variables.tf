@@ -51,6 +51,11 @@ variable "kubelet_identity_id" {
   type        = string
 }
 
+variable "acr_pull_identity_id" {
+  description = "The ID of the user-assigned identity for ACR pull"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to be applied to the AKS cluster"
   type        = map(string)
