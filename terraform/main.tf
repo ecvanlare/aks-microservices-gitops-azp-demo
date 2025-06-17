@@ -7,6 +7,34 @@ module "resource_group" {
   tags     = var.tags
 }
 
+# Create managed identity for cluster operations
+resource "azurerm_user_assigned_identity" "cluster" {
+  name                = "${var.aks_name}-cluster"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+}
+
+# Create managed identity for kubelet operations
+resource "azurerm_user_assigned_identity" "kubelet" {
+  name                = "${var.aks_name}-kubelet"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+}
+
+# Create managed identity for ACR pull
+resource "azurerm_user_assigned_identity" "acr_pull" {
+  name                = "${var.aks_name}-acr-pull"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+}
+
+# Create managed identity for ACR push (used by CI/CD)
+resource "azurerm_user_assigned_identity" "acr_push" {
+  name                = "${var.aks_name}-acr-push"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+}
+
 # Virtual Network Module
 module "vnet" {
   source = "./modules/network/vnet"
