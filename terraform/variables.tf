@@ -37,19 +37,19 @@ variable "vnet_address_space" {
 variable "subnets" {
   description = "Subnet configurations"
   type = map(object({
-    name             = string
-    address_prefixes = list(string)
+    name              = string
+    address_prefixes  = list(string)
     service_endpoints = list(string)
   }))
   default = {
     aks = {
-      name             = "snet-aks"
-      address_prefixes = ["10.0.0.0/24"]
+      name              = "snet-aks"
+      address_prefixes  = ["10.0.0.0/24"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
     appgw = {
-      name             = "snet-appgw"
-      address_prefixes = ["10.0.1.0/24"]
+      name              = "snet-appgw"
+      address_prefixes  = ["10.0.1.0/24"]
       service_endpoints = []
     }
   }
@@ -91,17 +91,17 @@ variable "aks_node_pool" {
   description = "Node pool configuration for AKS"
   type = object({
     name                = string
-    node_count         = number
-    vm_size            = string
+    node_count          = number
+    vm_size             = string
     enable_auto_scaling = bool
-    os_disk_size_gb    = number
+    os_disk_size_gb     = number
   })
   default = {
     name                = "default"
-    node_count         = 2
-    vm_size            = "Standard_D2s_v3"
+    node_count          = 2
+    vm_size             = "Standard_D2s_v3"
     enable_auto_scaling = false
-    os_disk_size_gb    = 30
+    os_disk_size_gb     = 30
   }
 }
 

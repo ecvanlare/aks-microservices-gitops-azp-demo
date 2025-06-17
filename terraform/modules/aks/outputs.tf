@@ -17,4 +17,9 @@ output "cluster_id" {
 output "cluster_identity" {
   description = "The identity block of the AKS cluster"
   value       = azurerm_kubernetes_cluster.aks.identity
+}
+
+output "cluster_principal_id" {
+  description = "The principal ID of the AKS cluster's system-assigned managed identity"
+  value       = azurerm_kubernetes_cluster.aks.identity[0].principal_id
 } 
