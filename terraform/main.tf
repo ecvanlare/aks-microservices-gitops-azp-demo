@@ -12,6 +12,7 @@ resource "azurerm_user_assigned_identity" "cluster" {
   name                = "${var.aks_name}-cluster"
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
+  tags                = var.tags
 }
 
 # Create managed identity for kubelet operations
@@ -19,13 +20,7 @@ resource "azurerm_user_assigned_identity" "kubelet" {
   name                = "${var.aks_name}-kubelet"
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
-}
-
-# Create managed identity for ACR pull
-resource "azurerm_user_assigned_identity" "acr_pull" {
-  name                = "${var.aks_name}-acr-pull"
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
+  tags                = var.tags
 }
 
 # Create managed identity for ACR push (used by CI/CD)
@@ -33,6 +28,19 @@ resource "azurerm_user_assigned_identity" "acr_push" {
   name                = "${var.aks_name}-acr-push"
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
+  tags                = var.tags
+}
+
+# Azure Container Registry Module
+module "acr" {
+  source = "./modules/acr"
+
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+  name                = var.acr_name
+  sku                 = var.acr_sku
+  admin_enabled       = false # Disable admin access since we're using managed identity
+  tags                = var.tags
 }
 
 # Virtual Network Module
@@ -80,18 +88,6 @@ module "nsg" {
   tags                = var.tags
 }
 
-# Azure Container Registry Module
-module "acr" {
-  source = "./modules/acr"
-
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
-  name                = var.acr_name
-  sku                 = var.acr_sku
-  admin_enabled       = false # Disable admin access since we're using managed identity
-  tags                = var.tags
-}
-
 # Azure Kubernetes Service Module
 module "aks" {
   source = "./modules/aks"
@@ -108,14 +104,8 @@ module "aks" {
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
-  tags = var.tags
-}
-
-# User-assigned managed identity for ACR push operations
-resource "azurerm_user_assigned_identity" "acr_push" {
-  name                = "id-acr-push"
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
+  cluster_identity_id = azurerm_user_assigned_identity.cluster.id
+  kubelet_identity_id = azurerm_user_assigned_identity.kubelet.id
   tags                = var.tags
 }
 
@@ -125,7 +115,7 @@ module "aks_acr_pull" {
 
   scope                = module.acr.acr_id
   role_definition_name = "AcrPull"
-  principal_id         = module.aks.cluster_principal_id
+  principal_id         = azurerm_user_assigned_identity.cluster.principal_id
 }
 
 # Identity assignment for ACR push operations

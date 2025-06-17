@@ -22,12 +22,12 @@ variable "node_pool" {
   description = "Node pool configuration"
   type = object({
     name                = string
-    node_count         = number
-    vm_size            = string
-    os_disk_size_gb    = number
+    node_count          = number
+    vm_size             = string
+    os_disk_size_gb     = number
     enable_auto_scaling = bool
-    min_count          = optional(number)
-    max_count          = optional(number)
+    min_count           = number
+    max_count           = number
   })
 }
 
@@ -52,9 +52,22 @@ variable "kubelet_identity_id" {
   type        = string
 }
 
-variable "acr_pull_identity_id" {
-  description = "The ID of the user-assigned identity for ACR pull"
+variable "load_balancer_sku" {
+  description = "The SKU of the load balancer"
   type        = string
+  default     = "standard"
+}
+
+variable "outbound_type" {
+  description = "The outbound type for the cluster"
+  type        = string
+  default     = "loadBalancer"
+}
+
+variable "user_node_pool_name" {
+  description = "The name of the user node pool"
+  type        = string
+  default     = "userpool"
 }
 
 variable "tags" {
