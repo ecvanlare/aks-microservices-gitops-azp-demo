@@ -90,6 +90,7 @@ variable "aks_dns_prefix" {
 variable "aks_node_pool" {
   description = "Node pool configuration for AKS"
   type = object({
+    name                = string
     node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
@@ -98,6 +99,7 @@ variable "aks_node_pool" {
     max_count           = optional(number)
   })
   default = {
+    name                = "default"
     node_count          = 2
     vm_size             = "Standard_B2s"
     os_disk_size_gb     = 30

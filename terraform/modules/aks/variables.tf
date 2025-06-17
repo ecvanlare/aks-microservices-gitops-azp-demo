@@ -21,6 +21,7 @@ variable "dns_prefix" {
 variable "node_pool" {
   description = "Node pool configuration"
   type = object({
+    name                = string
     node_count         = number
     vm_size            = string
     os_disk_size_gb    = number
