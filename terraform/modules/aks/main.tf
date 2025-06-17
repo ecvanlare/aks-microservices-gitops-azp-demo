@@ -31,6 +31,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   kubelet_identity {
     user_assigned_identity_id = var.kubelet_identity_id
+    client_id                 = var.kubelet_identity_id
+    object_id                 = var.kubelet_identity_id
   }
 
   tags = var.tags
