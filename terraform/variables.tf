@@ -101,7 +101,7 @@ variable "aks_node_pool" {
   default = {
     name                = "default"
     node_count          = 1
-    vm_size             = "Standard_B2"
+    vm_size             = "Standard_B2s"
     os_disk_size_gb     = 30
     enable_auto_scaling = true
     min_count           = 1
