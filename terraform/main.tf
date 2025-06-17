@@ -31,6 +31,15 @@ resource "azurerm_user_assigned_identity" "acr_push" {
   tags                = var.tags
 }
 
+# Grant cluster identity the Managed Identity Operator role for kubelet identity
+module "cluster_kubelet_operator" {
+  source = "./modules/identity"
+
+  scope                = azurerm_user_assigned_identity.kubelet.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = azurerm_user_assigned_identity.cluster.principal_id
+}
+
 # Azure Container Registry Module
 module "acr" {
   source = "./modules/acr"
@@ -88,6 +97,24 @@ module "nsg" {
   tags                = var.tags
 }
 
+# Identity assignment for AKS to pull from ACR
+module "aks_acr_pull" {
+  source = "./modules/identity"
+
+  scope                = module.acr.acr_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.cluster.principal_id
+}
+
+# Identity assignment for ACR push operations
+module "acr_push" {
+  source = "./modules/identity"
+
+  scope                = module.acr.acr_id
+  role_definition_name = "AcrPush"
+  principal_id         = azurerm_user_assigned_identity.acr_push.principal_id
+}
+
 # Azure Kubernetes Service Module
 module "aks" {
   source = "./modules/aks"
@@ -107,23 +134,9 @@ module "aks" {
   cluster_identity_id = azurerm_user_assigned_identity.cluster.id
   kubelet_identity_id = azurerm_user_assigned_identity.kubelet.id
   tags                = var.tags
-}
 
-# Identity assignment for AKS to pull from ACR
-module "aks_acr_pull" {
-  source = "./modules/identity"
-
-  scope                = module.acr.acr_id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.cluster.principal_id
-}
-
-# Identity assignment for ACR push operations
-module "acr_push" {
-  source = "./modules/identity"
-
-  scope                = module.acr.acr_id
-  role_definition_name = "AcrPush"
-  principal_id         = azurerm_user_assigned_identity.acr_push.principal_id
+  depends_on = [
+    module.cluster_kubelet_operator
+  ]
 }
 
