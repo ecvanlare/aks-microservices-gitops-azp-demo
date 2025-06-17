@@ -103,7 +103,7 @@ module "aks_acr_pull" {
 
   scope                = module.acr.acr_id
   role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.cluster.principal_id
+  principal_id         = azurerm_user_assigned_identity.kubelet.principal_id
 }
 
 # Identity assignment for ACR push operations
