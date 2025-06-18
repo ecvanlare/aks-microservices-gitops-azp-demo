@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  repository: cartservice
+  tag: 0.1.0-kubernetes.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 7070
+  annotations: {}
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
+
+env:
+  PORT: "7070"
+  REDIS_ADDR: "redis-cart:6379"
+
+podSecurityContext: {}
+securityContext: {}
+
+livenessProbe:
+  grpc:
+    port: 7070
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  grpc:
+    port: 7070
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3

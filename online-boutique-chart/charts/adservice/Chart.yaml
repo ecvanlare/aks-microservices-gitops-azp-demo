@@ -1,0 +1,6 @@
+apiVersion: v2
+name: adservice
+description: Advertisement service for the online boutique
+type: application
+version: 0.1.0
+appVersion: "1.0.0" 

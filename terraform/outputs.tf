@@ -71,4 +71,24 @@ output "acr_login_server" {
 output "acr_id" {
   description = "The ID of the container registry"
   value       = module.acr.acr_id
+}
+
+output "aks_acr_pull_role_id" {
+  description = "The ID of the AcrPull role assignment for AKS"
+  value       = module.aks_acr_pull.id
+}
+
+output "acr_push_role_id" {
+  description = "The ID of the AcrPush role assignment"
+  value       = module.acr_push.id
+}
+
+output "acr_push_identity_principal_id" {
+  description = "The principal ID of the user-assigned managed identity for ACR push"
+  value       = azurerm_user_assigned_identity.acr_push.principal_id
+}
+
+output "aks_identity_principal_id" {
+  description = "The principal ID of the AKS cluster's system-assigned managed identity"
+  value       = module.aks.cluster_principal_id
 } 

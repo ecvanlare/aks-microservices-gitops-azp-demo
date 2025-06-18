@@ -1,0 +1,203 @@
+global:
+  image:
+    registry: acronlineboutique.azurecr.io
+  imagePullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+adservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: adservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 9555
+    annotations: {}
+  env:
+    PORT: "9555"
+    DISABLE_PROFILER: "1"
+
+cartservice:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: cartservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 7070
+    annotations: {}
+  env:
+    PORT: "7070"
+    REDIS_ADDR: "redis-cart:6379"
+
+checkoutservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: checkoutservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 5050
+    annotations: {}
+  env:
+    PORT: "5050"
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+    PAYMENT_SERVICE_ADDR: "paymentservice:50051"
+    EMAIL_SERVICE_ADDR: "emailservice:8080"
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    CART_SERVICE_ADDR: "cartservice:7070"
+
+currencyservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: currencyservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 7000
+    annotations: {}
+  env:
+    PORT: "7000"
+    PROJECT_ID: "online-boutique"
+
+emailservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: emailservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+  env:
+    PORT: "8080"
+    DISABLE_PROFILER: "1"
+
+frontend:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: frontend
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+  env:
+    PORT: "8080"
+    AD_SERVICE_ADDR: "adservice:9555"
+    CART_SERVICE_ADDR: "cartservice:7070"
+    CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
+    SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+    SHOPPING_ASSISTANT_SERVICE_ADDR: "shoppingassistantservice:8080"
+
+paymentservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: paymentservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 50051
+    annotations: {}
+  env:
+    PORT: "50051"
+
+productcatalogservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: productcatalogservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 3550
+    annotations: {}
+  env:
+    PORT: "3550"
+
+recommendationservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: recommendationservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+  env:
+    PORT: "8080"
+    PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+    DISABLE_PROFILER: "1"
+
+redis-cart:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: bitnami/redis
+    tag: 7.4.1
+  service:
+    type: ClusterIP
+    port: 6379
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: "managed-csi"
+    accessMode: ReadWriteOnce
+  auth:
+    enabled: false
+  #   existingSecret: redis-password
+  #   existingSecretPasswordKey: redis-password
+  allowEmptyPassword: true
+
+shippingservice:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: shippingservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 50051
+    annotations: {}
+  env:
+    PORT: "50051"
+
+shoppingassistantservice:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: shoppingassistantservice
+    tag: 0.1.0-kubernetes.1
+  service:
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+  env:
+    PORT: "8080"
+    PROJECT_ID: "online-boutique"
+    REGION: "uksouth"
+    DB_HOST: "online-boutique-postgres.postgres.database.azure.com"
+    DB_NAME: "shopping_assistant"
+    DB_USER: "postgres"
+    DB_PORT: "5432"
+    DB_SSL_MODE: "require"
+    DISABLE_PROFILER: "1"
