@@ -15,7 +15,7 @@ adservice:
   replicaCount: 1
   image:
     repository: adservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 9555
@@ -29,7 +29,7 @@ cartservice:
   replicaCount: 2
   image:
     repository: cartservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 7070
@@ -43,7 +43,7 @@ checkoutservice:
   replicaCount: 1
   image:
     repository: checkoutservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 5050
@@ -62,7 +62,7 @@ currencyservice:
   replicaCount: 1
   image:
     repository: currencyservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 7000
@@ -76,7 +76,7 @@ emailservice:
   replicaCount: 1
   image:
     repository: emailservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 8080
@@ -90,7 +90,7 @@ frontend:
   replicaCount: 2
   image:
     repository: frontend
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 8080
@@ -111,7 +111,7 @@ paymentservice:
   replicaCount: 1
   image:
     repository: paymentservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 50051
@@ -124,7 +124,7 @@ productcatalogservice:
   replicaCount: 1
   image:
     repository: productcatalogservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 3550
@@ -137,7 +137,7 @@ recommendationservice:
   replicaCount: 1
   image:
     repository: recommendationservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 8080
@@ -172,7 +172,7 @@ shippingservice:
   replicaCount: 1
   image:
     repository: shippingservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 50051
@@ -185,7 +185,7 @@ shoppingassistantservice:
   replicaCount: 1
   image:
     repository: shoppingassistantservice
-    tag: v0.1.0
+    tag: 0.1.0-kubernetes.1
   service:
     type: ClusterIP
     port: 8080
