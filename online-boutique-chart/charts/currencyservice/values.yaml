@@ -1,0 +1,43 @@
+replicaCount: 1
+
+image:
+  repository: currencyservice
+  tag: 0.1.0-kubernetes.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 7000
+  annotations: {}
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
+
+env:
+  PORT: "7000"
+  PROJECT_ID: "online-boutique"
+  DISABLE_PROFILER: "1"
+
+podSecurityContext: {}
+securityContext: {}
+
+livenessProbe:
+  grpc:
+    port: 7000
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  grpc:
+    port: 7000
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
