@@ -21,6 +21,7 @@ resources:
 env:
   PORT: "7000"
   PROJECT_ID: "online-boutique"
+  DISABLE_PROFILER: "1"
 
 podSecurityContext: {}
 securityContext: {}

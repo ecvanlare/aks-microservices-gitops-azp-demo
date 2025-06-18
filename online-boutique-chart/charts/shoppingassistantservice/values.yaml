@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: shoppingassistantservice
-  tag: v0.1.0
+  tag: 0.1.0-kubernetes.1
   pullPolicy: IfNotPresent
 
 service:
@@ -29,12 +29,9 @@ env:
   DB_SSL_MODE: "require"
   DISABLE_PROFILER: "1"
 
-podSecurityContext:
-  fsGroup: {}
+podSecurityContext: {}
 
-securityContext:
-  runAsUser: {}
-  runAsNonRoot: {}
+securityContext: {}
 
 livenessProbe:
   grpc:
