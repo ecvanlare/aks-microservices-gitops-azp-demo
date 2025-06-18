@@ -1,34 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-redis-cart
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
   labels:
-    app: redis-cart
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: service
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: redis-cart
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: redis-cart
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: service
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: redis-cart
+        - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           ports:
             - containerPort: {{ .Values.service.port }}
+          {{- if .Values.command }}
           command: {{ .Values.command }}
+          {{- end }}
           env:
             {{- if .Values.allowEmptyPassword }}
             - name: ALLOW_EMPTY_PASSWORD
-              value: "yes"
+              value: "{{ .Values.allowEmptyPassword | toString }}"
             {{- end }}
             {{- if .Values.auth.enabled }}
             - name: REDIS_PASSWORD
@@ -44,13 +51,13 @@ spec:
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           volumeMounts:
-            - name: redis-data
-              mountPath: /data
+            - name: {{ .Values.volumeName }}
+              mountPath: {{ .Values.dataPath }}
       volumes:
-        - name: redis-data
+        - name: {{ .Values.volumeName }}
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-redis-cart
+            claimName: {{ .Release.Name }}-{{ .Chart.Name }}
           {{- else }}
           emptyDir: {}
           {{- end }} 

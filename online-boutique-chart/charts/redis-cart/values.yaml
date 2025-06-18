@@ -28,6 +28,12 @@ auth:
 
 allowEmptyPassword: true
 
+# Redis configuration
+command: []
+dataPath: /data
+volumeName: redis-data
+redisConfig: false  # Enable to use ConfigMap for Redis configuration
+
 livenessProbe:
   tcpSocket:
     port: 6379
@@ -43,3 +49,16 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
+
+# volumeMounts:
+#   - name: secrets-store-inline
+#     mountPath: "/mnt/secrets-store"
+#     readOnly: true
+
+# volumes:
+#   - name: secrets-store-inline
+#     csi:
+#       driver: secrets-store.csi.k8s.io
+#       readOnly: true
+#       volumeAttributes:
+#         secretProviderClass: "azure-keyvault"
