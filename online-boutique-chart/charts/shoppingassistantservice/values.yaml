@@ -37,8 +37,7 @@ securityContext:
   runAsNonRoot: {}
 
 livenessProbe:
-  httpGet:
-    path: /health
+  grpc:
     port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
@@ -46,8 +45,7 @@ livenessProbe:
   failureThreshold: 3
 
 readinessProbe:
-  httpGet:
-    path: /health
+  grpc:
     port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10

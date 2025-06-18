@@ -25,8 +25,7 @@ podSecurityContext: {}
 securityContext: {}
 
 livenessProbe:
-  httpGet:
-    path: /health
+  grpc:
     port: 3550
   initialDelaySeconds: 5
   periodSeconds: 10
@@ -34,8 +33,7 @@ livenessProbe:
   failureThreshold: 3
 
 readinessProbe:
-  httpGet:
-    path: /health
+  grpc:
     port: 3550
   initialDelaySeconds: 5
   periodSeconds: 10
