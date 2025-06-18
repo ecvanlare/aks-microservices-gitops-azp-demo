@@ -2,9 +2,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-redis-cart
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
   labels:
-    app: redis-cart
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: service
 spec:
   accessModes:
     - {{ .Values.persistence.accessMode | quote }}
