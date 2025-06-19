@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: shoppingassistantservice
-  tag: 0.1.0-kubernetes.1
+  tag: 0.1.0
   pullPolicy: IfNotPresent
 
 service:
