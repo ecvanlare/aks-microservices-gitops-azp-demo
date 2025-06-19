@@ -13,7 +13,11 @@ This directory contains all Azure DevOps pipeline configurations for the Online 
 │   │   └── helm-deploy-template.yml
 │   ├── terraform/
 │   │   └── terraform-template.yml
-│   └── ci-cd-template.yml
+│   ├── version-job.yml         # Semantic versioning job
+│   ├── package-job.yml         # Docker build job
+│   ├── validate-job.yml        # Helm validation job
+│   ├── deploy-job.yml          # Helm deployment job
+│   └── verify-job.yml          # Health check job
 ├── application/                 # Application-specific pipelines
 │   └── main-pipeline.yml       # Complete CI/CD entry point
 ├── infrastructure/              # Infrastructure pipelines
@@ -26,7 +30,12 @@ This directory contains all Azure DevOps pipeline configurations for the Online 
 ## Pipeline Types
 
 ### Application Pipelines
-- **main-pipeline.yml**: Complete CI/CD pipeline that builds, packages, validates, deploys, and verifies the application
+- **main-pipeline.yml**: Complete CI/CD pipeline with stages:
+  - **Version**: Calculate semantic versioning
+  - **Package**: Build and push Docker images
+  - **Validate**: Validate Helm chart
+  - **Deploy**: Deploy to Kubernetes
+  - **Verify**: Health checks and verification
 
 ### Infrastructure Pipelines
 - **terraform-plan.yml**: Plans infrastructure changes
@@ -34,7 +43,11 @@ This directory contains all Azure DevOps pipeline configurations for the Online 
 - **terraform-destroy.yml**: Destroys infrastructure
 
 ### Templates
-- **ci-cd-template.yml**: Multi-stage CI/CD orchestration template
+- **version-job.yml**: Semantic versioning job template
+- **package-job.yml**: Docker image build job template
+- **validate-job.yml**: Helm chart validation job template
+- **deploy-job.yml**: Helm deployment job template
+- **verify-job.yml**: Health check job template
 - **acr-build-template.yml**: Docker image build template
 - **helm-deploy-template.yml**: Helm deployment template
 - **terraform-template.yml**: Terraform execution template
@@ -48,4 +61,5 @@ This directory contains all Azure DevOps pipeline configurations for the Online 
 
 - Templates are centralized for reusability
 - Clear separation between application and infrastructure
-- Consistent naming conventions with `-template.yml` and `-pipeline.yml` suffixes 
+- Stage-based organization for better visibility
+- Consistent naming conventions with `-template.yml` and `-job.yml` suffixes 
