@@ -201,3 +201,41 @@ shoppingassistantservice:
     DB_PORT: "5432"
     DB_SSL_MODE: "require"
     DISABLE_PROFILER: "1"
+
+# NGINX Ingress Controller Configuration
+nginx-ingress:
+  enabled: true
+  controller:
+    replicaCount: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    service:
+      type: LoadBalancer
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+    config:
+      use-proxy-protocol: "false"
+      proxy-real-ip-cidr: "0.0.0.0/0"
+      use-forwarded-headers: "true"
+    admissionWebhooks:
+      enabled: false
+    metrics:
+      enabled: true
+      service:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "10254"
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  # host: "localhost"  # Commented out - no host requirement
+  # tls:
+  #   - secretName: online-boutique-tls
+  #     hosts:
+  #       - "online-boutique.local"
