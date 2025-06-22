@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Create Azure DevOps Variable Groups - Simple version
+# Create Azure DevOps Variable Groups
 
 set -e
 
@@ -39,69 +39,92 @@ ACR_NAME="acronlineboutique"
 AKS_NAME="aks-online-boutique"
 LOCATION="uksouth"
 
+# Confirmation prompt
+echo "This will destroy and recreate variable groups:"
+echo "  - online-boutique.common"
+echo "  - online-boutique.docker"
+echo "  - online-boutique.kubernetes"
+echo "  - terraform.infrastructure"
+echo
+read -p "Continue? (y/N): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Cancelled"
+    exit 0
+fi
+
+echo "Creating variable groups..."
+
 # Get actual resource names from Azure
 az account set --subscription "$SUBSCRIPTION_ID" >/dev/null
 ACR_LOGIN_SERVER=$(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query "loginServer" -o tsv 2>/dev/null || echo "${ACR_NAME}.azurecr.io")
 AKS_CLUSTER_NAME=$(az aks list --resource-group "$RESOURCE_GROUP" --query "[0].name" -o tsv 2>/dev/null || echo "$AKS_NAME")
 
-echo "Creating variable groups..."
+# Delete existing variable groups
+az pipelines variable-group list --query "[?name=='online-boutique.common'].id" -o tsv 2>/dev/null | xargs -I {} az pipelines variable-group delete --id {} --yes 2>/dev/null || true
+az pipelines variable-group list --query "[?name=='online-boutique.docker'].id" -o tsv 2>/dev/null | xargs -I {} az pipelines variable-group delete --id {} --yes 2>/dev/null || true
+az pipelines variable-group list --query "[?name=='online-boutique.kubernetes'].id" -o tsv 2>/dev/null | xargs -I {} az pipelines variable-group delete --id {} --yes 2>/dev/null || true
+az pipelines variable-group list --query "[?name=='terraform.infrastructure'].id" -o tsv 2>/dev/null | xargs -I {} az pipelines variable-group delete --id {} --yes 2>/dev/null || true
 
-# Create Build Variables Group
-BUILD_VARS=$(cat << EOF
+# Create Common Variables Group
+COMMON_VARS=$(cat << EOF
 {
     "variables": {
-        "AZURE_SUBSCRIPTION": {"value": "Azure-Service-Connection", "isSecret": false},
-        "ACR_NAME": {"value": "$ACR_NAME", "isSecret": false},
-        "ACR_LOGIN_SERVER": {"value": "$ACR_LOGIN_SERVER", "isSecret": false},
+        "AZURE_SUBSCRIPTION": {"value": "svcconn-online-boutique-rg", "isSecret": false},
         "RESOURCE_GROUP": {"value": "$RESOURCE_GROUP", "isSecret": false},
-        "LOCATION": {"value": "$LOCATION", "isSecret": false},
-        "IMAGE_TAG": {"value": "\$(Build.BuildId)", "isSecret": false},
-        "BUILD_SOURCE_BRANCH": {"value": "\$(Build.SourceBranch)", "isSecret": false},
-        "BUILD_SOURCE_VERSION": {"value": "\$(Build.SourceVersion)", "isSecret": false}
+        "ACR_NAME": {"value": "$ACR_NAME", "isSecret": false},
+        "AKS_CLUSTER_NAME": {"value": "$AKS_CLUSTER_NAME", "isSecret": false}
     }
 }
 EOF
 )
 
-az pipelines variable-group create --variables "$BUILD_VARS" --name "online-boutique-build-vars" --description "Build variables" --authorize true --output none
+az pipelines variable-group create --variables "$COMMON_VARS" --name "online-boutique.common" --description "Common variables for all pipelines" --authorize true --output none
 
-# Create Deploy Variables Group
-DEPLOY_VARS=$(cat << EOF
+# Create Docker Variables Group
+DOCKER_VARS=$(cat << EOF
 {
     "variables": {
-        "AZURE_SUBSCRIPTION": {"value": "Azure-Service-Connection", "isSecret": false},
-        "AKS_CLUSTER_NAME": {"value": "$AKS_CLUSTER_NAME", "isSecret": false},
-        "RESOURCE_GROUP": {"value": "$RESOURCE_GROUP", "isSecret": false},
-        "ACR_NAME": {"value": "$ACR_NAME", "isSecret": false},
         "ACR_LOGIN_SERVER": {"value": "$ACR_LOGIN_SERVER", "isSecret": false},
-        "NAMESPACE": {"value": "online-boutique", "isSecret": false},
-        "RELEASE_NAME": {"value": "online-boutique", "isSecret": false},
-        "HELM_CHART_PATH": {"value": "online-boutique-chart", "isSecret": false},
-        "HELM_VERSION": {"value": "3.12.0", "isSecret": false}
+        "LOCATION": {"value": "$LOCATION", "isSecret": false}
     }
 }
 EOF
 )
 
-az pipelines variable-group create --variables "$DEPLOY_VARS" --name "online-boutique-deploy-vars" --description "Deploy variables" --authorize true --output none
+az pipelines variable-group create --variables "$DOCKER_VARS" --name "online-boutique.docker" --description "Docker build variables" --authorize true --output none
 
-# Create Release Variables Group
-RELEASE_VARS=$(cat << EOF
+# Create Kubernetes Variables Group
+KUBERNETES_VARS=$(cat << EOF
 {
     "variables": {
-        "AZURE_SUBSCRIPTION": {"value": "Azure-Service-Connection", "isSecret": false},
-        "AKS_CLUSTER_NAME": {"value": "$AKS_CLUSTER_NAME", "isSecret": false},
-        "RESOURCE_GROUP": {"value": "$RESOURCE_GROUP", "isSecret": false},
         "NAMESPACE": {"value": "online-boutique", "isSecret": false},
         "RELEASE_NAME": {"value": "online-boutique", "isSecret": false},
         "HELM_CHART_PATH": {"value": "online-boutique-chart", "isSecret": false},
         "HELM_VERSION": {"value": "3.12.0", "isSecret": false},
-        "KUBERNETES_VERSION": {"value": "1.26", "isSecret": false}
+        "POD_READY_TIMEOUT": {"value": "300", "isSecret": false}
     }
 }
 EOF
 )
 
-az pipelines variable-group create --variables "$RELEASE_VARS" --name "online-boutique-release-vars" --description "Release variables" --authorize true --output none
+az pipelines variable-group create --variables "$KUBERNETES_VARS" --name "online-boutique.kubernetes" --description "Kubernetes deployment variables" --authorize true --output none
 
-echo "Variable groups created: online-boutique-build-vars, online-boutique-deploy-vars, online-boutique-release-vars" 
+# Create Terraform Infrastructure Variables Group
+TERRAFORM_VARS=$(cat << EOF
+{
+    "variables": {
+        "STORAGE_ACCOUNT_NAME": {"value": "stonlineboutiquetf", "isSecret": false},
+        "CONTAINER_NAME": {"value": "tfstate", "isSecret": false},
+        "TERRAFORM_STATE_KEY": {"value": "terraform.tfstate", "isSecret": false},
+        "RESOURCE_GROUP_NAME": {"value": "rg-online-boutique-tf", "isSecret": false}
+    }
+}
+EOF
+)
+
+az pipelines variable-group create --variables "$TERRAFORM_VARS" --name "terraform.infrastructure" --description "Terraform infrastructure variables" --authorize true --output none
+
+echo "✅ Variable groups created successfully"
+
+az pipelines variable-group list --query "[].{name:name, description:description, variableCount:variableCount}" -o table 
