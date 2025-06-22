@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Get Azure DevOps Values - Simple version
+# Get Azure DevOps Values - Auto-discovery version
 
 set -e
 
 show_usage() {
-    echo "Usage: $0 -o <org-url> -p <project> [-s <subscription>]"
+    echo "Usage: $0 [-o <org-url>] [-p <project>] [-s <subscription>]"
     echo "Example: $0 -o https://dev.azure.com/myorg -p myproject -s subscription-id"
+    echo "Or just run: $0 (will auto-discover values)"
 }
 
 # Parse arguments
@@ -20,17 +21,64 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z "$ORGANIZATION_URL" || -z "$PROJECT_NAME" ]]; then
-    echo "Missing required parameters"
-    show_usage
-    exit 1
-fi
-
 # Install Azure DevOps extension if needed
 if ! az extension list --query "[?name=='azure-devops'].name" -o tsv | grep -q "azure-devops"; then
+    echo "Installing Azure DevOps CLI extension..."
     az extension add --name azure-devops
 fi
 
+# Auto-discover values if not provided
+if [[ -z "$ORGANIZATION_URL" ]]; then
+    echo "Auto-discovering Azure DevOps organization..."
+    # Try to get from current Azure DevOps context
+    ORG_CONFIG=$(az devops configure --list 2>/dev/null | grep "organization" | head -1 | cut -d'=' -f2 | tr -d ' ')
+    if [[ -n "$ORG_CONFIG" ]]; then
+        ORGANIZATION_URL="$ORG_CONFIG"
+        echo "Found organization: $ORGANIZATION_URL"
+    else
+        echo "Could not auto-discover organization URL. Please provide with -o parameter."
+        show_usage
+        exit 1
+    fi
+fi
+
+if [[ -z "$PROJECT_NAME" ]]; then
+    echo "Auto-discovering Azure DevOps project..."
+    # Try to get from current Azure DevOps context
+    PROJ_CONFIG=$(az devops configure --list 2>/dev/null | grep "project" | head -1 | cut -d'=' -f2 | tr -d ' ')
+    if [[ -n "$PROJ_CONFIG" ]]; then
+        PROJECT_NAME="$PROJ_CONFIG"
+        echo "Found project: $PROJECT_NAME"
+    else
+        # Try to list projects and pick the first one
+        echo "Listing available projects..."
+        PROJECTS=$(az devops project list --organization "$ORGANIZATION_URL" --query "[].name" -o tsv 2>/dev/null | head -1)
+        if [[ -n "$PROJECTS" ]]; then
+            PROJECT_NAME="$PROJECTS"
+            echo "Using first available project: $PROJECT_NAME"
+        else
+            echo "Could not auto-discover project name. Please provide with -p parameter."
+            show_usage
+            exit 1
+        fi
+    fi
+fi
+
+if [[ -z "$SUBSCRIPTION_ID" ]]; then
+    echo "Auto-discovering Azure subscription..."
+    # Get current subscription
+    SUBSCRIPTION_ID=$(az account show --query "id" -o tsv 2>/dev/null)
+    if [[ -n "$SUBSCRIPTION_ID" ]]; then
+        SUBSCRIPTION_NAME=$(az account show --query "name" -o tsv 2>/dev/null)
+        echo "Found subscription: $SUBSCRIPTION_NAME ($SUBSCRIPTION_ID)"
+    else
+        echo "Could not auto-discover subscription. Please provide with -s parameter."
+        show_usage
+        exit 1
+    fi
+fi
+
+# Configure Azure DevOps defaults
 az devops configure --defaults organization="$ORGANIZATION_URL" project="$PROJECT_NAME"
 
 echo "=== Azure DevOps Values ==="
@@ -64,6 +112,8 @@ if [[ -n "$SUBSCRIPTION_ID" ]]; then
         AKS_CLUSTERS=$(az aks list --resource-group "$RESOURCE_GROUP" --query "[].{name:name, version:kubernetesVersion}" -o table 2>/dev/null || echo "No AKS clusters found")
         echo "AKS Clusters:"
         echo "$AKS_CLUSTERS"
+    else
+        echo "Resource group $RESOURCE_GROUP not found"
     fi
 fi
 

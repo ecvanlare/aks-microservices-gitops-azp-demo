@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Create Azure DevOps Service Connections - Simple version
+# Create Azure DevOps Service Connections
 
 set -e
 
@@ -37,10 +37,23 @@ az devops configure --defaults organization="$ORGANIZATION_URL" project="$PROJEC
 RESOURCE_GROUP="rg-online-boutique"
 ACR_NAME="acronlineboutique"
 
-echo "Creating service principal..."
+# Confirmation prompt
+echo "This will destroy and recreate service connections:"
+echo "  - svcconn-online-boutique-rg (Azure Resource Manager)"
+echo "  - $ACR_NAME (Azure Container Registry)"
+echo
+read -p "Continue? (y/N): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Cancelled"
+    exit 0
+fi
+
+echo "Creating service connections..."
+
+# Create service principal
 SP_NAME="AzureDevOps-OnlineBoutique-$PROJECT_NAME"
 SCOPE="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP"
-
 SP_JSON=$(az ad sp create-for-rbac --name "$SP_NAME" --role "Contributor" --scopes "$SCOPE" --years 2 --query "{appId:appId, password:password, tenant:tenant}" -o json)
 
 APP_ID=$(echo "$SP_JSON" | jq -r '.appId')
@@ -48,15 +61,18 @@ PASSWORD=$(echo "$SP_JSON" | jq -r '.password')
 TENANT=$(echo "$SP_JSON" | jq -r '.tenant')
 SUBSCRIPTION_NAME=$(az account show --subscription "$SUBSCRIPTION_ID" --query "name" -o tsv)
 
-echo "Creating Azure Resource Manager service connection..."
+# Delete existing service connections
+az devops service-endpoint list --query "[?name=='svcconn-online-boutique-rg'].id" -o tsv 2>/dev/null | xargs -I {} az devops service-endpoint delete --id {} --yes 2>/dev/null || true
+az devops service-endpoint list --query "[?name=='$ACR_NAME'].id" -o tsv 2>/dev/null | xargs -I {} az devops service-endpoint delete --id {} --yes 2>/dev/null || true
+
+# Create Azure Resource Manager service connection
 cat > /tmp/azure-sc.json << EOF
 {
-    "name": "Azure-Service-Connection",
+    "name": "svcconn-online-boutique-rg",
     "type": "azurerm",
     "authorization": {
         "parameters": {
             "tenantid": "$TENANT",
-            "serviceprincipalid": "$APP_ID",
             "authenticationType": "spnKey",
             "serviceprincipalkey": "$PASSWORD"
         },
@@ -75,7 +91,7 @@ EOF
 SC_ID=$(az devops service-endpoint create --service-endpoint-configuration /tmp/azure-sc.json --query "id" -o tsv)
 az devops service-endpoint update --id "$SC_ID" --enable-for-all true
 
-echo "Creating Azure Container Registry service connection..."
+# Create ACR service connection
 ACR_LOGIN_SERVER=$(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query "loginServer" -o tsv 2>/dev/null || echo "${ACR_NAME}.azurecr.io")
 
 cat > /tmp/acr-sc.json << EOF
@@ -85,10 +101,11 @@ cat > /tmp/acr-sc.json << EOF
     "authorization": {
         "parameters": {
             "registry": "$ACR_LOGIN_SERVER",
-            "username": "$APP_ID",
-            "password": "$PASSWORD"
+            "serviceprincipalid": "$APP_ID",
+            "serviceprincipalkey": "$PASSWORD",
+            "tenantid": "$TENANT"
         },
-        "scheme": "UsernamePassword"
+        "scheme": "ServicePrincipal"
     },
     "data": {
         "registrytype": "Others",
@@ -102,4 +119,18 @@ az devops service-endpoint update --id "$ACR_SC_ID" --enable-for-all true
 
 rm -f /tmp/azure-sc.json /tmp/acr-sc.json
 
-echo "Service connections created: Azure-Service-Connection, $ACR_NAME" 
+# Wait for Azure Resource Manager service connection to be ready
+echo "Waiting for service connection to be ready..."
+for i in {1..30}; do
+    STATUS=$(az devops service-endpoint show --id "$SC_ID" --query "isReady" -o tsv 2>/dev/null)
+    if [[ "$STATUS" == "true" ]]; then
+        echo "✅ Service connections created successfully"
+        break
+    elif [[ "$i" -eq 30 ]]; then
+        echo "⚠️  Service connection still not ready after 60 seconds"
+    else
+        sleep 2
+    fi
+done
+
+az devops service-endpoint list --query "[].{name:name, type:type, isReady:isReady}" -o table 
