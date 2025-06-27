@@ -131,9 +131,12 @@ module "aks" {
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
-  cluster_identity_id = azurerm_user_assigned_identity.cluster.id
-  kubelet_identity_id = azurerm_user_assigned_identity.kubelet.id
-  tags                = var.tags
+  cluster_identity_id        = azurerm_user_assigned_identity.cluster.id
+  kubelet_identity_id        = azurerm_user_assigned_identity.kubelet.id
+  kubelet_identity_client_id = azurerm_user_assigned_identity.kubelet.client_id
+  kubelet_identity_object_id = azurerm_user_assigned_identity.kubelet.principal_id
+  aad_rbac                  = var.aad_rbac
+  tags                       = var.tags
 
   depends_on = [
     module.cluster_kubelet_operator

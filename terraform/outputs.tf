@@ -57,6 +57,22 @@ output "aks_kube_config" {
   sensitive   = true
 }
 
+# AAD RBAC Outputs
+output "aad_rbac_enabled" {
+  description = "Whether Azure AD RBAC is enabled on the cluster"
+  value       = module.aks.aad_rbac_enabled
+}
+
+output "admin_group_object_ids" {
+  description = "The admin group object IDs configured for AAD RBAC"
+  value       = module.aks.admin_group_object_ids
+}
+
+output "azure_rbac_enabled" {
+  description = "Whether Azure RBAC is enabled for Kubernetes authorization"
+  value       = module.aks.azure_rbac_enabled
+}
+
 # ACR Outputs
 output "acr_name" {
   description = "The name of the container registry"
