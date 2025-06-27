@@ -91,9 +91,15 @@ variable "aad_rbac" {
   type = object({
     admin_group_object_ids = list(string)
     azure_rbac_enabled     = bool
+    user_groups = list(object({
+      name        = string
+      object_id   = string
+      roles       = list(string)
+    }))
   })
   default = {
     admin_group_object_ids = []
     azure_rbac_enabled     = true
+    user_groups = []
   }
 } 

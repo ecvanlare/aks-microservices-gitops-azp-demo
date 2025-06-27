@@ -162,15 +162,40 @@ variable "nsg_rules" {
   ]
 }
 
-# Azure AD RBAC Variables
-variable "aad_rbac" {
-  description = "Azure Active Directory RBAC configuration"
-  type = object({
-    admin_group_object_ids = list(string)
-    azure_rbac_enabled     = bool
-  })
-  default = {
-    admin_group_object_ids = []
-    azure_rbac_enabled     = true
-  }
+# Azure AD Group Names
+variable "admin_group_name" {
+  description = "Name for the AKS admin group"
+  type        = string
+  default     = "aks-admins"
+}
+
+variable "developer_group_name" {
+  description = "Name for the AKS developer group"
+  type        = string
+  default     = "aks-developers"
+}
+
+variable "viewer_group_name" {
+  description = "Name for the AKS viewer group"
+  type        = string
+  default     = "aks-viewers"
+}
+
+# Azure RBAC Role Names
+variable "admin_role" {
+  description = "Azure RBAC role for admin group"
+  type        = string
+  default     = "Azure Kubernetes Service RBAC Cluster Admin"
+}
+
+variable "developer_role" {
+  description = "Azure RBAC role for developer group"
+  type        = string
+  default     = "Azure Kubernetes Service RBAC Writer"
+}
+
+variable "viewer_role" {
+  description = "Azure RBAC role for viewer group"
+  type        = string
+  default     = "Azure Kubernetes Service RBAC Reader"
 }

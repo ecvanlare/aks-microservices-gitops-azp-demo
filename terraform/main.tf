@@ -115,6 +115,28 @@ module "acr_push" {
   principal_id         = azurerm_user_assigned_identity.acr_push.principal_id
 }
 
+# Azure AD Groups (must be created before AKS)
+resource "azuread_group" "aks_admins" {
+  display_name     = var.admin_group_name
+  mail_nickname    = var.admin_group_name
+  security_enabled = true
+  description      = "AKS Cluster Administrators"
+}
+
+resource "azuread_group" "aks_developers" {
+  display_name     = var.developer_group_name
+  mail_nickname    = var.developer_group_name
+  security_enabled = true
+  description      = "AKS Developers - Can create/modify resources"
+}
+
+resource "azuread_group" "aks_viewers" {
+  display_name     = var.viewer_group_name
+  mail_nickname    = var.viewer_group_name
+  security_enabled = true
+  description      = "AKS Viewers - Read-only access"
+}
+
 # Azure Kubernetes Service Module
 module "aks" {
   source = "./modules/aks"
@@ -135,11 +157,40 @@ module "aks" {
   kubelet_identity_id        = azurerm_user_assigned_identity.kubelet.id
   kubelet_identity_client_id = azurerm_user_assigned_identity.kubelet.client_id
   kubelet_identity_object_id = azurerm_user_assigned_identity.kubelet.principal_id
-  aad_rbac                  = var.aad_rbac
-  tags                       = var.tags
+  aad_rbac = {
+    admin_group_object_ids = [azuread_group.aks_admins.id]
+    azure_rbac_enabled     = true
+    user_groups = [
+      {
+        name      = var.admin_group_name
+        object_id = azuread_group.aks_admins.id
+        roles     = [var.admin_role]
+      },
+      {
+        name      = var.developer_group_name
+        object_id = azuread_group.aks_developers.id
+        roles     = [var.developer_role]
+      },
+      {
+        name      = var.viewer_group_name
+        object_id = azuread_group.aks_viewers.id
+        roles     = [var.viewer_role]
+      }
+    ]
+  }
+  tags = var.tags
 
   depends_on = [
     module.cluster_kubelet_operator
   ]
 }
 
+# Role assignments for user groups (must be created after AKS)
+module "user_group_roles" {
+  source = "./modules/identity"
+  count  = 3
+
+  scope                = module.aks.cluster_id
+  role_definition_name = count.index == 0 ? var.admin_role : count.index == 1 ? var.developer_role : var.viewer_role
+  principal_id         = count.index == 0 ? azuread_group.aks_admins.id : count.index == 1 ? azuread_group.aks_developers.id : azuread_group.aks_viewers.id
+} 

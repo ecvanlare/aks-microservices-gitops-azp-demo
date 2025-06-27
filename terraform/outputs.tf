@@ -73,6 +73,32 @@ output "azure_rbac_enabled" {
   value       = module.aks.azure_rbac_enabled
 }
 
+output "user_groups" {
+  description = "The user groups configured for AAD RBAC"
+  value = [
+    {
+      name      = var.admin_group_name
+      object_id = azuread_group.aks_admins.id
+      role      = var.admin_role
+    },
+    {
+      name      = var.developer_group_name
+      object_id = azuread_group.aks_developers.id
+      role      = var.developer_role
+    },
+    {
+      name      = var.viewer_group_name
+      object_id = azuread_group.aks_viewers.id
+      role      = var.viewer_role
+    }
+  ]
+}
+
+output "user_group_role_assignments" {
+  description = "The role assignments for user groups"
+  value       = module.user_group_roles[*].id
+}
+
 # ACR Outputs
 output "acr_name" {
   description = "The name of the container registry"
