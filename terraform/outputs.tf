@@ -27,12 +27,12 @@ output "vnet_id" {
 
 output "aks_subnet_id" {
   description = "The ID of the AKS subnet"
-  value       = module.aks_subnet.subnet_id
+  value       = module.subnets["aks"].subnet_id
 }
 
 output "appgw_subnet_id" {
   description = "The ID of the App Gateway subnet"
-  value       = module.appgw_subnet.subnet_id
+  value       = module.subnets["appgw"].subnet_id
 }
 
 output "nsg_id" {
@@ -78,17 +78,17 @@ output "user_groups" {
   value = [
     {
       name      = var.admin_group_name
-      object_id = azuread_group.aks_admins.id
+      object_id = azuread_group.aks_groups["admins"].id
       role      = var.admin_role
     },
     {
       name      = var.developer_group_name
-      object_id = azuread_group.aks_developers.id
+      object_id = azuread_group.aks_groups["developers"].id
       role      = var.developer_role
     },
     {
       name      = var.viewer_group_name
-      object_id = azuread_group.aks_viewers.id
+      object_id = azuread_group.aks_groups["viewers"].id
       role      = var.viewer_role
     }
   ]
@@ -96,7 +96,7 @@ output "user_groups" {
 
 output "user_group_role_assignments" {
   description = "The role assignments for user groups"
-  value       = module.user_group_roles[*].id
+  value       = values(module.user_group_roles)[*].id
 }
 
 # ACR Outputs
@@ -127,7 +127,7 @@ output "acr_push_role_id" {
 
 output "acr_push_identity_principal_id" {
   description = "The principal ID of the user-assigned managed identity for ACR push"
-  value       = azurerm_user_assigned_identity.acr_push.principal_id
+  value       = azurerm_user_assigned_identity.identities["acr_push"].principal_id
 }
 
 output "aks_identity_principal_id" {
