@@ -30,6 +30,7 @@ variable "rules" {
     destination_port_range     = string
     source_address_prefix      = string
     destination_address_prefix = string
+    description                = optional(string)
   }))
   default = []
 }
@@ -38,4 +39,16 @@ variable "tags" {
   description = "Tags to be applied to the NSG"
   type        = map(string)
   default     = {}
+}
+
+variable "enable_admin_source_restriction" {
+  description = "Enable source IP restrictions for admin access"
+  type        = bool
+  default     = false
+}
+
+variable "admin_source_ips" {
+  description = "Source IP addresses allowed for admin access (CIDR notation)"
+  type        = list(string)
+  default     = []
 } 

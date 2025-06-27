@@ -94,6 +94,8 @@ module "nsg" {
   location            = module.resource_group.resource_group_location
   subnet_id           = module.aks_subnet.subnet_id
   rules               = var.nsg_rules
+  enable_admin_source_restriction = var.enable_admin_source_restriction
+  admin_source_ips    = var.admin_source_ips
   tags                = var.tags
 }
 

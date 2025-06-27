@@ -146,20 +146,107 @@ variable "nsg_rules" {
     destination_port_range     = string
     source_address_prefix      = string
     destination_address_prefix = string
+    description                = string
   }))
   default = [
     {
-      name                       = "allow-https"
+      name                       = "allow-kubernetes-api"
       priority                   = 100
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "Tcp"
       source_port_range          = "*"
+      destination_port_range     = "6443"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow Kubernetes API server access from VNet"
+    },
+    {
+      name                       = "allow-https"
+      priority                   = 110
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
       destination_port_range     = "443"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS from VNet"
+    },
+    {
+      name                       = "allow-http"
+      priority                   = 120
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP from VNet"
+    },
+    {
+      name                       = "allow-ssh"
+      priority                   = 130
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "22"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow SSH from VNet"
+    },
+    {
+      name                       = "allow-kubelet"
+      priority                   = 140
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "10250"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow Kubelet API from VNet"
+    },
+    {
+      name                       = "allow-nodeport-services"
+      priority                   = 150
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "30000-32767"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow NodePort services from VNet"
+    },
+    {
+      name                       = "deny-all-inbound"
+      priority                   = 4096
+      direction                  = "Inbound"
+      access                     = "Deny"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
       source_address_prefix      = "*"
       destination_address_prefix = "*"
+      description                = "Deny all other inbound traffic"
     }
   ]
+}
+
+# Source IP restrictions for admin access
+variable "admin_source_ips" {
+  description = "Source IP addresses allowed for admin access (CIDR notation)"
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_admin_source_restriction" {
+  description = "Enable source IP restrictions for admin access"
+  type        = bool
+  default     = false
 }
 
 # Azure AD Group Names
