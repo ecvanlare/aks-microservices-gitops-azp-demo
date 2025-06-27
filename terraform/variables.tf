@@ -320,8 +320,8 @@ variable "appgw_sku" {
     capacity = number
   })
   default = {
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
+    name     = "Standard"
+    tier     = "Standard"
     capacity = 2
   }
 }

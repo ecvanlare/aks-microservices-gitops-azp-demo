@@ -164,7 +164,7 @@ module "aks" {
   user_node_pool_name        = var.aks_user_node_pool_name
   aad_rbac = {
     admin_group_object_ids = []
-    azure_rbac_enabled     = false
+    azure_rbac_enabled     = true
     user_groups = []
   }
   tags = var.tags
