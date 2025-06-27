@@ -136,7 +136,7 @@ variable "aks_dns_service_ip" {
 variable "aks_load_balancer_sku" {
   description = "SKU of the load balancer for AKS"
   type        = string
-  default     = "Standard"
+  default     = "standard"
 }
 
 variable "aks_outbound_type" {
