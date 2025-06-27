@@ -133,6 +133,24 @@ variable "aks_dns_service_ip" {
   default     = "172.16.0.10"
 }
 
+variable "aks_load_balancer_sku" {
+  description = "SKU of the load balancer for AKS"
+  type        = string
+  default     = "Standard"
+}
+
+variable "aks_outbound_type" {
+  description = "Outbound type for AKS cluster"
+  type        = string
+  default     = "loadBalancer"
+}
+
+variable "aks_user_node_pool_name" {
+  description = "Name for the user node pool in AKS"
+  type        = string
+  default     = "userpool"
+}
+
 # NSG Variables
 variable "nsg_rules" {
   description = "Network security group rules"

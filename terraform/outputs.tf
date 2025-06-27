@@ -133,4 +133,25 @@ output "acr_push_identity_principal_id" {
 output "aks_identity_principal_id" {
   description = "The principal ID of the AKS cluster's system-assigned managed identity"
   value       = module.aks.cluster_principal_id
+}
+
+# Application Gateway Outputs
+output "appgw_name" {
+  description = "The name of the Application Gateway"
+  value       = module.appgw.name
+}
+
+output "appgw_id" {
+  description = "The ID of the Application Gateway"
+  value       = module.appgw.id
+}
+
+output "appgw_private_ip" {
+  description = "The private IP address of the Application Gateway"
+  value       = module.appgw.private_ip_address
+}
+
+output "appgw_backend_pools" {
+  description = "The backend address pools of the Application Gateway"
+  value       = module.appgw.backend_address_pools
 } 

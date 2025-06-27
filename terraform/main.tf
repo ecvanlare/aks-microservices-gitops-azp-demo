@@ -159,6 +159,9 @@ module "aks" {
   kubelet_identity_id        = azurerm_user_assigned_identity.kubelet.id
   kubelet_identity_client_id = azurerm_user_assigned_identity.kubelet.client_id
   kubelet_identity_object_id = azurerm_user_assigned_identity.kubelet.principal_id
+  load_balancer_sku          = var.aks_load_balancer_sku
+  outbound_type              = var.aks_outbound_type
+  user_node_pool_name        = var.aks_user_node_pool_name
   aad_rbac = {
     admin_group_object_ids = [azuread_group.aks_admins.id]
     azure_rbac_enabled     = true
