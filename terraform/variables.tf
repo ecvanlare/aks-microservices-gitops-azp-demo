@@ -65,7 +65,7 @@ variable "acr_name" {
 variable "acr_sku" {
   description = "SKU of the container registry"
   type        = string
-  default     = "Standard"
+  default     = "Basic"
 }
 
 variable "acr_admin_enabled" {
@@ -285,4 +285,95 @@ variable "viewer_role" {
   description = "Azure RBAC role for viewer group"
   type        = string
   default     = "Azure Kubernetes Service RBAC Reader"
+}
+
+# Application Gateway Load Balancer Variables
+variable "appgw_name" {
+  description = "Name of the Application Gateway"
+  type        = string
+  default     = "appgw-online-boutique"
+}
+
+variable "appgw_sku" {
+  description = "SKU of the Application Gateway"
+  type = object({
+    name     = string
+    tier     = string
+    capacity = number
+  })
+  default = {
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
+    capacity = 2
+  }
+}
+
+variable "appgw_frontend_ip_configuration" {
+  description = "Frontend IP configuration for Application Gateway"
+  type = object({
+    name                 = string
+    subnet_id            = string
+    private_ip_address   = string
+    private_ip_allocation = string
+  })
+  default = {
+    name                  = "appGwFrontendIP"
+    subnet_id             = null  # Will be set in main.tf
+    private_ip_address    = "10.0.1.10"
+    private_ip_allocation = "Static"
+  }
+}
+
+variable "appgw_backend_address_pools" {
+  description = "Backend address pools for Application Gateway"
+  type = list(object({
+    name = string
+    fqdns = list(string)
+  }))
+  default = [
+    {
+      name  = "aks-backend-pool"
+      fqdns = []
+    }
+  ]
+}
+
+variable "appgw_http_listeners" {
+  description = "HTTP listeners for Application Gateway"
+  type = list(object({
+    name                           = string
+    frontend_ip_configuration_name = string
+    frontend_port_name             = string
+    protocol                       = string
+    host_name                      = string
+  }))
+  default = [
+    {
+      name                           = "http-listener"
+      frontend_ip_configuration_name = "appGwFrontendIP"
+      frontend_port_name             = "port_80"
+      protocol                       = "Http"
+      host_name                      = null
+    }
+  ]
+}
+
+variable "appgw_request_routing_rules" {
+  description = "Request routing rules for Application Gateway"
+  type = list(object({
+    name                       = string
+    rule_type                  = string
+    http_listener_name         = string
+    backend_address_pool_name  = string
+    backend_http_settings_name = string
+  }))
+  default = [
+    {
+      name                       = "routing-rule"
+      rule_type                  = "Basic"
+      http_listener_name         = "http-listener"
+      backend_address_pool_name  = "aks-backend-pool"
+      backend_http_settings_name = "http-settings"
+    }
+  ]
 }

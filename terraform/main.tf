@@ -195,4 +195,23 @@ module "user_group_roles" {
   scope                = module.aks.cluster_id
   role_definition_name = count.index == 0 ? var.admin_role : count.index == 1 ? var.developer_role : var.viewer_role
   principal_id         = count.index == 0 ? azuread_group.aks_admins.id : count.index == 1 ? azuread_group.aks_developers.id : azuread_group.aks_viewers.id
+}
+
+# Create Application Gateway for load balancing
+module "appgw" {
+  source = "./modules/appgw"
+
+  name                = var.appgw_name
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+  subnet_id           = module.appgw_subnet.subnet_id
+  sku                 = var.appgw_sku
+  frontend_ip_configuration = {
+    name = "appGwFrontendIP"
+  }
+  tags = var.tags
+
+  depends_on = [
+    module.appgw_subnet
+  ]
 } 
