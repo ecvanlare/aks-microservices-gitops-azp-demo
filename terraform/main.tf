@@ -163,9 +163,25 @@ module "aks" {
   outbound_type              = var.aks_outbound_type
   user_node_pool_name        = var.aks_user_node_pool_name
   aad_rbac = {
-    admin_group_object_ids = []
+    admin_group_object_ids = [azuread_group.aks_admins.id]
     azure_rbac_enabled     = true
-    user_groups = []
+    user_groups = [
+      {
+        name      = var.admin_group_name
+        object_id = azuread_group.aks_admins.id
+        roles     = [var.admin_role]
+      },
+      {
+        name      = var.developer_group_name
+        object_id = azuread_group.aks_developers.id
+        roles     = [var.developer_role]
+      },
+      {
+        name      = var.viewer_group_name
+        object_id = azuread_group.aks_viewers.id
+        roles     = [var.viewer_role]
+      }
+    ]
   }
   tags = var.tags
 
@@ -184,6 +200,16 @@ module "user_group_roles" {
   principal_id         = count.index == 0 ? azuread_group.aks_admins.id : count.index == 1 ? azuread_group.aks_developers.id : azuread_group.aks_viewers.id
 }
 
+# Create public IP for Application Gateway
+resource "azurerm_public_ip" "appgw" {
+  name                = "pip-appgw-online-boutique"
+  resource_group_name = module.resource_group.resource_group_name
+  location            = module.resource_group.resource_group_location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags                = var.tags
+}
+
 # Create Application Gateway for load balancing
 module "appgw" {
   source = "./modules/appgw"
@@ -196,6 +222,7 @@ module "appgw" {
   frontend_ip_configuration = {
     name = var.appgw_frontend_ip_name
   }
+  public_ip_address_id = azurerm_public_ip.appgw.id
   backend_address_pools = [
     {
       name  = var.appgw_backend_pool_name

@@ -18,6 +18,12 @@ variable "subnet_id" {
   type        = string
 }
 
+variable "public_ip_address_id" {
+  description = "ID of the public IP address for the Application Gateway"
+  type        = string
+  default     = null
+}
+
 variable "sku" {
   description = "SKU of the Application Gateway"
   type = object({
