@@ -207,30 +207,30 @@ module "appgw" {
   subnet_id           = module.appgw_subnet.subnet_id
   sku                 = var.appgw_sku
   frontend_ip_configuration = {
-    name = "appGwFrontendIP"
+    name = var.appgw_frontend_ip_name
   }
   backend_address_pools = [
     {
-      name  = "aks-backend-pool"
-      fqdns = []
+      name  = var.appgw_backend_pool_name
+      fqdns = var.appgw_backend_fqdns
     }
   ]
   http_listeners = [
     {
-      name                           = "http-listener"
-      frontend_ip_configuration_name = "appGwFrontendIP"
-      frontend_port_name             = "port_80"
-      protocol                       = "Http"
-      host_name                      = null
+      name                           = var.appgw_http_listener_name
+      frontend_ip_configuration_name = var.appgw_frontend_ip_name
+      frontend_port_name             = var.appgw_frontend_port_name
+      protocol                       = var.appgw_protocol
+      host_name                      = var.appgw_host_name
     }
   ]
   request_routing_rules = [
     {
-      name                       = "routing-rule"
-      rule_type                  = "Basic"
-      http_listener_name         = "http-listener"
-      backend_address_pool_name  = "aks-backend-pool"
-      backend_http_settings_name = "http-settings"
+      name                       = var.appgw_routing_rule_name
+      rule_type                  = var.appgw_rule_type
+      http_listener_name         = var.appgw_http_listener_name
+      backend_address_pool_name  = var.appgw_backend_pool_name
+      backend_http_settings_name = var.appgw_backend_http_settings_name
     }
   ]
   tags = var.tags

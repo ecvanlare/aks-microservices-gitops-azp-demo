@@ -302,8 +302,8 @@ variable "appgw_sku" {
     capacity = number
   })
   default = {
-    name     = "Standard"
-    tier     = "Standard"
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
     capacity = 2
   }
 }
@@ -376,4 +376,64 @@ variable "appgw_request_routing_rules" {
       backend_http_settings_name = "http-settings"
     }
   ]
+}
+
+variable "appgw_frontend_ip_name" {
+  description = "Name for the Application Gateway frontend IP configuration"
+  type        = string
+  default     = "appGwFrontendIP"
+}
+
+variable "appgw_backend_pool_name" {
+  description = "Name for the Application Gateway backend address pool"
+  type        = string
+  default     = "aks-backend-pool"
+}
+
+variable "appgw_http_listener_name" {
+  description = "Name for the Application Gateway HTTP listener"
+  type        = string
+  default     = "http-listener"
+}
+
+variable "appgw_frontend_port_name" {
+  description = "Name for the Application Gateway frontend port"
+  type        = string
+  default     = "port_80"
+}
+
+variable "appgw_protocol" {
+  description = "Protocol for the Application Gateway listener"
+  type        = string
+  default     = "Http"
+}
+
+variable "appgw_routing_rule_name" {
+  description = "Name for the Application Gateway routing rule"
+  type        = string
+  default     = "routing-rule"
+}
+
+variable "appgw_rule_type" {
+  description = "Type for the Application Gateway routing rule"
+  type        = string
+  default     = "Basic"
+}
+
+variable "appgw_backend_http_settings_name" {
+  description = "Name for the Application Gateway backend HTTP settings"
+  type        = string
+  default     = "http-settings"
+}
+
+variable "appgw_backend_fqdns" {
+  description = "FQDNs for the Application Gateway backend address pool"
+  type        = list(string)
+  default     = []
+}
+
+variable "appgw_host_name" {
+  description = "Host name for the Application Gateway HTTP listener (null for none)"
+  type        = string
+  default     = null
 }
