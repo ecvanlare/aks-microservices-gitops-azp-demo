@@ -65,7 +65,7 @@ variable "acr_name" {
 variable "acr_sku" {
   description = "SKU of the container registry"
   type        = string
-  default     = "Basic"
+  default     = "Standard"
 }
 
 variable "acr_admin_enabled" {
@@ -302,8 +302,8 @@ variable "appgw_sku" {
     capacity = number
   })
   default = {
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
+    name     = "Standard"
+    tier     = "Standard"
     capacity = 2
   }
 }

@@ -209,6 +209,30 @@ module "appgw" {
   frontend_ip_configuration = {
     name = "appGwFrontendIP"
   }
+  backend_address_pools = [
+    {
+      name  = "aks-backend-pool"
+      fqdns = []
+    }
+  ]
+  http_listeners = [
+    {
+      name                           = "http-listener"
+      frontend_ip_configuration_name = "appGwFrontendIP"
+      frontend_port_name             = "port_80"
+      protocol                       = "Http"
+      host_name                      = null
+    }
+  ]
+  request_routing_rules = [
+    {
+      name                       = "routing-rule"
+      rule_type                  = "Basic"
+      http_listener_name         = "http-listener"
+      backend_address_pool_name  = "aks-backend-pool"
+      backend_http_settings_name = "http-settings"
+    }
+  ]
   tags = var.tags
 
   depends_on = [
