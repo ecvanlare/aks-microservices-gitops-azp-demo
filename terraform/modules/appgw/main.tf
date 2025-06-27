@@ -21,7 +21,6 @@ resource "azurerm_application_gateway" "appgw" {
 
   frontend_ip_configuration {
     name      = var.frontend_ip_configuration.name
-    subnet_id = var.subnet_id
     public_ip_address_id = var.public_ip_address_id
   }
 

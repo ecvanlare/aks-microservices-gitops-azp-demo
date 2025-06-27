@@ -163,7 +163,7 @@ module "aks" {
   outbound_type              = var.aks_outbound_type
   user_node_pool_name        = var.aks_user_node_pool_name
   aad_rbac = {
-    admin_group_object_ids = [azuread_group.aks_admins.id]
+    admin_group_object_ids = []
     azure_rbac_enabled     = true
     user_groups = [
       {
