@@ -46,6 +46,7 @@ resource "azurerm_application_gateway" "appgw" {
   request_routing_rule {
     name                       = "routing-rule"
     rule_type                  = "Basic"
+    priority                   = 100
     http_listener_name         = "http-listener"
     backend_address_pool_name  = "aks-backend-pool"
     backend_http_settings_name = "http-settings"

@@ -163,25 +163,9 @@ module "aks" {
   outbound_type              = var.aks_outbound_type
   user_node_pool_name        = var.aks_user_node_pool_name
   aad_rbac = {
-    admin_group_object_ids = [azuread_group.aks_admins.id]
-    azure_rbac_enabled     = true
-    user_groups = [
-      {
-        name      = var.admin_group_name
-        object_id = azuread_group.aks_admins.id
-        roles     = [var.admin_role]
-      },
-      {
-        name      = var.developer_group_name
-        object_id = azuread_group.aks_developers.id
-        roles     = [var.developer_role]
-      },
-      {
-        name      = var.viewer_group_name
-        object_id = azuread_group.aks_viewers.id
-        roles     = [var.viewer_role]
-      }
-    ]
+    admin_group_object_ids = []
+    azure_rbac_enabled     = false
+    user_groups = []
   }
   tags = var.tags
 
