@@ -166,12 +166,10 @@ variable "nsg_rules" {
 variable "aad_rbac" {
   description = "Azure Active Directory RBAC configuration"
   type = object({
-    managed                = bool
     admin_group_object_ids = list(string)
     azure_rbac_enabled     = bool
   })
   default = {
-    managed                = true
     admin_group_object_ids = []
     azure_rbac_enabled     = true
   }

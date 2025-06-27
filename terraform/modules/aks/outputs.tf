@@ -26,7 +26,7 @@ output "cluster_principal_id" {
 
 output "aad_rbac_enabled" {
   description = "Whether Azure AD RBAC is enabled on the cluster"
-  value       = azurerm_kubernetes_cluster.aks.azure_active_directory_role_based_access_control[0].managed
+  value       = length(azurerm_kubernetes_cluster.aks.azure_active_directory_role_based_access_control) > 0
 }
 
 output "admin_group_object_ids" {
