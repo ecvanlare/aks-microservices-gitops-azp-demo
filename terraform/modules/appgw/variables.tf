@@ -43,7 +43,7 @@ variable "frontend_ip_configuration" {
 variable "backend_address_pools" {
   description = "Backend address pools for Application Gateway"
   type = list(object({
-    name = string
+    name  = string
     fqdns = list(string)
   }))
 }

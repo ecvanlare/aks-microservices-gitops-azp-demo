@@ -329,14 +329,14 @@ variable "appgw_sku" {
 variable "appgw_frontend_ip_configuration" {
   description = "Frontend IP configuration for Application Gateway"
   type = object({
-    name                 = string
-    subnet_id            = string
-    private_ip_address   = string
+    name                  = string
+    subnet_id             = string
+    private_ip_address    = string
     private_ip_allocation = string
   })
   default = {
     name                  = "appGwFrontendIP"
-    subnet_id             = null  # Will be set in main.tf
+    subnet_id             = null # Will be set in main.tf
     private_ip_address    = "10.0.1.10"
     private_ip_allocation = "Static"
   }
@@ -345,7 +345,7 @@ variable "appgw_frontend_ip_configuration" {
 variable "appgw_backend_address_pools" {
   description = "Backend address pools for Application Gateway"
   type = list(object({
-    name = string
+    name  = string
     fqdns = list(string)
   }))
   default = [

@@ -10,9 +10,9 @@ module "resource_group" {
 # Create managed identities
 resource "azurerm_user_assigned_identity" "identities" {
   for_each = {
-    cluster   = "${var.aks_name}-cluster"
-    kubelet   = "${var.aks_name}-kubelet"
-    acr_push  = "${var.aks_name}-acr-push"
+    cluster  = "${var.aks_name}-cluster"
+    kubelet  = "${var.aks_name}-kubelet"
+    acr_push = "${var.aks_name}-acr-push"
   }
 
   name                = each.value
@@ -55,7 +55,7 @@ module "vnet" {
 
 # Subnet Modules
 module "subnets" {
-  source = "./modules/network/subnet"
+  source   = "./modules/network/subnet"
   for_each = var.subnets
 
   name                = each.value.name
@@ -69,14 +69,14 @@ module "subnets" {
 module "nsg" {
   source = "./modules/network/nsg"
 
-  name                = "nsg-aks"
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
-  subnet_id           = module.subnets["aks"].subnet_id
-  rules               = var.nsg_rules
+  name                            = "nsg-aks"
+  resource_group_name             = module.resource_group.resource_group_name
+  location                        = module.resource_group.resource_group_location
+  subnet_id                       = module.subnets["aks"].subnet_id
+  rules                           = var.nsg_rules
   enable_admin_source_restriction = var.enable_admin_source_restriction
-  admin_source_ips    = var.admin_source_ips
-  tags                = var.tags
+  admin_source_ips                = var.admin_source_ips
+  tags                            = var.tags
 }
 
 # Identity assignment for AKS to pull from ACR
@@ -172,7 +172,7 @@ locals {
 }
 
 module "user_group_roles" {
-  source = "./modules/identity"
+  source   = "./modules/identity"
   for_each = local.role_assignments
 
   scope                = module.aks.cluster_id

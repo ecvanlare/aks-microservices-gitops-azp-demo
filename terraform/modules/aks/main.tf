@@ -16,16 +16,16 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    network_plugin     = var.network.plugin
-    network_policy     = var.network.policy
-    service_cidr       = var.network.service_cidr
-    dns_service_ip     = var.network.dns_service_ip
-    load_balancer_sku  = var.load_balancer_sku
-    outbound_type      = var.outbound_type
+    network_plugin    = var.network.plugin
+    network_policy    = var.network.policy
+    service_cidr      = var.network.service_cidr
+    dns_service_ip    = var.network.dns_service_ip
+    load_balancer_sku = var.load_balancer_sku
+    outbound_type     = var.outbound_type
   }
 
   identity {
-    type = "UserAssigned"
+    type         = "UserAssigned"
     identity_ids = [var.cluster_identity_id]
   }
 

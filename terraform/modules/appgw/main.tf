@@ -20,7 +20,7 @@ resource "azurerm_application_gateway" "appgw" {
   }
 
   frontend_ip_configuration {
-    name      = var.frontend_ip_configuration.name
+    name                 = var.frontend_ip_configuration.name
     public_ip_address_id = var.public_ip_address_id
   }
 
