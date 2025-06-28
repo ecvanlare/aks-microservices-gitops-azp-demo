@@ -16,6 +16,24 @@ resource "azurerm_network_security_group" "nsg" {
       destination_port_range     = security_rule.value.destination_port_range
       source_address_prefix      = security_rule.value.source_address_prefix
       destination_address_prefix = security_rule.value.destination_address_prefix
+      description                = lookup(security_rule.value, "description", null)
+    }
+  }
+
+  # Conditional admin access rules
+  dynamic "security_rule" {
+    for_each = var.enable_admin_source_restriction && length(var.admin_source_ips) > 0 ? var.admin_source_ips : []
+    content {
+      name                       = "allow-admin-kubernetes-api-${index(var.admin_source_ips, security_rule.value)}"
+      priority                   = 90
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "6443"
+      source_address_prefix      = security_rule.value
+      destination_address_prefix = "*"
+      description                = "Allow Kubernetes API access from admin IP ${security_rule.value}"
     }
   }
 }
