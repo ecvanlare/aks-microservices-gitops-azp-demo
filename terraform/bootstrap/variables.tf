@@ -28,6 +28,16 @@ variable "storage_container_access_type" {
   default     = "private"
 }
 
+variable "storage_soft_delete_retention_days" {
+  description = "Number of days to retain deleted blobs for soft delete protection"
+  type        = number
+  default     = 7
+  validation {
+    condition     = var.storage_soft_delete_retention_days >= 1 && var.storage_soft_delete_retention_days <= 365
+    error_message = "Soft delete retention days must be between 1 and 365."
+  }
+}
+
 variable "tags" {
   description = "Common tags to be applied to all resources"
   type        = map(string)
