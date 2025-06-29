@@ -6,12 +6,19 @@ resource "azurerm_resource_group" "infrastructure" {
 }
 
 resource "azurerm_storage_account" "tfstate" {
-  name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.infrastructure.name
-  location                 = azurerm_resource_group.infrastructure.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  min_tls_version          = "TLS1_2"
+  name                            = var.storage_account_name
+  resource_group_name             = azurerm_resource_group.infrastructure.name
+  location                        = azurerm_resource_group.infrastructure.location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  min_tls_version                 = "TLS1_2"
+  allow_nested_items_to_be_public = false
+
+  blob_properties {
+    delete_retention_policy {
+      days = var.storage_soft_delete_retention_days
+    }
+  }
 
   tags = merge(var.tags, var.storage_account_tags)
 }
