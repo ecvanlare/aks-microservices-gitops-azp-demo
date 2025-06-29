@@ -3,6 +3,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = var.location
   resource_group_name = var.resource_group_name
   dns_prefix          = var.dns_prefix
+  private_cluster_enabled = true
 
   default_node_pool {
     name                = var.node_pool.name
@@ -13,6 +14,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     min_count           = var.node_pool.min_count
     max_count           = var.node_pool.max_count
     vnet_subnet_id      = var.network.subnet_id
+    max_pods            = var.max_pods_per_node
   }
 
   network_profile {
@@ -36,7 +38,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   azure_active_directory_role_based_access_control {
-    managed                = true
     admin_group_object_ids = var.aad_rbac.admin_group_object_ids
     azure_rbac_enabled     = var.aad_rbac.azure_rbac_enabled
   }
@@ -56,5 +57,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
   enable_auto_scaling   = var.node_pool.enable_auto_scaling
   os_disk_size_gb       = var.node_pool.os_disk_size_gb
   vnet_subnet_id        = var.network.subnet_id
+  max_pods              = var.max_pods_per_node
   tags                  = var.tags
 } 

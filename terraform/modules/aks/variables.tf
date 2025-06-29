@@ -80,6 +80,16 @@ variable "user_node_pool_name" {
   default     = "userpool"
 }
 
+variable "max_pods_per_node" {
+  description = "Maximum number of pods per node"
+  type        = number
+  default     = 30
+  validation {
+    condition     = var.max_pods_per_node >= 10 && var.max_pods_per_node <= 250
+    error_message = "Max pods per node must be between 10 and 250."
+  }
+}
+
 variable "tags" {
   description = "Tags to be applied to the AKS cluster"
   type        = map(string)
