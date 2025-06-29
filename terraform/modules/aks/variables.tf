@@ -52,6 +52,16 @@ variable "kubelet_identity_id" {
   type        = string
 }
 
+variable "kubelet_identity_client_id" {
+  description = "The client ID of the user-assigned identity for the kubelet"
+  type        = string
+}
+
+variable "kubelet_identity_object_id" {
+  description = "The object ID of the user-assigned identity for the kubelet"
+  type        = string
+}
+
 variable "load_balancer_sku" {
   description = "The SKU of the load balancer"
   type        = string
@@ -74,4 +84,22 @@ variable "tags" {
   description = "Tags to be applied to the AKS cluster"
   type        = map(string)
   default     = {}
+}
+
+variable "aad_rbac" {
+  description = "Azure Active Directory RBAC configuration"
+  type = object({
+    admin_group_object_ids = list(string)
+    azure_rbac_enabled     = bool
+    user_groups = list(object({
+      name      = string
+      object_id = string
+      roles     = list(string)
+    }))
+  })
+  default = {
+    admin_group_object_ids = []
+    azure_rbac_enabled     = true
+    user_groups            = []
+  }
 } 
