@@ -203,7 +203,7 @@ shoppingassistantservice:
     DISABLE_PROFILER: "1"
 
 # NGINX Ingress Controller Configuration
-nginx-ingress:
+ingress-nginx:
   enabled: true
   controller:
     replicaCount: 2
