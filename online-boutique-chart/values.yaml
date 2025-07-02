@@ -206,7 +206,7 @@ shoppingassistantservice:
 ingress-nginx:
   enabled: true
   controller:
-    replicaCount: 1
+    replicaCount: 2
     resources:
       requests:
         cpu: 200m
@@ -226,10 +226,6 @@ ingress-nginx:
       enabled: false
     metrics:
       enabled: true
-      service:
-        annotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "10254"
     startupProbe:
       enabled: true
       initialDelaySeconds: 30
