@@ -209,11 +209,11 @@ ingress-nginx:
     replicaCount: 2
     resources:
       requests:
-        cpu: 200m
-        memory: 256Mi
-      limits:
-        cpu: 500m
+        cpu: 300m
         memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
     service:
       type: LoadBalancer
       annotations:
@@ -226,6 +226,14 @@ ingress-nginx:
       enabled: false
     metrics:
       enabled: true
+    # Add node affinity for better resource distribution
+    nodeSelector:
+      kubernetes.io/os: linux
+    tolerations:
+      - key: "kubernetes.io/os"
+        operator: "Equal"
+        value: "linux"
+        effect: "NoSchedule"
 
 # Ingress Configuration
 ingress:
