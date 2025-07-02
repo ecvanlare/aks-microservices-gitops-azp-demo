@@ -209,31 +209,17 @@ ingress-nginx:
     replicaCount: 2
     resources:
       requests:
-        cpu: 300m
-        memory: 512Mi
+        cpu: 200m
+        memory: 256Mi
       limits:
-        cpu: 1000m
-        memory: 1Gi
+        cpu: 500m
+        memory: 512Mi
     service:
       type: LoadBalancer
-      annotations:
-        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
-    config:
-      use-proxy-protocol: "false"
-      proxy-real-ip-cidr: "0.0.0.0/0"
-      use-forwarded-headers: "true"
     admissionWebhooks:
       enabled: false
     metrics:
       enabled: true
-    # Add node affinity for better resource distribution
-    nodeSelector:
-      kubernetes.io/os: linux
-    tolerations:
-      - key: "kubernetes.io/os"
-        operator: "Equal"
-        value: "linux"
-        effect: "NoSchedule"
 
 # Ingress Configuration
 ingress:
