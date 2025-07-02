@@ -113,12 +113,12 @@ variable "aks_node_pool" {
   })
   default = {
     name                = "default"
-    node_count          = 2
+    node_count          = 1
     vm_size             = "Standard_B2s"
     os_disk_size_gb     = 30
     enable_auto_scaling = true
-    min_count           = 2
-    max_count           = 3
+    min_count           = 1
+    max_count           = 2
   }
 }
 
@@ -143,13 +143,13 @@ variable "aks_user_node_pool" {
   })
   default = {
     name                = "userpool"
-    node_count          = 2
-    vm_size             = "Standard_B4ms"
+    node_count          = 1
+    vm_size             = "Standard_B2s"
     os_disk_size_gb     = 64
     enable_auto_scaling = true
-    min_count           = 2
-    max_count           = 4
-    max_pods            = 40
+    min_count           = 1
+    max_count           = 2
+    max_pods            = 50
   }
 }
 
