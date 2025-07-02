@@ -18,6 +18,16 @@ variable "dns_prefix" {
   type        = string
 }
 
+variable "private_cluster_enabled" {
+  description = "Whether to enable private cluster"
+  type        = bool
+}
+
+variable "public_network_access_enabled" {
+  description = "Whether to enable public network access"
+  type        = bool
+}
+
 variable "node_pool" {
   description = "Node pool configuration"
   type = object({

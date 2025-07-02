@@ -115,11 +115,13 @@ resource "azuread_group" "aks_groups" {
 module "aks" {
   source = "./modules/aks"
 
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
-  name                = var.aks_name
-  dns_prefix          = var.aks_dns_prefix
-  node_pool           = var.aks_node_pool
+  resource_group_name           = module.resource_group.resource_group_name
+  location                      = module.resource_group.resource_group_location
+  name                          = var.aks_name
+  dns_prefix                    = var.aks_dns_prefix
+  private_cluster_enabled       = var.aks_private_cluster_enabled
+  public_network_access_enabled = var.aks_public_network_access_enabled
+  node_pool                     = var.aks_node_pool
   network = {
     plugin         = var.aks_network_plugin
     policy         = var.aks_network_policy

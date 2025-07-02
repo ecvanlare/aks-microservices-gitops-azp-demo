@@ -151,6 +151,18 @@ variable "aks_user_node_pool_name" {
   default     = "userpool"
 }
 
+variable "aks_private_cluster_enabled" {
+  description = "Whether to enable private cluster for AKS"
+  type        = bool
+  default     = false
+}
+
+variable "aks_public_network_access_enabled" {
+  description = "Whether to enable public network access for AKS"
+  type        = bool
+  default     = true
+}
+
 # NSG Variables
 variable "nsg_rules" {
   description = "Network security group rules"
