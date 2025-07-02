@@ -122,4 +122,44 @@ variable "aad_rbac" {
     azure_rbac_enabled     = true
     user_groups            = []
   }
-} 
+}
+
+# Ingress Node Pool Variables
+variable "ingress_node_pool_enabled" {
+  description = "Whether to create a dedicated ingress node pool"
+  type        = bool
+  default     = false
+}
+
+variable "user_node_pool" {
+  description = "The user node pool configuration"
+  type = object({
+    name                = string
+    node_count          = number
+    vm_size             = string
+    os_disk_size_gb     = number
+    enable_auto_scaling = bool
+    min_count           = number
+    max_count           = number
+    max_pods            = number
+  })
+}
+
+variable "ingress_node_pool" {
+  description = "The ingress node pool configuration"
+  type = object({
+    name                = string
+    node_count          = number
+    vm_size             = string
+    os_disk_size_gb     = number
+    enable_auto_scaling = bool
+    min_count           = number
+    max_count           = number
+    max_pods            = number
+    node_taints         = list(string)
+  })
+}
+
+
+
+ 

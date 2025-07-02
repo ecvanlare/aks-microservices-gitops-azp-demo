@@ -115,13 +115,21 @@ resource "azuread_group" "aks_groups" {
 module "aks" {
   source = "./modules/aks"
 
+  # Basic Configuration
   resource_group_name           = module.resource_group.resource_group_name
   location                      = module.resource_group.resource_group_location
   name                          = var.aks_name
   dns_prefix                    = var.aks_dns_prefix
   private_cluster_enabled       = var.aks_private_cluster_enabled
   public_network_access_enabled = var.aks_public_network_access_enabled
-  node_pool                     = var.aks_node_pool
+
+  # Node Pools Configuration
+  node_pool                 = var.aks_node_pool
+  user_node_pool            = var.aks_user_node_pool
+  ingress_node_pool_enabled = var.aks_ingress_node_pool_enabled
+  ingress_node_pool         = var.aks_ingress_node_pool
+
+  # Network Configuration
   network = {
     plugin         = var.aks_network_plugin
     policy         = var.aks_network_policy
@@ -129,13 +137,16 @@ module "aks" {
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
+  load_balancer_sku = var.aks_load_balancer_sku
+  outbound_type     = var.aks_outbound_type
+
+  # Identity Configuration
   cluster_identity_id        = azurerm_user_assigned_identity.identities["cluster"].id
   kubelet_identity_id        = azurerm_user_assigned_identity.identities["kubelet"].id
   kubelet_identity_client_id = azurerm_user_assigned_identity.identities["kubelet"].client_id
   kubelet_identity_object_id = azurerm_user_assigned_identity.identities["kubelet"].principal_id
-  load_balancer_sku          = var.aks_load_balancer_sku
-  outbound_type              = var.aks_outbound_type
-  user_node_pool_name        = var.aks_user_node_pool_name
+
+  # RBAC Configuration
   aad_rbac = {
     admin_group_object_ids = []
     azure_rbac_enabled     = true
@@ -157,6 +168,7 @@ module "aks" {
       }
     ]
   }
+
   tags = var.tags
 
   depends_on = [

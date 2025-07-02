@@ -74,7 +74,7 @@ variable "acr_admin_enabled" {
   default     = false
 }
 
-# AKS Variables
+# AKS Basic Configuration
 variable "aks_name" {
   description = "Name of the AKS cluster"
   type        = string
@@ -87,8 +87,21 @@ variable "aks_dns_prefix" {
   default     = "online-boutique"
 }
 
+variable "aks_private_cluster_enabled" {
+  description = "Whether to enable private cluster for AKS"
+  type        = bool
+  default     = false
+}
+
+variable "aks_public_network_access_enabled" {
+  description = "Whether to enable public network access for AKS"
+  type        = bool
+  default     = true
+}
+
+# AKS Node Pools Configuration
 variable "aks_node_pool" {
-  description = "The default node pool configuration for AKS"
+  description = "The default node pool configuration for AKS (system workloads)"
   type = object({
     name                = string
     node_count          = number
@@ -100,15 +113,79 @@ variable "aks_node_pool" {
   })
   default = {
     name                = "default"
-    node_count          = 1
+    node_count          = 2
     vm_size             = "Standard_B2s"
     os_disk_size_gb     = 30
     enable_auto_scaling = true
-    min_count           = 1
+    min_count           = 2
     max_count           = 3
   }
 }
 
+variable "aks_user_node_pool_name" {
+  description = "Name for the user node pool in AKS"
+  type        = string
+  default     = "userpool"
+}
+
+# User Node Pool Configuration (COST-OPTIMIZED for production)
+variable "aks_user_node_pool" {
+  description = "The user node pool configuration for AKS (application workloads)"
+  type = object({
+    name                = string
+    node_count          = number
+    vm_size             = string
+    os_disk_size_gb     = number
+    enable_auto_scaling = bool
+    min_count           = number
+    max_count           = number
+    max_pods            = number
+  })
+  default = {
+    name                = "userpool"
+    node_count          = 2
+    vm_size             = "Standard_B4ms"
+    os_disk_size_gb     = 64
+    enable_auto_scaling = true
+    min_count           = 2
+    max_count           = 4
+    max_pods            = 40
+  }
+}
+
+variable "aks_ingress_node_pool_enabled" {
+  description = "Whether to create a dedicated ingress node pool"
+  type        = bool
+  default     = false
+}
+
+variable "aks_ingress_node_pool" {
+  description = "The ingress node pool configuration for AKS (load balancers)"
+  type = object({
+    name                = string
+    node_count          = number
+    vm_size             = string
+    os_disk_size_gb     = number
+    enable_auto_scaling = bool
+    min_count           = number
+    max_count           = number
+    max_pods            = number
+    node_taints         = list(string)
+  })
+  default = {
+    name                = "ingress"
+    node_count          = 2
+    vm_size             = "Standard_B2s"
+    os_disk_size_gb     = 64
+    enable_auto_scaling = true
+    min_count           = 2
+    max_count           = 3
+    max_pods            = 30
+    node_taints         = ["ingress=true:NoSchedule"]
+  }
+}
+
+# AKS Network Configuration
 variable "aks_network_plugin" {
   description = "Network plugin for AKS"
   type        = string
@@ -143,24 +220,6 @@ variable "aks_outbound_type" {
   description = "Outbound type for AKS cluster"
   type        = string
   default     = "loadBalancer"
-}
-
-variable "aks_user_node_pool_name" {
-  description = "Name for the user node pool in AKS"
-  type        = string
-  default     = "userpool"
-}
-
-variable "aks_private_cluster_enabled" {
-  description = "Whether to enable private cluster for AKS"
-  type        = bool
-  default     = false
-}
-
-variable "aks_public_network_access_enabled" {
-  description = "Whether to enable public network access for AKS"
-  type        = bool
-  default     = true
 }
 
 # NSG Variables

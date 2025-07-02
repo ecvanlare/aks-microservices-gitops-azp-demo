@@ -49,18 +49,40 @@ resource "azurerm_kubernetes_cluster" "aks" {
   tags = var.tags
 }
 
-# Output the cluster credentials
+# User node pool (conditional)
 resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
   count                 = var.node_pool.enable_auto_scaling ? 1 : 0
-  name                  = var.user_node_pool_name
+  name                  = var.user_node_pool.name
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  vm_size               = var.node_pool.vm_size
-  node_count            = var.node_pool.node_count
-  min_count             = var.node_pool.min_count
-  max_count             = var.node_pool.max_count
-  enable_auto_scaling   = var.node_pool.enable_auto_scaling
-  os_disk_size_gb       = var.node_pool.os_disk_size_gb
+  vm_size               = var.user_node_pool.vm_size
+  node_count            = var.user_node_pool.node_count
+  min_count             = var.user_node_pool.min_count
+  max_count             = var.user_node_pool.max_count
+  enable_auto_scaling   = var.user_node_pool.enable_auto_scaling
+  os_disk_size_gb       = var.user_node_pool.os_disk_size_gb
   vnet_subnet_id        = var.network.subnet_id
-  max_pods              = var.max_pods_per_node
+  max_pods              = var.user_node_pool.max_pods
   tags                  = var.tags
+}
+
+# Dedicated ingress node pool for ingress controllers
+resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
+  count                 = var.ingress_node_pool_enabled ? 1 : 0
+  name                  = var.ingress_node_pool.name
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  vm_size               = var.ingress_node_pool.vm_size
+  node_count            = var.ingress_node_pool.node_count
+  min_count             = var.ingress_node_pool.min_count
+  max_count             = var.ingress_node_pool.max_count
+  enable_auto_scaling   = var.ingress_node_pool.enable_auto_scaling
+  os_disk_size_gb       = var.ingress_node_pool.os_disk_size_gb
+  vnet_subnet_id        = var.network.subnet_id
+  max_pods              = var.ingress_node_pool.max_pods
+
+  # Node taints to prevent other workloads from scheduling here
+  node_taints = var.ingress_node_pool.node_taints
+
+  tags = merge(var.tags, {
+    Purpose = "ingress-controllers"
+  })
 } 
