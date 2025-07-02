@@ -226,12 +226,6 @@ ingress-nginx:
       enabled: false
     metrics:
       enabled: true
-    startupProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
 
 # Ingress Configuration
 ingress:

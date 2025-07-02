@@ -41,7 +41,7 @@ dependencies:
     repository: "file://charts/shippingservice"
   - name: shoppingassistantservice
     version: "0.1.0"
-    repository: "file://charts/shoppingassistantservice"
+    repository: "file://charts/shoppingassistantservice" 
   - name: ingress-nginx
     version: 4.7.1
     repository: "https://kubernetes.github.io/ingress-nginx" 
