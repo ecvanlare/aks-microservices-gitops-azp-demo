@@ -206,14 +206,14 @@ shoppingassistantservice:
 ingress-nginx:
   enabled: true
   controller:
-    replicaCount: 2
+    replicaCount: 1
     resources:
       requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
         cpu: 200m
         memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
     service:
       type: LoadBalancer
       annotations:
@@ -230,6 +230,12 @@ ingress-nginx:
         annotations:
           prometheus.io/scrape: "true"
           prometheus.io/port: "10254"
+    startupProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
 
 # Ingress Configuration
 ingress:
