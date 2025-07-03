@@ -152,22 +152,22 @@ module "aks" {
 
   # RBAC Configuration
   aad_rbac = {
-    admin_group_object_ids = []
+    admin_group_object_ids = [azuread_group.aks_groups["admins"].object_id]
     azure_rbac_enabled     = true
     user_groups = [
       {
         name      = var.admin_group_name
-        object_id = azuread_group.aks_groups["admins"].id
+        object_id = azuread_group.aks_groups["admins"].object_id
         roles     = [var.admin_role]
       },
       {
         name      = var.developer_group_name
-        object_id = azuread_group.aks_groups["developers"].id
+        object_id = azuread_group.aks_groups["developers"].object_id
         roles     = [var.developer_role]
       },
       {
         name      = var.viewer_group_name
-        object_id = azuread_group.aks_groups["viewers"].id
+        object_id = azuread_group.aks_groups["viewers"].object_id
         roles     = [var.viewer_role]
       }
     ]
@@ -195,7 +195,7 @@ module "user_group_roles" {
 
   scope                = module.aks.cluster_id
   role_definition_name = each.value.role
-  principal_id         = azuread_group.aks_groups[each.value.group].id
+  principal_id         = azuread_group.aks_groups[each.value.group].object_id
 }
 
 # Create public IP for Application Gateway
