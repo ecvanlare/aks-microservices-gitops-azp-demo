@@ -131,6 +131,8 @@ variable "aks_user_node_pool" {
     min_count           = number
     max_count           = number
     max_pods            = number
+    node_taints         = list(string)
+    node_labels         = map(string)
   })
   default = {
     name                = "userpool"
@@ -140,6 +142,10 @@ variable "aks_user_node_pool" {
     min_count           = 1
     max_count           = 3
     max_pods            = 50
+    node_taints         = ["userpool=true:NoSchedule"]
+    node_labels = {
+      "agentpool" = "userpool"
+    }
   }
 }
 

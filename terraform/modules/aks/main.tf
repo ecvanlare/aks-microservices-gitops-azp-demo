@@ -74,7 +74,14 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
   os_disk_size_gb       = var.user_node_pool.os_disk_size_gb
   vnet_subnet_id        = var.network.subnet_id
   max_pods              = var.user_node_pool.max_pods
-  tags                  = var.tags
+
+  # Node taints to ensure only pods with tolerations can schedule here
+  node_taints = var.user_node_pool.node_taints
+
+  # Node labels for identification
+  node_labels = var.user_node_pool.node_labels
+
+  tags = var.tags
 }
 
 # Dedicated ingress node pool for ingress controllers

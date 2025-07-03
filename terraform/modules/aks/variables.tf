@@ -141,6 +141,8 @@ variable "user_node_pool" {
     min_count           = number
     max_count           = number
     max_pods            = number
+    node_taints         = list(string)
+    node_labels         = map(string)
   })
 }
 
