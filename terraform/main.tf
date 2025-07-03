@@ -140,6 +140,10 @@ module "aks" {
   load_balancer_sku = var.aks_load_balancer_sku
   outbound_type     = var.aks_outbound_type
 
+  # Cluster Autoscaler Configuration
+  enable_cluster_autoscaler = var.aks_enable_cluster_autoscaler
+  autoscaler_profile        = var.aks_autoscaler_profile
+
   # Identity Configuration
   cluster_identity_id        = azurerm_user_assigned_identity.identities["cluster"].id
   kubelet_identity_id        = azurerm_user_assigned_identity.identities["kubelet"].id

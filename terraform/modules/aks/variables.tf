@@ -28,11 +28,11 @@ variable "public_network_access_enabled" {
   type        = bool
 }
 
+# Node Pool Configuration
 variable "node_pool" {
   description = "Node pool configuration"
   type = object({
     name                = string
-    node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
     enable_auto_scaling = bool
@@ -41,6 +41,7 @@ variable "node_pool" {
   })
 }
 
+# Network Configuration
 variable "network" {
   description = "Network configuration"
   type = object({
@@ -52,6 +53,7 @@ variable "network" {
   })
 }
 
+# Identity Configuration
 variable "cluster_identity_id" {
   description = "The ID of the user-assigned identity for the cluster"
   type        = string
@@ -72,6 +74,7 @@ variable "kubelet_identity_object_id" {
   type        = string
 }
 
+# Load Balancer Configuration
 variable "load_balancer_sku" {
   description = "The SKU of the load balancer"
   type        = string
@@ -84,12 +87,7 @@ variable "outbound_type" {
   default     = "loadBalancer"
 }
 
-variable "user_node_pool_name" {
-  description = "The name of the user node pool"
-  type        = string
-  default     = "userpool"
-}
-
+# Node Configuration
 variable "max_pods_per_node" {
   description = "Maximum number of pods per node"
   type        = number
@@ -100,12 +98,7 @@ variable "max_pods_per_node" {
   }
 }
 
-variable "tags" {
-  description = "Tags to be applied to the AKS cluster"
-  type        = map(string)
-  default     = {}
-}
-
+# RBAC Configuration
 variable "aad_rbac" {
   description = "Azure Active Directory RBAC configuration"
   type = object({
@@ -124,7 +117,14 @@ variable "aad_rbac" {
   }
 }
 
-# Ingress Node Pool Variables
+# Tags
+variable "tags" {
+  description = "Tags to be applied to the AKS cluster"
+  type        = map(string)
+  default     = {}
+}
+
+# Additional Node Pools
 variable "ingress_node_pool_enabled" {
   description = "Whether to create a dedicated ingress node pool"
   type        = bool
@@ -135,7 +135,6 @@ variable "user_node_pool" {
   description = "The user node pool configuration"
   type = object({
     name                = string
-    node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
     enable_auto_scaling = bool
@@ -149,7 +148,6 @@ variable "ingress_node_pool" {
   description = "The ingress node pool configuration"
   type = object({
     name                = string
-    node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
     enable_auto_scaling = bool
@@ -160,6 +158,22 @@ variable "ingress_node_pool" {
   })
 }
 
+# Cluster Autoscaler Configuration
+variable "enable_cluster_autoscaler" {
+  description = "Whether to enable cluster autoscaler"
+  type        = bool
+}
 
-
- 
+variable "autoscaler_profile" {
+  description = "Cluster autoscaler profile configuration (scale-down settings)"
+  type = object({
+    # Scale-down configuration (supported by Azure provider)
+    scale_down_delay_after_add       = string
+    scale_down_delay_after_delete    = string
+    scale_down_delay_after_failure   = string
+    scan_interval                    = string
+    scale_down_unneeded              = string
+    scale_down_unready               = string
+    scale_down_utilization_threshold = string
+  })
+}

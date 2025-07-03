@@ -104,7 +104,6 @@ variable "aks_node_pool" {
   description = "The default node pool configuration for AKS (system workloads)"
   type = object({
     name                = string
-    node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
     enable_auto_scaling = bool
@@ -113,8 +112,7 @@ variable "aks_node_pool" {
   })
   default = {
     name                = "default"
-    node_count          = 1
-    vm_size             = "Standard_B2s"
+    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - better for system workloads + Redis
     os_disk_size_gb     = 30
     enable_auto_scaling = true
     min_count           = 1
@@ -122,18 +120,11 @@ variable "aks_node_pool" {
   }
 }
 
-variable "aks_user_node_pool_name" {
-  description = "Name for the user node pool in AKS"
-  type        = string
-  default     = "userpool"
-}
-
 # User Node Pool Configuration (COST-OPTIMIZED for production)
 variable "aks_user_node_pool" {
   description = "The user node pool configuration for AKS (application workloads)"
   type = object({
     name                = string
-    node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
     enable_auto_scaling = bool
@@ -143,12 +134,11 @@ variable "aks_user_node_pool" {
   })
   default = {
     name                = "userpool"
-    node_count          = 1
-    vm_size             = "Standard_B2s"
+    vm_size             = "Standard_B4ms" # 4 vCPU, 16GB RAM - better for 12 microservices
     os_disk_size_gb     = 64
     enable_auto_scaling = true
     min_count           = 1
-    max_count           = 2
+    max_count           = 3
     max_pods            = 50
   }
 }
@@ -156,14 +146,13 @@ variable "aks_user_node_pool" {
 variable "aks_ingress_node_pool_enabled" {
   description = "Whether to create a dedicated ingress node pool"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"
   type = object({
     name                = string
-    node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
     enable_auto_scaling = bool
@@ -174,11 +163,10 @@ variable "aks_ingress_node_pool" {
   })
   default = {
     name                = "ingress"
-    node_count          = 2
-    vm_size             = "Standard_B2s"
+    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - better for ingress controllers
     os_disk_size_gb     = 64
     enable_auto_scaling = true
-    min_count           = 2
+    min_count           = 1
     max_count           = 3
     max_pods            = 30
     node_taints         = ["ingress=true:NoSchedule"]
@@ -208,6 +196,38 @@ variable "aks_dns_service_ip" {
   description = "DNS service IP for AKS cluster (must be within service_cidr)"
   type        = string
   default     = "172.16.0.10"
+}
+
+# AKS Load Balancer Configuration
+
+
+# AKS Cluster Autoscaler Configuration
+variable "aks_enable_cluster_autoscaler" {
+  description = "Whether to enable cluster autoscaler"
+  type        = bool
+  default     = true
+}
+
+variable "aks_autoscaler_profile" {
+  description = "Cluster autoscaler profile configuration"
+  type = object({
+    scale_down_delay_after_add       = string
+    scale_down_delay_after_delete    = string
+    scale_down_delay_after_failure   = string
+    scan_interval                    = string
+    scale_down_unneeded              = string
+    scale_down_unready               = string
+    scale_down_utilization_threshold = string
+  })
+  default = {
+    scale_down_delay_after_add       = "15m"
+    scale_down_delay_after_delete    = "15s"
+    scale_down_delay_after_failure   = "3m"
+    scan_interval                    = "10s"
+    scale_down_unneeded              = "10m"
+    scale_down_unready               = "20m"
+    scale_down_utilization_threshold = "0.5"
+  }
 }
 
 variable "aks_load_balancer_sku" {
