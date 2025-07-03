@@ -93,6 +93,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
   # Node taints to prevent other workloads from scheduling here
   node_taints = var.ingress_node_pool.node_taints
 
+  # Node labels to make this pool eligible for Azure Load Balancer
+  node_labels = var.ingress_node_pool.node_labels
+
+  # Enable public IPs for ingress nodes to allow LoadBalancer services
+  enable_node_public_ip = var.ingress_node_pool.enable_node_public_ip
+
   tags = merge(var.tags, {
     Purpose = "ingress-controllers"
   })

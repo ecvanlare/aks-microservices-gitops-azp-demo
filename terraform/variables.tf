@@ -152,14 +152,16 @@ variable "aks_ingress_node_pool_enabled" {
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"
   type = object({
-    name                = string
-    vm_size             = string
-    os_disk_size_gb     = number
-    enable_auto_scaling = bool
-    min_count           = number
-    max_count           = number
-    max_pods            = number
-    node_taints         = list(string)
+    name                    = string
+    vm_size                 = string
+    os_disk_size_gb         = number
+    enable_auto_scaling     = bool
+    min_count               = number
+    max_count               = number
+    max_pods                = number
+    node_taints             = list(string)
+    node_labels             = map(string)
+    enable_node_public_ip   = bool
   })
   default = {
     name                = "ingress"
@@ -170,6 +172,11 @@ variable "aks_ingress_node_pool" {
     max_count           = 3
     max_pods            = 30
     node_taints         = ["ingress=true:NoSchedule"]
+    node_labels         = {
+      "kubernetes.azure.com/mode" = "user"
+      "node.kubernetes.io/exclude-from-external-load-balancers" = "false"
+    }
+    enable_node_public_ip = true
   }
 }
 
