@@ -152,16 +152,16 @@ variable "aks_ingress_node_pool_enabled" {
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"
   type = object({
-    name                    = string
-    vm_size                 = string
-    os_disk_size_gb         = number
-    enable_auto_scaling     = bool
-    min_count               = number
-    max_count               = number
-    max_pods                = number
-    node_taints             = list(string)
-    node_labels             = map(string)
-    enable_node_public_ip   = bool
+    name                  = string
+    vm_size               = string
+    os_disk_size_gb       = number
+    enable_auto_scaling   = bool
+    min_count             = number
+    max_count             = number
+    max_pods              = number
+    node_taints           = list(string)
+    node_labels           = map(string)
+    enable_node_public_ip = bool
   })
   default = {
     name                = "ingress"
@@ -172,11 +172,10 @@ variable "aks_ingress_node_pool" {
     max_count           = 3
     max_pods            = 30
     node_taints         = ["ingress=true:NoSchedule"]
-    node_labels         = {
-      "kubernetes.azure.com/mode" = "user"
+    node_labels = {
       "node.kubernetes.io/exclude-from-external-load-balancers" = "false"
     }
-    enable_node_public_ip = true
+    enable_node_public_ip = false
   }
 }
 
@@ -184,7 +183,7 @@ variable "aks_ingress_node_pool" {
 variable "aks_network_plugin" {
   description = "Network plugin for AKS"
   type        = string
-  default     = "kubenet"
+  default     = "azure"
 }
 
 variable "aks_network_policy" {
@@ -196,13 +195,13 @@ variable "aks_network_policy" {
 variable "aks_service_cidr" {
   description = "Service CIDR for AKS cluster"
   type        = string
-  default     = "172.16.0.0/16"
+  default     = "10.96.0.0/12"
 }
 
 variable "aks_dns_service_ip" {
   description = "DNS service IP for AKS cluster (must be within service_cidr)"
   type        = string
-  default     = "172.16.0.10"
+  default     = "10.96.0.10"
 }
 
 # AKS Load Balancer Configuration

@@ -147,16 +147,16 @@ variable "user_node_pool" {
 variable "ingress_node_pool" {
   description = "The ingress node pool configuration"
   type = object({
-    name                    = string
-    vm_size                 = string
-    os_disk_size_gb         = number
-    enable_auto_scaling     = bool
-    min_count               = number
-    max_count               = number
-    max_pods                = number
-    node_taints             = list(string)
-    node_labels             = map(string)
-    enable_node_public_ip   = bool
+    name                  = string
+    vm_size               = string
+    os_disk_size_gb       = number
+    enable_auto_scaling   = bool
+    min_count             = number
+    max_count             = number
+    max_pods              = number
+    node_taints           = list(string)
+    node_labels           = map(string)
+    enable_node_public_ip = bool
   })
 }
 
