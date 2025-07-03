@@ -331,6 +331,18 @@ variable "nsg_rules" {
       description                = "Allow NodePort services from VNet"
     },
     {
+      name                       = "allow-ingress-health"
+      priority                   = 160
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "10254"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow Ingress Controller health checks"
+    },
+    {
       name                       = "deny-all-inbound"
       priority                   = 4096
       direction                  = "Inbound"

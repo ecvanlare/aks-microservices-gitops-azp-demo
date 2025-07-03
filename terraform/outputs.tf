@@ -154,4 +154,26 @@ output "appgw_private_ip" {
 output "appgw_backend_pools" {
   description = "The backend address pools of the Application Gateway"
   value       = module.appgw.backend_address_pools
+}
+
+# Node Pool Outputs
+output "ingress_node_pool_enabled" {
+  description = "Whether the ingress node pool is enabled"
+  value       = var.aks_ingress_node_pool_enabled
+}
+
+output "ingress_node_pool_name" {
+  description = "The name of the ingress node pool"
+  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.name : null
+}
+
+output "ingress_node_pool_vm_size" {
+  description = "The VM size of the ingress node pool"
+  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.vm_size : null
+}
+
+# Network Security Group Outputs
+output "nsg_rules" {
+  description = "The network security group rules"
+  value       = var.nsg_rules
 } 
