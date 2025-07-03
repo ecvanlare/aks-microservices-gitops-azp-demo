@@ -97,6 +97,15 @@ module "acr_push" {
   principal_id         = azurerm_user_assigned_identity.identities["acr_push"].principal_id
 }
 
+# Grant AKS cluster identity Network Contributor role for LoadBalancer services
+module "aks_network_contributor" {
+  source = "./modules/identity"
+
+  scope                = module.resource_group.resource_group_id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
+}
+
 # Azure AD Groups (must be created before AKS)
 resource "azuread_group" "aks_groups" {
   for_each = {
@@ -176,7 +185,8 @@ module "aks" {
   tags = var.tags
 
   depends_on = [
-    module.cluster_kubelet_operator
+    module.cluster_kubelet_operator,
+    module.aks_network_contributor
   ]
 }
 
