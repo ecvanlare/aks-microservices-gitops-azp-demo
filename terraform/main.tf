@@ -97,6 +97,15 @@ module "acr_push" {
   principal_id         = azurerm_user_assigned_identity.identities["acr_push"].principal_id
 }
 
+# Grant AKS cluster identity Network Contributor role for LoadBalancer services
+module "aks_network_contributor" {
+  source = "./modules/identity"
+
+  scope                = module.resource_group.resource_group_id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
+}
+
 # Azure AD Groups (must be created before AKS)
 resource "azuread_group" "aks_groups" {
   for_each = {
@@ -115,11 +124,21 @@ resource "azuread_group" "aks_groups" {
 module "aks" {
   source = "./modules/aks"
 
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
-  name                = var.aks_name
-  dns_prefix          = var.aks_dns_prefix
-  node_pool           = var.aks_node_pool
+  # Basic Configuration
+  resource_group_name           = module.resource_group.resource_group_name
+  location                      = module.resource_group.resource_group_location
+  name                          = var.aks_name
+  dns_prefix                    = var.aks_dns_prefix
+  private_cluster_enabled       = var.aks_private_cluster_enabled
+  public_network_access_enabled = var.aks_public_network_access_enabled
+
+  # Node Pools Configuration
+  node_pool                 = var.aks_node_pool
+  user_node_pool            = var.aks_user_node_pool
+  ingress_node_pool_enabled = var.aks_ingress_node_pool_enabled
+  ingress_node_pool         = var.aks_ingress_node_pool
+
+  # Network Configuration
   network = {
     plugin         = var.aks_network_plugin
     policy         = var.aks_network_policy
@@ -127,38 +146,47 @@ module "aks" {
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
+  load_balancer_sku = var.aks_load_balancer_sku
+  outbound_type     = var.aks_outbound_type
+
+  # Cluster Autoscaler Configuration
+  enable_cluster_autoscaler = var.aks_enable_cluster_autoscaler
+  autoscaler_profile        = var.aks_autoscaler_profile
+
+  # Identity Configuration
   cluster_identity_id        = azurerm_user_assigned_identity.identities["cluster"].id
   kubelet_identity_id        = azurerm_user_assigned_identity.identities["kubelet"].id
   kubelet_identity_client_id = azurerm_user_assigned_identity.identities["kubelet"].client_id
   kubelet_identity_object_id = azurerm_user_assigned_identity.identities["kubelet"].principal_id
-  load_balancer_sku          = var.aks_load_balancer_sku
-  outbound_type              = var.aks_outbound_type
-  user_node_pool_name        = var.aks_user_node_pool_name
+
+  # RBAC Configuration
   aad_rbac = {
-    admin_group_object_ids = []
+    admin_group_object_ids = [azuread_group.aks_groups["admins"].object_id]
     azure_rbac_enabled     = true
     user_groups = [
       {
         name      = var.admin_group_name
-        object_id = azuread_group.aks_groups["admins"].id
+        object_id = azuread_group.aks_groups["admins"].object_id
         roles     = [var.admin_role]
       },
       {
         name      = var.developer_group_name
-        object_id = azuread_group.aks_groups["developers"].id
+        object_id = azuread_group.aks_groups["developers"].object_id
         roles     = [var.developer_role]
       },
       {
         name      = var.viewer_group_name
-        object_id = azuread_group.aks_groups["viewers"].id
+        object_id = azuread_group.aks_groups["viewers"].object_id
         roles     = [var.viewer_role]
       }
     ]
   }
+
   tags = var.tags
 
   depends_on = [
-    module.cluster_kubelet_operator
+    module.cluster_kubelet_operator,
+    module.aks_network_contributor
   ]
 }
 
@@ -177,59 +205,7 @@ module "user_group_roles" {
 
   scope                = module.aks.cluster_id
   role_definition_name = each.value.role
-  principal_id         = azuread_group.aks_groups[each.value.group].id
+  principal_id         = azuread_group.aks_groups[each.value.group].object_id
 }
 
-# Create public IP for Application Gateway
-resource "azurerm_public_ip" "appgw" {
-  name                = "pip-appgw-online-boutique"
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  tags                = var.tags
-}
-
-# Create Application Gateway for load balancing
-module "appgw" {
-  source = "./modules/appgw"
-
-  name                = var.appgw_name
-  resource_group_name = module.resource_group.resource_group_name
-  location            = module.resource_group.resource_group_location
-  subnet_id           = module.subnets["appgw"].subnet_id
-  sku                 = var.appgw_sku
-  frontend_ip_configuration = {
-    name = var.appgw_frontend_ip_name
-  }
-  public_ip_address_id = azurerm_public_ip.appgw.id
-  backend_address_pools = [
-    {
-      name  = var.appgw_backend_pool_name
-      fqdns = var.appgw_backend_fqdns
-    }
-  ]
-  http_listeners = [
-    {
-      name                           = var.appgw_http_listener_name
-      frontend_ip_configuration_name = var.appgw_frontend_ip_name
-      frontend_port_name             = var.appgw_frontend_port_name
-      protocol                       = var.appgw_protocol
-      host_name                      = var.appgw_host_name
-    }
-  ]
-  request_routing_rules = [
-    {
-      name                       = var.appgw_routing_rule_name
-      rule_type                  = var.appgw_rule_type
-      http_listener_name         = var.appgw_http_listener_name
-      backend_address_pool_name  = var.appgw_backend_pool_name
-      backend_http_settings_name = var.appgw_backend_http_settings_name
-    }
-  ]
-  tags = var.tags
-
-  depends_on = [
-    module.subnets["appgw"]
-  ]
-} 
+ 

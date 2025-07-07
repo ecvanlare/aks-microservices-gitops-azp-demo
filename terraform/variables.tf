@@ -47,11 +47,6 @@ variable "subnets" {
       address_prefixes  = ["10.0.0.0/24"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
-    appgw = {
-      name              = "snet-appgw"
-      address_prefixes  = ["10.0.1.0/24"]
-      service_endpoints = []
-    }
   }
 }
 
@@ -68,13 +63,9 @@ variable "acr_sku" {
   default     = "Standard"
 }
 
-variable "acr_admin_enabled" {
-  description = "Enable admin access to the container registry"
-  type        = bool
-  default     = false
-}
 
-# AKS Variables
+
+# AKS Basic Configuration
 variable "aks_name" {
   description = "Name of the AKS cluster"
   type        = string
@@ -87,11 +78,23 @@ variable "aks_dns_prefix" {
   default     = "online-boutique"
 }
 
+variable "aks_private_cluster_enabled" {
+  description = "Whether to enable private cluster for AKS"
+  type        = bool
+  default     = false
+}
+
+variable "aks_public_network_access_enabled" {
+  description = "Whether to enable public network access for AKS"
+  type        = bool
+  default     = true
+}
+
+# AKS Node Pools Configuration
 variable "aks_node_pool" {
-  description = "The default node pool configuration for AKS"
+  description = "The default node pool configuration for AKS (system workloads)"
   type = object({
     name                = string
-    node_count          = number
     vm_size             = string
     os_disk_size_gb     = number
     enable_auto_scaling = bool
@@ -100,37 +103,135 @@ variable "aks_node_pool" {
   })
   default = {
     name                = "default"
-    node_count          = 1
-    vm_size             = "Standard_B2s"
+    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - better for system workloads + Redis
     os_disk_size_gb     = 30
     enable_auto_scaling = true
     min_count           = 1
-    max_count           = 3
+    max_count           = 2
   }
 }
 
+# User Node Pool Configuration (COST-OPTIMIZED for production)
+variable "aks_user_node_pool" {
+  description = "The user node pool configuration for AKS (application workloads)"
+  type = object({
+    name                = string
+    vm_size             = string
+    os_disk_size_gb     = number
+    enable_auto_scaling = bool
+    min_count           = number
+    max_count           = number
+    max_pods            = number
+    node_taints         = list(string)
+    node_labels         = map(string)
+  })
+  default = {
+    name                = "userpool"
+    vm_size             = "Standard_B4ms" # 4 vCPU, 16GB RAM - better for 12 microservices
+    os_disk_size_gb     = 64
+    enable_auto_scaling = true
+    min_count           = 1
+    max_count           = 3
+    max_pods            = 50
+    node_taints         = ["userpool=true:NoSchedule"]
+    node_labels = {
+      "agentpool" = "userpool"
+    }
+  }
+}
+
+variable "aks_ingress_node_pool_enabled" {
+  description = "Whether to create a dedicated ingress node pool"
+  type        = bool
+  default     = true
+}
+
+variable "aks_ingress_node_pool" {
+  description = "The ingress node pool configuration for AKS (load balancers)"
+  type = object({
+    name                  = string
+    vm_size               = string
+    os_disk_size_gb       = number
+    enable_auto_scaling   = bool
+    min_count             = number
+    max_count             = number
+    max_pods              = number
+    node_taints           = list(string)
+    node_labels           = map(string)
+    enable_node_public_ip = bool
+  })
+  default = {
+    name                = "ingress"
+    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - better for ingress controllers
+    os_disk_size_gb     = 64
+    enable_auto_scaling = true
+    min_count           = 1
+    max_count           = 3
+    max_pods            = 30
+    node_taints         = ["ingress=true:NoSchedule"]
+    node_labels = {
+      "agentpool"                                               = "ingress"
+      "node.kubernetes.io/exclude-from-external-load-balancers" = "false"
+    }
+    enable_node_public_ip = true
+  }
+}
+
+# AKS Network Configuration
 variable "aks_network_plugin" {
   description = "Network plugin for AKS"
   type        = string
-  default     = "kubenet"
+  default     = "azure"
 }
 
 variable "aks_network_policy" {
   description = "Network policy for AKS"
   type        = string
-  default     = "calico"
+  default     = null
 }
 
 variable "aks_service_cidr" {
   description = "Service CIDR for AKS cluster"
   type        = string
-  default     = "172.16.0.0/16"
+  default     = "10.96.0.0/12"
 }
 
 variable "aks_dns_service_ip" {
   description = "DNS service IP for AKS cluster (must be within service_cidr)"
   type        = string
-  default     = "172.16.0.10"
+  default     = "10.96.0.10"
+}
+
+# AKS Load Balancer Configuration
+
+
+# AKS Cluster Autoscaler Configuration
+variable "aks_enable_cluster_autoscaler" {
+  description = "Whether to enable cluster autoscaler"
+  type        = bool
+  default     = true
+}
+
+variable "aks_autoscaler_profile" {
+  description = "Cluster autoscaler profile configuration"
+  type = object({
+    scale_down_delay_after_add       = string
+    scale_down_delay_after_delete    = string
+    scale_down_delay_after_failure   = string
+    scan_interval                    = string
+    scale_down_unneeded              = string
+    scale_down_unready               = string
+    scale_down_utilization_threshold = string
+  })
+  default = {
+    scale_down_delay_after_add       = "15m"
+    scale_down_delay_after_delete    = "15s"
+    scale_down_delay_after_failure   = "3m"
+    scan_interval                    = "10s"
+    scale_down_unneeded              = "10m"
+    scale_down_unready               = "20m"
+    scale_down_utilization_threshold = "0.5"
+  }
 }
 
 variable "aks_load_balancer_sku" {
@@ -143,12 +244,6 @@ variable "aks_outbound_type" {
   description = "Outbound type for AKS cluster"
   type        = string
   default     = "loadBalancer"
-}
-
-variable "aks_user_node_pool_name" {
-  description = "Name for the user node pool in AKS"
-  type        = string
-  default     = "userpool"
 }
 
 # NSG Variables
@@ -192,6 +287,18 @@ variable "nsg_rules" {
       description                = "Allow HTTPS from VNet"
     },
     {
+      name                       = "allow-https-external"
+      priority                   = 115
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "Internet"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS from Internet"
+    },
+    {
       name                       = "allow-http"
       priority                   = 120
       direction                  = "Inbound"
@@ -202,6 +309,18 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow HTTP from VNet"
+    },
+    {
+      name                       = "allow-http-external"
+      priority                   = 125
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "Internet"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP from Internet"
     },
     {
       name                       = "allow-ssh"
@@ -238,6 +357,30 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow NodePort services from VNet"
+    },
+    {
+      name                       = "allow-ingress-health"
+      priority                   = 160
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "10254"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow Ingress Controller health checks"
+    },
+    {
+      name                       = "allow-all-internal"
+      priority                   = 170
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow all internal traffic within VNet"
     },
     {
       name                       = "deny-all-inbound"
@@ -305,153 +448,4 @@ variable "viewer_role" {
   default     = "Azure Kubernetes Service RBAC Reader"
 }
 
-# Application Gateway Load Balancer Variables
-variable "appgw_name" {
-  description = "Name of the Application Gateway"
-  type        = string
-  default     = "appgw-online-boutique"
-}
 
-variable "appgw_sku" {
-  description = "SKU of the Application Gateway"
-  type = object({
-    name     = string
-    tier     = string
-    capacity = number
-  })
-  default = {
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
-    capacity = 2
-  }
-}
-
-variable "appgw_frontend_ip_configuration" {
-  description = "Frontend IP configuration for Application Gateway"
-  type = object({
-    name                  = string
-    subnet_id             = string
-    private_ip_address    = string
-    private_ip_allocation = string
-  })
-  default = {
-    name                  = "appGwFrontendIP"
-    subnet_id             = null # Will be set in main.tf
-    private_ip_address    = "10.0.1.10"
-    private_ip_allocation = "Static"
-  }
-}
-
-variable "appgw_backend_address_pools" {
-  description = "Backend address pools for Application Gateway"
-  type = list(object({
-    name  = string
-    fqdns = list(string)
-  }))
-  default = [
-    {
-      name  = "aks-backend-pool"
-      fqdns = []
-    }
-  ]
-}
-
-variable "appgw_http_listeners" {
-  description = "HTTP listeners for Application Gateway"
-  type = list(object({
-    name                           = string
-    frontend_ip_configuration_name = string
-    frontend_port_name             = string
-    protocol                       = string
-    host_name                      = string
-  }))
-  default = [
-    {
-      name                           = "http-listener"
-      frontend_ip_configuration_name = "appGwFrontendIP"
-      frontend_port_name             = "port_80"
-      protocol                       = "Http"
-      host_name                      = null
-    }
-  ]
-}
-
-variable "appgw_request_routing_rules" {
-  description = "Request routing rules for Application Gateway"
-  type = list(object({
-    name                       = string
-    rule_type                  = string
-    http_listener_name         = string
-    backend_address_pool_name  = string
-    backend_http_settings_name = string
-  }))
-  default = [
-    {
-      name                       = "routing-rule"
-      rule_type                  = "Basic"
-      http_listener_name         = "http-listener"
-      backend_address_pool_name  = "aks-backend-pool"
-      backend_http_settings_name = "http-settings"
-    }
-  ]
-}
-
-variable "appgw_frontend_ip_name" {
-  description = "Name for the Application Gateway frontend IP configuration"
-  type        = string
-  default     = "appGwFrontendIP"
-}
-
-variable "appgw_backend_pool_name" {
-  description = "Name for the Application Gateway backend address pool"
-  type        = string
-  default     = "aks-backend-pool"
-}
-
-variable "appgw_http_listener_name" {
-  description = "Name for the Application Gateway HTTP listener"
-  type        = string
-  default     = "http-listener"
-}
-
-variable "appgw_frontend_port_name" {
-  description = "Name for the Application Gateway frontend port"
-  type        = string
-  default     = "port_80"
-}
-
-variable "appgw_protocol" {
-  description = "Protocol for the Application Gateway listener"
-  type        = string
-  default     = "Http"
-}
-
-variable "appgw_routing_rule_name" {
-  description = "Name for the Application Gateway routing rule"
-  type        = string
-  default     = "routing-rule"
-}
-
-variable "appgw_rule_type" {
-  description = "Type for the Application Gateway routing rule"
-  type        = string
-  default     = "Basic"
-}
-
-variable "appgw_backend_http_settings_name" {
-  description = "Name for the Application Gateway backend HTTP settings"
-  type        = string
-  default     = "http-settings"
-}
-
-variable "appgw_backend_fqdns" {
-  description = "FQDNs for the Application Gateway backend address pool"
-  type        = list(string)
-  default     = []
-}
-
-variable "appgw_host_name" {
-  description = "Host name for the Application Gateway HTTP listener (null for none)"
-  type        = string
-  default     = null
-}
