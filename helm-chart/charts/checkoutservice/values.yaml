@@ -1,0 +1,67 @@
+replicaCount: 1
+
+image:
+  repository: checkoutservice
+  tag: 0.1.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5050
+  annotations: {}
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 600m
+    memory: 768Mi
+
+env:
+  PORT: "5050"
+  PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+  SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+  PAYMENT_SERVICE_ADDR: "paymentservice:50051"
+  EMAIL_SERVICE_ADDR: "emailservice:8080"
+  CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+  CART_SERVICE_ADDR: "cartservice:7070"
+
+# User pool tolerations
+tolerations:
+  - key: "userpool"
+    operator: "Equal"
+    value: "true"
+    effect: "NoSchedule"
+
+# Node affinity - require user pool
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: agentpool
+          operator: In
+          values:
+          - userpool
+
+# Node placement - inherits from parent chart global values
+
+podSecurityContext: {}
+securityContext: {}
+
+livenessProbe:
+  grpc:
+    port: 5050
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  grpc:
+    port: 5050
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3 

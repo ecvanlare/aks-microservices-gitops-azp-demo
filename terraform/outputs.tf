@@ -30,10 +30,7 @@ output "aks_subnet_id" {
   value       = module.subnets["aks"].subnet_id
 }
 
-output "appgw_subnet_id" {
-  description = "The ID of the App Gateway subnet"
-  value       = module.subnets["appgw"].subnet_id
-}
+
 
 output "nsg_id" {
   description = "The ID of the network security group"
@@ -144,7 +141,7 @@ output "aks_identity_principal_id" {
 output "managed_identities" {
   description = "The managed identities created for AKS"
   value = {
-    cluster  = {
+    cluster = {
       name         = azurerm_user_assigned_identity.identities["cluster"].name
       id           = azurerm_user_assigned_identity.identities["cluster"].id
       principal_id = azurerm_user_assigned_identity.identities["cluster"].principal_id
@@ -165,26 +162,7 @@ output "managed_identities" {
   }
 }
 
-# Application Gateway Outputs
-output "appgw_name" {
-  description = "The name of the Application Gateway"
-  value       = module.appgw.name
-}
 
-output "appgw_id" {
-  description = "The ID of the Application Gateway"
-  value       = module.appgw.id
-}
-
-output "appgw_private_ip" {
-  description = "The private IP address of the Application Gateway"
-  value       = module.appgw.private_ip_address
-}
-
-output "appgw_backend_pools" {
-  description = "The backend address pools of the Application Gateway"
-  value       = module.appgw.backend_address_pools
-}
 
 # Node Pool Outputs
 output "ingress_node_pool_enabled" {
@@ -245,11 +223,11 @@ output "node_pools" {
 output "network_config" {
   description = "The network configuration for AKS"
   value = {
-    plugin         = var.aks_network_plugin
-    policy         = var.aks_network_policy
-    service_cidr   = var.aks_service_cidr
-    dns_service_ip = var.aks_dns_service_ip
-    vnet_name      = var.vnet_name
+    plugin             = var.aks_network_plugin
+    policy             = var.aks_network_policy
+    service_cidr       = var.aks_service_cidr
+    dns_service_ip     = var.aks_dns_service_ip
+    vnet_name          = var.vnet_name
     vnet_address_space = var.vnet_address_space
   }
 }
