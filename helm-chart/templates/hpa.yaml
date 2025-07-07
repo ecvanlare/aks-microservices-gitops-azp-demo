@@ -1,0 +1,86 @@
+# Horizontal Pod Autoscaler Configuration for Online Boutique
+# This enables application-level scaling based on CPU/memory usage
+
+{{- if .Values.hpa.enabled }}
+{{- if .Values.hpa.frontend.enabled }}
+---
+# Frontend HPA (most critical for user experience)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-frontend-hpa
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-frontend
+  minReplicas: {{ .Values.hpa.frontend.minReplicas | default .Values.frontend.replicaCount }}
+  maxReplicas: {{ .Values.hpa.frontend.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.hpa.frontend.cpu.targetAverageUtilization | default .Values.hpa.global.cpu.targetAverageUtilization }}
+{{- end }}
+
+{{- if .Values.hpa.cartservice.enabled }}
+---
+# Cart Service HPA (critical for shopping experience)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-cartservice-hpa
+  labels:
+    app.kubernetes.io/name: cartservice
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-cartservice
+  minReplicas: {{ .Values.hpa.cartservice.minReplicas | default .Values.cartservice.replicaCount }}
+  maxReplicas: {{ .Values.hpa.cartservice.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.hpa.cartservice.cpu.targetAverageUtilization | default .Values.hpa.global.cpu.targetAverageUtilization }}
+{{- end }}
+
+{{- if .Values.hpa.productcatalogservice.enabled }}
+---
+# Product Catalog Service HPA (high traffic)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-productcatalogservice-hpa
+  labels:
+    app.kubernetes.io/name: productcatalogservice
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-productcatalogservice
+  minReplicas: {{ .Values.hpa.productcatalogservice.minReplicas | default .Values.productcatalogservice.replicaCount }}
+  maxReplicas: {{ .Values.hpa.productcatalogservice.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.hpa.productcatalogservice.cpu.targetAverageUtilization | default .Values.hpa.global.cpu.targetAverageUtilization }}
+{{- end }}
+
+{{- end }} 

@@ -30,10 +30,7 @@ output "aks_subnet_id" {
   value       = module.subnets["aks"].subnet_id
 }
 
-output "appgw_subnet_id" {
-  description = "The ID of the App Gateway subnet"
-  value       = module.subnets["appgw"].subnet_id
-}
+
 
 output "nsg_id" {
   description = "The ID of the network security group"
@@ -78,17 +75,17 @@ output "user_groups" {
   value = [
     {
       name      = var.admin_group_name
-      object_id = azuread_group.aks_groups["admins"].id
+      object_id = azuread_group.aks_groups["admins"].object_id
       role      = var.admin_role
     },
     {
       name      = var.developer_group_name
-      object_id = azuread_group.aks_groups["developers"].id
+      object_id = azuread_group.aks_groups["developers"].object_id
       role      = var.developer_role
     },
     {
       name      = var.viewer_group_name
-      object_id = azuread_group.aks_groups["viewers"].id
+      object_id = azuread_group.aks_groups["viewers"].object_id
       role      = var.viewer_role
     }
   ]
@@ -125,6 +122,11 @@ output "acr_push_role_id" {
   value       = module.acr_push.id
 }
 
+output "aks_network_contributor_role_id" {
+  description = "The ID of the Network Contributor role assignment for AKS"
+  value       = module.aks_network_contributor.id
+}
+
 output "acr_push_identity_principal_id" {
   description = "The principal ID of the user-assigned managed identity for ACR push"
   value       = azurerm_user_assigned_identity.identities["acr_push"].principal_id
@@ -135,23 +137,106 @@ output "aks_identity_principal_id" {
   value       = module.aks.cluster_principal_id
 }
 
-# Application Gateway Outputs
-output "appgw_name" {
-  description = "The name of the Application Gateway"
-  value       = module.appgw.name
+# Managed Identity Outputs
+output "managed_identities" {
+  description = "The managed identities created for AKS"
+  value = {
+    cluster = {
+      name         = azurerm_user_assigned_identity.identities["cluster"].name
+      id           = azurerm_user_assigned_identity.identities["cluster"].id
+      principal_id = azurerm_user_assigned_identity.identities["cluster"].principal_id
+      client_id    = azurerm_user_assigned_identity.identities["cluster"].client_id
+    }
+    kubelet = {
+      name         = azurerm_user_assigned_identity.identities["kubelet"].name
+      id           = azurerm_user_assigned_identity.identities["kubelet"].id
+      principal_id = azurerm_user_assigned_identity.identities["kubelet"].principal_id
+      client_id    = azurerm_user_assigned_identity.identities["kubelet"].client_id
+    }
+    acr_push = {
+      name         = azurerm_user_assigned_identity.identities["acr_push"].name
+      id           = azurerm_user_assigned_identity.identities["acr_push"].id
+      principal_id = azurerm_user_assigned_identity.identities["acr_push"].principal_id
+      client_id    = azurerm_user_assigned_identity.identities["acr_push"].client_id
+    }
+  }
 }
 
-output "appgw_id" {
-  description = "The ID of the Application Gateway"
-  value       = module.appgw.id
+
+
+# Node Pool Outputs
+output "ingress_node_pool_enabled" {
+  description = "Whether the ingress node pool is enabled"
+  value       = var.aks_ingress_node_pool_enabled
 }
 
-output "appgw_private_ip" {
-  description = "The private IP address of the Application Gateway"
-  value       = module.appgw.private_ip_address
+output "ingress_node_pool_name" {
+  description = "The name of the ingress node pool"
+  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.name : null
 }
 
-output "appgw_backend_pools" {
-  description = "The backend address pools of the Application Gateway"
-  value       = module.appgw.backend_address_pools
+output "ingress_node_pool_vm_size" {
+  description = "The VM size of the ingress node pool"
+  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.vm_size : null
+}
+
+# Network Security Group Outputs
+output "nsg_rules" {
+  description = "The network security group rules"
+  value       = var.nsg_rules
+}
+
+# Node Pool Configuration Outputs
+output "node_pools" {
+  description = "The node pool configurations"
+  value = {
+    default = {
+      name                = var.aks_node_pool.name
+      vm_size             = var.aks_node_pool.vm_size
+      min_count           = var.aks_node_pool.min_count
+      max_count           = var.aks_node_pool.max_count
+      enable_auto_scaling = var.aks_node_pool.enable_auto_scaling
+    }
+    user = {
+      name                = var.aks_user_node_pool.name
+      vm_size             = var.aks_user_node_pool.vm_size
+      min_count           = var.aks_user_node_pool.min_count
+      max_count           = var.aks_user_node_pool.max_count
+      enable_auto_scaling = var.aks_user_node_pool.enable_auto_scaling
+      max_pods            = var.aks_user_node_pool.max_pods
+    }
+    ingress = var.aks_ingress_node_pool_enabled ? {
+      name                  = var.aks_ingress_node_pool.name
+      vm_size               = var.aks_ingress_node_pool.vm_size
+      min_count             = var.aks_ingress_node_pool.min_count
+      max_count             = var.aks_ingress_node_pool.max_count
+      enable_auto_scaling   = var.aks_ingress_node_pool.enable_auto_scaling
+      max_pods              = var.aks_ingress_node_pool.max_pods
+      node_taints           = var.aks_ingress_node_pool.node_taints
+      node_labels           = var.aks_ingress_node_pool.node_labels
+      enable_node_public_ip = var.aks_ingress_node_pool.enable_node_public_ip
+    } : null
+  }
+}
+
+# Network Configuration Outputs
+output "network_config" {
+  description = "The network configuration for AKS"
+  value = {
+    plugin             = var.aks_network_plugin
+    policy             = var.aks_network_policy
+    service_cidr       = var.aks_service_cidr
+    dns_service_ip     = var.aks_dns_service_ip
+    vnet_name          = var.vnet_name
+    vnet_address_space = var.vnet_address_space
+  }
+}
+
+# Cluster Autoscaler Outputs
+output "cluster_autoscaler" {
+  description = "The cluster autoscaler configuration"
+  value = {
+    enabled = var.aks_enable_cluster_autoscaler
+    profile = var.aks_autoscaler_profile
+  }
 } 

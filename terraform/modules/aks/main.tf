@@ -3,11 +3,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location                = var.location
   resource_group_name     = var.resource_group_name
   dns_prefix              = var.dns_prefix
-  private_cluster_enabled = true
+  private_cluster_enabled = var.private_cluster_enabled
+
+  # Enable public network access for pipeline connectivity
+  public_network_access_enabled = var.public_network_access_enabled
 
   default_node_pool {
     name                = var.node_pool.name
-    node_count          = var.node_pool.node_count
     vm_size             = var.node_pool.vm_size
     os_disk_size_gb     = var.node_pool.os_disk_size_gb
     enable_auto_scaling = var.node_pool.enable_auto_scaling
@@ -43,21 +45,68 @@ resource "azurerm_kubernetes_cluster" "aks" {
     azure_rbac_enabled     = var.aad_rbac.azure_rbac_enabled
   }
 
+  # Enable cluster autoscaler for automatic node scaling
+  dynamic "auto_scaler_profile" {
+    for_each = var.enable_cluster_autoscaler ? [1] : []
+    content {
+      # Scale-down configuration (supported attributes)
+      scale_down_delay_after_add       = var.autoscaler_profile.scale_down_delay_after_add
+      scale_down_delay_after_delete    = var.autoscaler_profile.scale_down_delay_after_delete
+      scale_down_delay_after_failure   = var.autoscaler_profile.scale_down_delay_after_failure
+      scan_interval                    = var.autoscaler_profile.scan_interval
+      scale_down_unneeded              = var.autoscaler_profile.scale_down_unneeded
+      scale_down_unready               = var.autoscaler_profile.scale_down_unready
+      scale_down_utilization_threshold = var.autoscaler_profile.scale_down_utilization_threshold
+    }
+  }
+
   tags = var.tags
 }
 
-# Output the cluster credentials
+# User node pool (always enabled for workload separation)
 resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
-  count                 = var.node_pool.enable_auto_scaling ? 1 : 0
-  name                  = var.user_node_pool_name
+  name                  = var.user_node_pool.name
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  vm_size               = var.node_pool.vm_size
-  node_count            = var.node_pool.node_count
-  min_count             = var.node_pool.min_count
-  max_count             = var.node_pool.max_count
-  enable_auto_scaling   = var.node_pool.enable_auto_scaling
-  os_disk_size_gb       = var.node_pool.os_disk_size_gb
+  vm_size               = var.user_node_pool.vm_size
+  enable_auto_scaling   = var.user_node_pool.enable_auto_scaling
+  min_count             = var.user_node_pool.min_count
+  max_count             = var.user_node_pool.max_count
+  os_disk_size_gb       = var.user_node_pool.os_disk_size_gb
   vnet_subnet_id        = var.network.subnet_id
-  max_pods              = var.max_pods_per_node
-  tags                  = var.tags
+  max_pods              = var.user_node_pool.max_pods
+
+  # Node taints to ensure only pods with tolerations can schedule here
+  node_taints = var.user_node_pool.node_taints
+
+  # Node labels for identification
+  node_labels = var.user_node_pool.node_labels
+
+  tags = var.tags
+}
+
+# Dedicated ingress node pool for ingress controllers
+resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
+  count                 = var.ingress_node_pool_enabled ? 1 : 0
+  name                  = var.ingress_node_pool.name
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  vm_size               = var.ingress_node_pool.vm_size
+  enable_auto_scaling   = var.ingress_node_pool.enable_auto_scaling
+  min_count             = var.ingress_node_pool.min_count
+  max_count             = var.ingress_node_pool.max_count
+  os_disk_size_gb       = var.ingress_node_pool.os_disk_size_gb
+  vnet_subnet_id        = var.network.subnet_id
+  max_pods              = var.ingress_node_pool.max_pods
+
+  # Node taints to prevent other workloads from scheduling here
+  node_taints = var.ingress_node_pool.node_taints
+
+  # Node labels to make this pool eligible for Azure Load Balancer
+  node_labels = var.ingress_node_pool.node_labels
+
+  # Enable public IPs for ingress nodes to allow LoadBalancer services
+  enable_node_public_ip = var.ingress_node_pool.enable_node_public_ip
+
+  tags = merge(var.tags, {
+    Purpose = "ingress-controllers"
+  })
 } 
