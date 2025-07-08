@@ -6,14 +6,17 @@ metadata:
   labels:
     {{- include "helm-chart.labels" . | nindent 4 }}
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- if .Values.ssl.enabled }}
+    cert-manager.io/cluster-issuer: {{ .Values.ssl.clusterIssuer | quote }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{- if .Values.ssl.enabled }}true{{- else }}false{{- end }}"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: "/$1"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.ingress.className | default "nginx" }}
   rules:
   {{- if .Values.ingress.host }}
   - host: {{ .Values.ingress.host }}
@@ -37,14 +40,10 @@ spec:
             port:
               number: {{ .Values.frontend.service.port }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.ssl.enabled }}
   tls:
-  {{- range .Values.ingress.tls }}
   - hosts:
-    {{- range .hosts }}
-    - {{ . | quote }}
-    {{- end }}
-    secretName: {{ .secretName }}
-  {{- end }}
+    - {{ .Values.ingress.host | quote }}
+    secretName: {{ include "helm-chart.fullname" . }}-tls
   {{- end }}
 {{- end }} 

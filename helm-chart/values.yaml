@@ -4,20 +4,27 @@ global:
   imagePullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
     limits:
-      cpu: 600m
-      memory: 768Mi
+      cpu: 500m
+      memory: 512Mi
   securityContext: {}
 
 # --- Services Config ---
 adservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 180Mi
+    limits:
+      cpu: 300m
+      memory: 300Mi
   image:
     repository: adservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 9555
@@ -28,9 +35,16 @@ adservice:
 cartservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
   image:
     repository: cartservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 7070
@@ -41,9 +55,16 @@ cartservice:
 checkoutservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
   image:
     repository: checkoutservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 5050
@@ -59,9 +80,16 @@ checkoutservice:
 currencyservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
   image:
     repository: currencyservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 7000
@@ -72,9 +100,16 @@ currencyservice:
 emailservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
   image:
     repository: emailservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 8080
@@ -85,9 +120,16 @@ emailservice:
 frontend:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
   image:
     repository: frontend
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 8080
@@ -105,9 +147,16 @@ frontend:
 paymentservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
   image:
     repository: paymentservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 50051
@@ -117,9 +166,16 @@ paymentservice:
 productcatalogservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
   image:
     repository: productcatalogservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 3550
@@ -129,9 +185,16 @@ productcatalogservice:
 recommendationservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 220Mi
+    limits:
+      cpu: 200m
+      memory: 450Mi
   image:
     repository: recommendationservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 8080
@@ -144,6 +207,13 @@ recommendationservice:
 redis-cart:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
   image:
     repository: bitnami/redis
     tag: 7.4.1
@@ -164,9 +234,16 @@ redis-cart:
 shippingservice:
   enabled: true
   replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
   image:
     repository: shippingservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 50051
@@ -178,7 +255,7 @@ shoppingassistantservice:
   replicaCount: 1
   image:
     repository: shoppingassistantservice
-    tag: 0.1.0-ingress.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 8080
@@ -196,6 +273,19 @@ shoppingassistantservice:
 # --- Ingress Config ---
 ingress:
   enabled: true
+  host: "ecvlsolutions.com"
+  className: "nginx"
+
+# SSL Configuration (uses cluster-level Cert-Manager)
+ssl:
+  enabled: true
+  clusterIssuer: "letsencrypt-prod"  # References the cluster-level issuer
+
+# Infrastructure dependencies
+cert-manager:
+  enabled: true
+
+
 
 ingress-nginx:
   enabled: true
