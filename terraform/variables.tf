@@ -467,9 +467,6 @@ variable "viewer_role" {
 # - domain-name
 # - cert-manager-email
 
-variable "external_dns_email" {
-  description = "Email for ExternalDNS"
-  type        = string
-}
+
 
 
