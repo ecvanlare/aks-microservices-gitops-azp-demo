@@ -1,12 +1,22 @@
 # Online Boutique Helm Chart
 
-## Quick Deploy
+# Complete Deployment Guide
 
-### Prerequisites
+## Prerequisites
 - AKS cluster with external IP
 - Domain name pointing to cluster IP
+- Cloudflare account (for ExternalDNS automation)
 
-### Deployment Steps
+## What Gets Deployed
+
+- ✅ **Cert-Manager** (cluster-wide SSL certificate management)
+- ✅ **NGINX Ingress** (load balancer)
+- ✅ **All microservices** (frontend, cart, checkout, etc.)
+- ✅ **ClusterIssuer** (Let's Encrypt configuration)
+- ✅ **SSL certificates** (automatic via Let's Encrypt)
+- ✅ **ExternalDNS** (automatic DNS management with Cloudflare)
+
+## Step 1: Initial Deployment
 
 ```bash
 # 1. Add repositories
@@ -28,52 +38,84 @@ helm install cert-manager jetstack/cert-manager \
 cd helm-chart
 helm dependency update
 helm upgrade --install test . --namespace test --create-namespace --wait --timeout=15m
-
-# 5. Configure DNS and Enable SSL (see sections below)
 ```
 
-## What Gets Deployed
-
-- ✅ **Cert-Manager** (cluster-wide SSL certificate management)
-- ✅ **NGINX Ingress** (load balancer)
-- ✅ **All microservices** (frontend, cart, checkout, etc.)
-- ✅ **ClusterIssuer** (Let's Encrypt configuration)
-- ✅ **SSL certificates** (automatic via Let's Encrypt)
-
-## DNS Configuration
+## Step 2: Configure DNS
 
 **⚠️ IMPORTANT: DNS must be configured BEFORE SSL certificates can be issued**
 
-### Step 1: Get Your Cluster's External IP
+### Get Your Cluster's External IP
 ```bash
 kubectl get svc -n test | grep ingress-nginx-controller
 ```
 
-### Step 2: Configure DNS A Record
+### Configure DNS A Record
 - **Type:** A record
 - **Name:** Your domain (e.g., `ecvlsolutions.com` or `@` for root domain)
-- **Value:** External IP from step 1 (e.g., `74.177.247.49`)
+- **Value:** External IP from step above (e.g., `74.177.247.49`)
 - **TTL:** 300 seconds (or default)
 
-### Step 3: Wait for DNS Propagation
+### Wait for DNS Propagation
 - Allow 5-10 minutes for DNS changes to propagate globally
 
-### Step 4: Verify DNS Resolution
+### Verify DNS Resolution
 ```bash
 nslookup yourdomain.com
 # Should return your cluster's external IP
 ```
 
-# SSL Setup with Let's Encrypt and Cert-Manager
+## Step 3: Deploy ExternalDNS (Optional - Automated DNS)
 
-## Prerequisites
-- Application already deployed and accessible via HTTP
-- Domain name pointing to your cluster's external IP
-- Cert-Manager installed cluster-wide
+### Create Cloudflare API Token
+1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
+2. Click "Create Token"
+3. Choose "Custom token" template
+4. Configure permissions:
+   - **Zone**: `Zone:Zone:Edit` (for your domain)
+   - **Zone**: `Zone:DNS:Edit` (for DNS record management)
+5. Set Zone Resources to "Include: Specific zone" and select your domain
+6. Click "Continue to summary" and "Create Token"
+7. **Copy the token** (you won't see it again!)
 
----
+### Get Your Zone ID
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Select your domain
+3. Look at the URL: `https://dash.cloudflare.com/zone/abc123def456`
+4. **The Zone ID** is the `abc123def456` part
 
-## Step 1: Verify DNS Configuration
+### Configure ExternalDNS
+Edit `helm-chart/infra/external-dns/external-dns-values.yaml`:
+
+```yaml
+# Environment variables for Cloudflare configuration
+env:
+  - name: CF_API_KEY
+    value: "your-cloudflare-api-key"  # Replace with your API key
+  - name: CF_API_EMAIL
+    value: "your-email@example.com"  # Replace with your Cloudflare email
+  - name: CF_ZONE_ID
+    value: "your-zone-id"  # Replace with your zone ID
+```
+
+### Deploy ExternalDNS
+```bash
+# Add ExternalDNS Helm repository
+helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
+helm repo update
+
+# Create namespace
+kubectl create namespace external-dns --dry-run=client -o yaml | kubectl apply -f -
+
+# Deploy ExternalDNS
+helm upgrade --install external-dns external-dns/external-dns \
+  --namespace external-dns \
+  --values infra/external-dns/external-dns-values.yaml \
+  --wait --timeout=5m
+```
+
+## Step 4: Enable SSL
+
+### Verify DNS Configuration
 ```bash
 # Get your cluster's external IP
 kubectl get svc -n test | grep ingress-nginx-controller
@@ -83,9 +125,7 @@ nslookup yourdomain.com
 # Should return your cluster's external IP
 ```
 
----
-
-## Step 2: Enable SSL in values.yaml
+### Enable SSL in values.yaml
 Edit `helm-chart/values.yaml`:
 ```yaml
 ssl:
@@ -93,16 +133,12 @@ ssl:
   clusterIssuer: "letsencrypt-prod"
 ```
 
----
-
-## Step 3: Deploy SSL Configuration
+### Deploy SSL Configuration
 ```bash
 helm upgrade test . --namespace test --wait --timeout=5m
 ```
 
----
-
-## Step 4: Monitor Certificate Issuance
+### Monitor Certificate Issuance
 ```bash
 # Watch certificate status
 kubectl get certificates -n test -w
@@ -112,9 +148,7 @@ kubectl get certificates -n test -w
 kubectl describe certificate test-helm-chart-tls -n test
 ```
 
----
-
-## Step 5: Verify HTTPS Access
+### Verify HTTPS Access
 ```bash
 # Test HTTPS
 curl -I https://yourdomain.com
@@ -123,11 +157,45 @@ curl -I https://yourdomain.com
 # Should show valid SSL certificate (no warnings)
 ```
 
----
+## Step 5: Verify Complete Deployment
 
-## Troubleshooting SSL Issues
+```bash
+# Check Cert-Manager (cluster-wide)
+kubectl get pods -n cert-manager
+kubectl get clusterissuers
 
-### Certificate Not Ready
+# Check application in test namespace
+kubectl get pods -n test
+kubectl get svc -n test
+kubectl get ingress -n test
+
+# Check SSL certificates (if SSL is enabled)
+kubectl get certificates -n test
+kubectl describe certificate test-helm-chart-tls -n test
+
+# Check ExternalDNS (if deployed)
+kubectl get pods -n external-dns
+kubectl logs deployment/external-dns -n external-dns
+
+# Test HTTP access
+curl -I http://yourdomain.com
+
+# Test HTTPS access (if SSL is enabled)
+curl -I https://yourdomain.com
+```
+
+## Success Indicators
+- ✅ Certificate shows `READY=True`
+- ✅ `https://yourdomain.com` loads without warnings
+- ✅ Browser shows valid SSL certificate
+- ✅ ExternalDNS pods running (if deployed)
+- ✅ DNS records automatically managed (if ExternalDNS deployed)
+
+## Troubleshooting
+
+### SSL Issues
+
+#### Certificate Not Ready
 ```bash
 # Check certificate status
 kubectl describe certificate test-helm-chart-tls -n test
@@ -141,24 +209,63 @@ kubectl get challenges -n test
 kubectl describe challenge <challenge-name> -n test
 ```
 
-### Retry Certificate Issuance
+#### Retry Certificate Issuance
 ```bash
 # Delete failed certificate to retry
 kubectl delete certificate test-helm-chart-tls -n test
 # Certificate will be recreated automatically
 ```
 
-### Common Issues
+#### Common SSL Issues
 - **DNS not propagated**: Wait 5-10 minutes, verify with `nslookup`
 - **Port 80 blocked**: Ensure NSG allows inbound HTTP from Internet
 - **Challenge timeout**: Check ingress is routing ACME challenges correctly
 
----
+### ExternalDNS Issues
 
-## Success Indicators
-- ✅ Certificate shows `READY=True`
-- ✅ `https://yourdomain.com` loads without warnings
-- ✅ Browser shows valid SSL certificate
+#### ExternalDNS not creating records
+```bash
+# Check logs
+kubectl logs deployment/external-dns -n external-dns
+
+# Check if API credentials are working
+kubectl describe pod -l app.kubernetes.io/name=external-dns -n external-dns
+```
+
+#### API Token Issues
+- Verify token has correct permissions
+- Check if domain is properly added to Cloudflare
+- Ensure token is not expired
+
+#### DNS Propagation
+- Cloudflare changes are usually instant
+- External DNS propagation may take 5-10 minutes
+
+### Test ExternalDNS Automation
+
+Create a test ingress to verify ExternalDNS is working:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-ingress
+  namespace: test
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: test.yourdomain.com
+spec:
+  rules:
+  - host: test.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+```
 
 ## Verify Deployment
 
@@ -189,6 +296,7 @@ This deployment follows infrastructure-as-code best practices:
 
 - **Cert-Manager**: Installed cluster-wide for SSL certificate management
 - **NGINX Ingress**: Installed via Helm dependency for load balancing
+- **ExternalDNS**: Automatically manages DNS records in Cloudflare
 - **Application**: All microservices deployed in the `test` namespace
 - **Infrastructure**: ClusterIssuer and other cluster-wide resources
 
@@ -258,100 +366,4 @@ If you want to test via port-forward or direct IP, you have two options:
 
 ### Best Practice
 - For production, only match your real domain in ingress rules.
-- For local testing, add a default rule or use the Host header as shown above.
-
-# SSL Setup with Let's Encrypt and Cert-Manager
-
-## Prerequisites
-- Application already deployed and accessible via HTTP
-- Domain name pointing to your cluster's external IP
-- Cert-Manager installed cluster-wide
-
----
-
-## Step 1: Verify DNS Configuration
-```bash
-# Get your cluster's external IP
-kubectl get svc -n test | grep ingress-nginx-controller
-
-# Verify DNS points to your cluster
-nslookup yourdomain.com
-# Should return your cluster's external IP
-```
-
----
-
-## Step 2: Enable SSL in values.yaml
-Edit `helm-chart/values.yaml`:
-```yaml
-ssl:
-  enabled: true
-  clusterIssuer: "letsencrypt-prod"
-```
-
----
-
-## Step 3: Deploy SSL Configuration
-```bash
-helm upgrade test . --namespace test --wait --timeout=5m
-```
-
----
-
-## Step 4: Monitor Certificate Issuance
-```bash
-# Watch certificate status
-kubectl get certificates -n test -w
-# Wait for READY=True
-
-# Check certificate details
-kubectl describe certificate test-helm-chart-tls -n test
-```
-
----
-
-## Step 5: Verify HTTPS Access
-```bash
-# Test HTTPS
-curl -I https://yourdomain.com
-
-# Open in browser: https://yourdomain.com
-# Should show valid SSL certificate (no warnings)
-```
-
----
-
-## Troubleshooting SSL Issues
-
-### Certificate Not Ready
-```bash
-# Check certificate status
-kubectl describe certificate test-helm-chart-tls -n test
-
-# Check Let's Encrypt orders
-kubectl get orders -n test
-kubectl describe order <order-name> -n test
-
-# Check challenges
-kubectl get challenges -n test
-kubectl describe challenge <challenge-name> -n test
-```
-
-### Retry Certificate Issuance
-```bash
-# Delete failed certificate to retry
-kubectl delete certificate test-helm-chart-tls -n test
-# Certificate will be recreated automatically
-```
-
-### Common Issues
-- **DNS not propagated**: Wait 5-10 minutes, verify with `nslookup`
-- **Port 80 blocked**: Ensure NSG allows inbound HTTP from Internet
-- **Challenge timeout**: Check ingress is routing ACME challenges correctly
-
----
-
-## Success Indicators
-- ✅ Certificate shows `READY=True`
-- ✅ `https://yourdomain.com` loads without warnings
-- ✅ Browser shows valid SSL certificate 
+- For local testing, add a default rule or use the Host header as shown above. 
