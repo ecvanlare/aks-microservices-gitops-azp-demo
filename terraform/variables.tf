@@ -1,4 +1,16 @@
 # Resource Group Variables
+variable "environment" {
+  description = "Environment name (e.g., dev, staging, prod)"
+  type        = string
+  default     = "prod"
+}
+
+variable "project_name" {
+  description = "Project name for resource naming"
+  type        = string
+  default     = "online-boutique"
+}
+
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
@@ -103,7 +115,7 @@ variable "aks_node_pool" {
   })
   default = {
     name                = "default"
-    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - better for system workloads + Redis
+    vm_size             = "Standard_B1ms" # 1 vCPU, 2GB RAM - sufficient for system workloads + Redis
     os_disk_size_gb     = 30
     enable_auto_scaling = true
     min_count           = 1
@@ -127,8 +139,8 @@ variable "aks_user_node_pool" {
   })
   default = {
     name                = "userpool"
-    vm_size             = "Standard_B4ms" # 4 vCPU, 16GB RAM - better for 12 microservices
-    os_disk_size_gb     = 64
+    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - sufficient for 12 microservices
+    os_disk_size_gb     = 32
     enable_auto_scaling = true
     min_count           = 1
     max_count           = 3
@@ -162,8 +174,8 @@ variable "aks_ingress_node_pool" {
   })
   default = {
     name                = "ingress"
-    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - better for ingress controllers
-    os_disk_size_gb     = 64
+    vm_size             = "Standard_B1ms" # 1 vCPU, 2GB RAM - sufficient for ingress controllers
+    os_disk_size_gb     = 32
     enable_auto_scaling = true
     min_count           = 1
     max_count           = 3
@@ -447,5 +459,14 @@ variable "viewer_role" {
   type        = string
   default     = "Azure Kubernetes Service RBAC Reader"
 }
+
+# Note: Secrets are managed via Azure Portal
+# Add these secrets manually in the Key Vault after deployment:
+# - cloudflare-api-token
+# - cloudflare-zone-id  
+# - domain-name
+# - cert-manager-email
+
+
 
 

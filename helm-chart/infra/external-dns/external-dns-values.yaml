@@ -1,0 +1,74 @@
+# ExternalDNS Configuration for Cloudflare
+# This will automatically manage DNS records in your Cloudflare account
+
+provider: cloudflare
+
+# Cloudflare API configuration
+# Using Zone API token for ecvlsolutions.com
+# Note: For zone API tokens, we need to specify the zone ID
+
+# Sources to watch for DNS records
+sources:
+  - ingress
+
+# Policy for DNS record management
+policy: sync
+
+# Registry for tracking DNS records
+registry: txt
+
+# Domain filters - specify your domain
+domainFilters:
+  - "ecvlsolutions.com"
+
+# Log level
+logLevel: info
+
+# Interval for checking for changes
+interval: 1m
+
+# RBAC configuration
+rbac:
+  create: true
+
+# Service account
+serviceAccount:
+  create: true
+  name: "external-dns"
+
+# Security context
+# securityContext:
+#   runAsNonRoot: true
+#   runAsUser: 65534
+
+# Resources
+resources:
+  requests:
+    cpu: 50m
+    memory: 50Mi
+  limits:
+    cpu: 100m
+    memory: 100Mi
+
+# Node selector (optional)
+nodeSelector: {}
+
+# Tolerations (optional)
+tolerations: []
+
+# Affinity (optional)
+affinity: {}
+
+# Environment variables for Cloudflare configuration
+# These will be populated from Azure Key Vault via CSI Driver
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-credentials
+        key: cloudflare-api-token
+  - name: CF_ZONE_ID
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-credentials
+        key: cloudflare-zone-id 
