@@ -60,8 +60,15 @@ tolerations: []
 affinity: {}
 
 # Environment variables for Cloudflare configuration
+# These will be populated from Azure Key Vault via CSI Driver
 env:
   - name: CF_API_TOKEN
-    value: "ix2sv-NeOqnk7MQi1ZiPHIJJmhgNae6L6uexPVDN"  # Your account API token
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-credentials
+        key: cloudflare-api-token
   - name: CF_ZONE_ID
-    value: "3b92c2482c1ccf5f87e36c519680666d"  # Your zone ID 
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-credentials
+        key: cloudflare-zone-id 

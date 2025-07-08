@@ -207,7 +207,7 @@ module "keyvault" {
   location                       = var.location
   resource_group_name            = module.resource_group.resource_group_name
   aks_managed_identity_object_id = module.aks.kubelet_identity_object_id
-  tags = var.tags
+  tags                           = var.tags
 }
 
 module "user_group_roles" {

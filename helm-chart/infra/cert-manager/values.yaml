@@ -9,7 +9,7 @@ cert-manager:
 productionIssuer:
   enabled: true
   name: "letsencrypt-prod"
-  email: "c.vanlare@outlook.com"
+  email: ""  # Must be provided via --set productionIssuer.email or from Key Vault
   server: "https://acme-v02.api.letsencrypt.org/directory"
   ingressClass: "nginx"
 
