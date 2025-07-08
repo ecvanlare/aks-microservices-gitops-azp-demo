@@ -199,6 +199,17 @@ locals {
   }
 }
 
+# Key Vault Module for storing all sensitive values
+module "keyvault" {
+  source = "./modules/keyvault"
+
+  key_vault_name                 = "kv-${var.environment}-${var.project_name}"
+  location                       = var.location
+  resource_group_name            = module.resource_group.resource_group_name
+  aks_managed_identity_object_id = module.aks.kubelet_identity_object_id
+  tags = var.tags
+}
+
 module "user_group_roles" {
   source   = "./modules/identity"
   for_each = local.role_assignments

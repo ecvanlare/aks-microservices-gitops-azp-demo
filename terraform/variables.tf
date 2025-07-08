@@ -1,4 +1,16 @@
 # Resource Group Variables
+variable "environment" {
+  description = "Environment name (e.g., dev, staging, prod)"
+  type        = string
+  default     = "prod"
+}
+
+variable "project_name" {
+  description = "Project name for resource naming"
+  type        = string
+  default     = "online-boutique"
+}
+
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
@@ -446,6 +458,18 @@ variable "viewer_role" {
   description = "Azure RBAC role for viewer group"
   type        = string
   default     = "Azure Kubernetes Service RBAC Reader"
+}
+
+# Note: Secrets are managed via Azure Portal
+# Add these secrets manually in the Key Vault after deployment:
+# - cloudflare-api-token
+# - cloudflare-zone-id  
+# - domain-name
+# - cert-manager-email
+
+variable "external_dns_email" {
+  description = "Email for ExternalDNS"
+  type        = string
 }
 
 
