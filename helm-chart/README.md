@@ -16,180 +16,72 @@
 - ✅ **SSL certificates** (automatic via Let's Encrypt)
 - ✅ **ExternalDNS** (automatic DNS management with Cloudflare)
 
-## Step 1: Initial Deployment
+## Quick Deployment
 
+### Step 1: Deploy Everything
 ```bash
-# 1. Add repositories
+# 1. Add repositories and install dependencies
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo add jetstack https://charts.jetstack.io
+helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
 helm repo update
 
 # 2. Install Cert-Manager CRDs (required first)
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.crds.yaml
 
-# 3. Install Cert-Manager cluster-wide (required for SSL certificates)
-helm install cert-manager jetstack/cert-manager \
+# 3. Install Cert-Manager cluster-wide
+helm upgrade --install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --set installCRDs=false \
   --wait --timeout=5m
 
-# 4. Deploy the application
+# 4. Deploy ExternalDNS (automated DNS management)
+kubectl create namespace external-dns --dry-run=client -o yaml | kubectl apply -f -
+helm upgrade --install external-dns external-dns/external-dns \
+  --namespace external-dns \
+  --values infra/external-dns/external-dns-values.yaml \
+  --wait --timeout=5m
+
+# 5. Deploy the application
 cd helm-chart
 helm dependency update
 helm upgrade --install test . --namespace test --create-namespace --wait --timeout=15m
 ```
 
-## Step 2: Configure DNS
-
-**⚠️ IMPORTANT: DNS must be configured BEFORE SSL certificates can be issued**
-
-### Get Your Cluster's External IP
+### Step 2: Enable SSL (Optional)
 ```bash
-kubectl get svc -n test | grep ingress-nginx-controller
-```
+# Enable SSL in values.yaml (edit helm-chart/values.yaml)
+# Set ssl.enabled: true
 
-### Configure DNS A Record
-- **Type:** A record
-- **Name:** Your domain (e.g., `ecvlsolutions.com` or `@` for root domain)
-- **Value:** External IP from step above (e.g., `74.177.247.49`)
-- **TTL:** 300 seconds (or default)
-
-### Wait for DNS Propagation
-- Allow 5-10 minutes for DNS changes to propagate globally
-
-### Verify DNS Resolution
-```bash
-nslookup yourdomain.com
-# Should return your cluster's external IP
-```
-
-## Step 3: Deploy ExternalDNS (Optional - Automated DNS)
-
-### Create Cloudflare API Token
-1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
-2. Click "Create Token"
-3. Choose "Custom token" template
-4. Configure permissions:
-   - **Zone**: `Zone:Zone:Edit` (for your domain)
-   - **Zone**: `Zone:DNS:Edit` (for DNS record management)
-5. Set Zone Resources to "Include: Specific zone" and select your domain
-6. Click "Continue to summary" and "Create Token"
-7. **Copy the token** (you won't see it again!)
-
-### Get Your Zone ID
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Select your domain
-3. Look at the URL: `https://dash.cloudflare.com/zone/abc123def456`
-4. **The Zone ID** is the `abc123def456` part
-
-### Configure ExternalDNS
-Edit `helm-chart/infra/external-dns/external-dns-values.yaml`:
-
-```yaml
-# Environment variables for Cloudflare configuration
-env:
-  - name: CF_API_KEY
-    value: "your-cloudflare-api-key"  # Replace with your API key
-  - name: CF_API_EMAIL
-    value: "your-email@example.com"  # Replace with your Cloudflare email
-  - name: CF_ZONE_ID
-    value: "your-zone-id"  # Replace with your zone ID
-```
-
-### Deploy ExternalDNS
-```bash
-# Add ExternalDNS Helm repository
-helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
-helm repo update
-
-# Create namespace
-kubectl create namespace external-dns --dry-run=client -o yaml | kubectl apply -f -
-
-# Deploy ExternalDNS
-helm upgrade --install external-dns external-dns/external-dns \
-  --namespace external-dns \
-  --values infra/external-dns/external-dns-values.yaml \
-  --wait --timeout=5m
-```
-
-## Step 4: Enable SSL
-
-### Verify DNS Configuration
-```bash
-# Get your cluster's external IP
-kubectl get svc -n test | grep ingress-nginx-controller
-
-# Verify DNS points to your cluster
-nslookup yourdomain.com
-# Should return your cluster's external IP
-```
-
-### Enable SSL in values.yaml
-Edit `helm-chart/values.yaml`:
-```yaml
-ssl:
-  enabled: true
-  clusterIssuer: "letsencrypt-prod"
-```
-
-### Deploy SSL Configuration
-```bash
+# Redeploy with SSL enabled
 helm upgrade test . --namespace test --wait --timeout=5m
 ```
 
-### Monitor Certificate Issuance
+### Step 3: Verify Deployment
 ```bash
-# Watch certificate status
-kubectl get certificates -n test -w
-# Wait for READY=True
+# Check all components
+kubectl get pods -n cert-manager          # Verify Cert-Manager is running
+kubectl get pods -n test                  # Check application pods
+kubectl get pods -n external-dns          # Verify ExternalDNS is running
+kubectl get ingress -n test               # Check ingress configuration
 
-# Check certificate details
-kubectl describe certificate test-helm-chart-tls -n test
-```
+# Check SSL certificates (if enabled)
+kubectl get certificates -n test          # Verify SSL certificate status
 
-### Verify HTTPS Access
-```bash
-# Test HTTPS
-curl -I https://yourdomain.com
+# Check ExternalDNS logs
+kubectl logs deployment/external-dns -n external-dns  # Verify DNS automation is working
 
-# Open in browser: https://yourdomain.com
-# Should show valid SSL certificate (no warnings)
-```
-
-## Step 5: Verify Complete Deployment
-
-```bash
-# Check Cert-Manager (cluster-wide)
-kubectl get pods -n cert-manager
-kubectl get clusterissuers
-
-# Check application in test namespace
-kubectl get pods -n test
-kubectl get svc -n test
-kubectl get ingress -n test
-
-# Check SSL certificates (if SSL is enabled)
-kubectl get certificates -n test
-kubectl describe certificate test-helm-chart-tls -n test
-
-# Check ExternalDNS (if deployed)
-kubectl get pods -n external-dns
-kubectl logs deployment/external-dns -n external-dns
-
-# Test HTTP access
-curl -I http://yourdomain.com
-
-# Test HTTPS access (if SSL is enabled)
-curl -I https://yourdomain.com
+# Test access
+curl -I http://yourdomain.com             # Test HTTP access
+curl -I https://yourdomain.com            # Test HTTPS access (if SSL enabled)
 ```
 
 ## Success Indicators
-- ✅ Certificate shows `READY=True`
+- ✅ Certificate shows `READY=True` (if SSL enabled)
 - ✅ `https://yourdomain.com` loads without warnings
-- ✅ Browser shows valid SSL certificate
-- ✅ ExternalDNS pods running (if deployed)
-- ✅ DNS records automatically managed (if ExternalDNS deployed)
+- ✅ ExternalDNS pods running
+- ✅ DNS records automatically managed
 
 ## Troubleshooting
 
@@ -197,22 +89,14 @@ curl -I https://yourdomain.com
 
 #### Certificate Not Ready
 ```bash
-# Check certificate status
-kubectl describe certificate test-helm-chart-tls -n test
-
-# Check Let's Encrypt orders
-kubectl get orders -n test
-kubectl describe order <order-name> -n test
-
-# Check challenges
-kubectl get challenges -n test
-kubectl describe challenge <challenge-name> -n test
+kubectl describe certificate test-helm-chart-tls -n test    # Check certificate details and errors
+kubectl get orders -n test                                  # Check Let's Encrypt orders
+kubectl get challenges -n test                              # Check ACME challenges
 ```
 
 #### Retry Certificate Issuance
 ```bash
-# Delete failed certificate to retry
-kubectl delete certificate test-helm-chart-tls -n test
+kubectl delete certificate test-helm-chart-tls -n test      # Delete failed certificate
 # Certificate will be recreated automatically
 ```
 
@@ -222,72 +106,9 @@ kubectl delete certificate test-helm-chart-tls -n test
 - **Challenge timeout**: Check ingress is routing ACME challenges correctly
 
 ### ExternalDNS Issues
-
-#### ExternalDNS not creating records
 ```bash
-# Check logs
-kubectl logs deployment/external-dns -n external-dns
-
-# Check if API credentials are working
-kubectl describe pod -l app.kubernetes.io/name=external-dns -n external-dns
-```
-
-#### API Token Issues
-- Verify token has correct permissions
-- Check if domain is properly added to Cloudflare
-- Ensure token is not expired
-
-#### DNS Propagation
-- Cloudflare changes are usually instant
-- External DNS propagation may take 5-10 minutes
-
-### Test ExternalDNS Automation
-
-Create a test ingress to verify ExternalDNS is working:
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: test-ingress
-  namespace: test
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: test.yourdomain.com
-spec:
-  rules:
-  - host: test.yourdomain.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 80
-```
-
-## Verify Deployment
-
-```bash
-# Check Cert-Manager (cluster-wide)
-kubectl get pods -n cert-manager
-kubectl get clusterissuers
-
-# Check application in test namespace
-kubectl get pods -n test
-kubectl get svc -n test
-kubectl get ingress -n test
-
-# Check SSL certificates (if SSL is enabled)
-kubectl get certificates -n test
-kubectl describe certificate test-helm-chart-tls -n test
-
-# Test HTTP access
-curl -I http://yourdomain.com
-
-# Test HTTPS access (if SSL is enabled)
-curl -I https://yourdomain.com
+kubectl logs deployment/external-dns -n external-dns        # Check ExternalDNS logs
+kubectl describe pod -l app.kubernetes.io/name=external-dns -n external-dns  # Check pod details
 ```
 
 ## Architecture
@@ -298,7 +119,6 @@ This deployment follows infrastructure-as-code best practices:
 - **NGINX Ingress**: Installed via Helm dependency for load balancing
 - **ExternalDNS**: Automatically manages DNS records in Cloudflare
 - **Application**: All microservices deployed in the `test` namespace
-- **Infrastructure**: ClusterIssuer and other cluster-wide resources
 
 ## Configuration
 
@@ -306,7 +126,7 @@ Edit `values.yaml` to customize:
 - Domain name (`ingress.host`)
 - SSL settings (`ssl.enabled`)
 - Service configurations
-- Resource limits (optimized for production workloads)
+- Resource limits
 
 ### Resource Allocation
 
@@ -316,8 +136,6 @@ The chart includes optimized resource requests and limits for each service:
 - **Core services** (frontend, checkout, shipping): 100m CPU, 64-128Mi memory  
 - **Data services** (recommendationservice): 100m CPU, 220Mi memory
 - **Redis cache**: 100m CPU, 128Mi memory
-
-These settings balance performance with cost efficiency for typical e-commerce workloads.
 
 ## Ingress Host Rules & Local Testing
 
@@ -333,7 +151,7 @@ If you want to test via port-forward or direct IP, you have two options:
 
 1. **Use the correct Host header in your requests:**
    ```bash
-   # Port-forward ingress controller
+   # Port-forward ingress controller to local machine
    kubectl port-forward -n test svc/test-ingress-nginx-controller 8080:80
 
    # Test with Host header (should return 200 OK)
@@ -366,4 +184,61 @@ If you want to test via port-forward or direct IP, you have two options:
 
 ### Best Practice
 - For production, only match your real domain in ingress rules.
-- For local testing, add a default rule or use the Host header as shown above. 
+- For local testing, add a default rule or use the Host header as shown above.
+
+---
+
+## Setup References
+
+### ExternalDNS Configuration
+
+#### Create Cloudflare API Token
+1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
+2. Click "Create Token"
+3. Choose "Custom token" template
+4. Configure permissions:
+   - **Zone**: `Zone:Zone:Edit` (for your domain)
+   - **Zone**: `Zone:DNS:Edit` (for DNS record management)
+5. Set Zone Resources to "Include: Specific zone" and select your domain
+6. Click "Continue to summary" and "Create Token"
+7. **Copy the token** (you won't see it again!)
+
+#### Get Your Zone ID
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Select your domain
+3. Look at the URL: `https://dash.cloudflare.com/zone/abc123def456`
+4. **The Zone ID** is the `abc123def456` part
+
+#### Configure ExternalDNS Values
+Edit `helm-chart/infra/external-dns/external-dns-values.yaml`:
+
+```yaml
+# Environment variables for Cloudflare configuration
+env:
+  - name: CF_API_TOKEN
+    value: "your-cloudflare-api-token"  # Replace with your API token
+  - name: CF_ZONE_ID
+    value: "your-zone-id"  # Replace with your zone ID
+```
+
+### Manual DNS Configuration (Alternative - Only if NOT using ExternalDNS)
+
+#### Get Your Cluster's External IP
+```bash
+kubectl get svc -n test | grep ingress-nginx-controller
+```
+
+#### Configure DNS A Record
+- **Type:** A record
+- **Name:** Your domain (e.g., `ecvlsolutions.com` or `@` for root domain)
+- **Value:** External IP from step above (e.g., `74.177.247.49`)
+- **TTL:** 300 seconds (or default)
+
+#### Wait for DNS Propagation
+- Allow 5-10 minutes for DNS changes to propagate globally
+
+#### Verify DNS Resolution
+```bash
+nslookup yourdomain.com
+# Should return your cluster's external IP
+``` 
