@@ -38,8 +38,3 @@ output "azure_rbac_enabled" {
   description = "Whether Azure RBAC is enabled for Kubernetes authorization"
   value       = azurerm_kubernetes_cluster.aks.azure_active_directory_role_based_access_control[0].azure_rbac_enabled
 }
-
-output "kubelet_identity_object_id" {
-  description = "The object ID of the kubelet identity"
-  value       = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
-} 
