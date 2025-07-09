@@ -78,20 +78,17 @@ variable "kubelet_identity_object_id" {
 variable "load_balancer_sku" {
   description = "The SKU of the load balancer"
   type        = string
-  default     = "standard"
 }
 
 variable "outbound_type" {
   description = "The outbound type for the cluster"
   type        = string
-  default     = "loadBalancer"
 }
 
 # Node Configuration
 variable "max_pods_per_node" {
   description = "Maximum number of pods per node"
   type        = number
-  default     = 30
   validation {
     condition     = var.max_pods_per_node >= 10 && var.max_pods_per_node <= 250
     error_message = "Max pods per node must be between 10 and 250."
@@ -110,25 +107,27 @@ variable "aad_rbac" {
       roles     = list(string)
     }))
   })
-  default = {
-    admin_group_object_ids = []
-    azure_rbac_enabled     = true
-    user_groups            = []
-  }
 }
 
 # Tags
 variable "tags" {
-  description = "Tags to be applied to the AKS cluster"
+  description = "Tags to apply to resources"
   type        = map(string)
-  default     = {}
+}
+
+variable "timeouts" {
+  description = "Timeouts for AKS cluster operations"
+  type = object({
+    create = string
+    update = string
+    delete = string
+  })
 }
 
 # Additional Node Pools
 variable "ingress_node_pool_enabled" {
   description = "Whether to create a dedicated ingress node pool"
   type        = bool
-  default     = false
 }
 
 variable "user_node_pool" {

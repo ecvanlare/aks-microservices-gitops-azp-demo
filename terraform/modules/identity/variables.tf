@@ -16,23 +16,19 @@ variable "principal_id" {
 variable "description" {
   description = "A description of the role assignment."
   type        = string
-  default     = null
 }
 
 variable "condition" {
   description = "The condition which limits the resources that the role can be assigned to."
   type        = string
-  default     = null
 }
 
 variable "condition_version" {
   description = "The version of the condition syntax."
   type        = string
-  default     = "2.0"
 }
 
 variable "skip_existing_check" {
   description = "Whether to skip checking if the role assignment already exists."
   type        = bool
-  default     = false
 } 
