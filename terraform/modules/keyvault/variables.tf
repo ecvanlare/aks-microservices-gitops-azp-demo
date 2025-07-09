@@ -13,12 +13,9 @@ variable "resource_group_name" {
   type        = string
 }
 
-
-
 variable "aks_managed_identity_object_id" {
-  description = "Object ID of AKS managed identity (optional)"
+  description = "Object ID of AKS managed identity"
   type        = string
-  default     = null
 }
 
 variable "tags" {

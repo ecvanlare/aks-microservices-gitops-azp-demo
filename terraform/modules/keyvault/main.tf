@@ -18,12 +18,6 @@ resource "azurerm_key_vault" "main" {
   tags = var.tags
 }
 
-# Note: Secrets are managed via Azure Portal
-# Add these secrets manually in the Key Vault:
-# - cloudflare-api-token
-# - cloudflare-zone-id  
-# - domain-name
-# - cert-manager-email
 
 # Access policy for Terraform (current user)
 resource "azurerm_key_vault_access_policy" "terraform" {
@@ -38,8 +32,6 @@ resource "azurerm_key_vault_access_policy" "terraform" {
 
 # Access policy for AKS managed identity
 resource "azurerm_key_vault_access_policy" "aks" {
-  count = var.aks_managed_identity_object_id != null ? 1 : 0
-
   key_vault_id = azurerm_key_vault.main.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = var.aks_managed_identity_object_id
