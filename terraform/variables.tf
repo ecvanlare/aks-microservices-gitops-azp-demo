@@ -125,7 +125,7 @@ variable "aks_node_pool" {
   })
   default = {
     name                = "default"
-    vm_size             = "Standard_B1ms" # 1 vCPU, 2GB RAM - sufficient for system workloads + Redis
+    vm_size             = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest size that meets Azure minimum requirements
     os_disk_size_gb     = 30
     enable_auto_scaling = true
     min_count           = 1
@@ -184,7 +184,7 @@ variable "aks_ingress_node_pool" {
   })
   default = {
     name                = "ingress"
-    vm_size             = "Standard_B1ms" # 1 vCPU, 2GB RAM - sufficient for ingress controllers
+    vm_size             = "Standard_B1s" # 1 vCPU, 1GB RAM - sufficient for ingress controllers
     os_disk_size_gb     = 32
     enable_auto_scaling = true
     min_count           = 1
