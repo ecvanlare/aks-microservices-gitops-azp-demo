@@ -207,6 +207,7 @@ module "keyvault" {
   location                       = var.location
   resource_group_name            = module.resource_group.resource_group_name
   aks_managed_identity_object_id = module.aks.kubelet_identity_object_id
+  enable_rbac_authorization      = true
   tags                           = var.tags
 }
 
@@ -215,6 +216,20 @@ module "user_group_roles" {
   for_each = local.role_assignments
 
   scope                = module.aks.cluster_id
+  role_definition_name = each.value.role
+  principal_id         = azuread_group.aks_groups[each.value.group].object_id
+}
+
+# Key Vault role assignments for user groups
+module "keyvault_user_group_roles" {
+  source   = "./modules/identity"
+  for_each = {
+    admins     = { group = "admins", role = "Key Vault Administrator" }
+    developers = { group = "developers", role = "Key Vault Secrets Officer" }
+    viewers    = { group = "viewers", role = "Key Vault Reader" }
+  }
+
+  scope                = module.keyvault.key_vault_id
   role_definition_name = each.value.role
   principal_id         = azuread_group.aks_groups[each.value.group].object_id
 }
