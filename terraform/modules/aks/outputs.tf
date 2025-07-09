@@ -42,4 +42,4 @@ output "admin_group_object_ids" {
 output "azure_rbac_enabled" {
   description = "Whether Azure RBAC is enabled for Kubernetes authorization"
   value       = azurerm_kubernetes_cluster.aks.azure_active_directory_role_based_access_control[0].azure_rbac_enabled
-}
+} 

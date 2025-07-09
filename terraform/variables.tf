@@ -35,9 +35,15 @@ variable "tags" {
 
 # Network Variables
 variable "vnet_name" {
-  description = "Name of the virtual network"
+  description = "Name of the Virtual Network"
   type        = string
   default     = "vnet-online-boutique"
+}
+
+variable "nsg_name" {
+  description = "Name of the Network Security Group"
+  type        = string
+  default     = "nsg-aks"
 }
 
 variable "vnet_address_space" {
@@ -75,7 +81,11 @@ variable "acr_sku" {
   default     = "Standard"
 }
 
-
+variable "acr_admin_enabled" {
+  description = "Enable admin access to the container registry"
+  type        = bool
+  default     = false
+}
 
 # AKS Basic Configuration
 variable "aks_name" {
@@ -215,7 +225,15 @@ variable "aks_dns_service_ip" {
 }
 
 # AKS Load Balancer Configuration
-
+variable "aks_max_pods_per_node" {
+  description = "Maximum number of pods per node"
+  type        = number
+  default     = 30
+  validation {
+    condition     = var.aks_max_pods_per_node >= 10 && var.aks_max_pods_per_node <= 250
+    error_message = "Max pods per node must be between 10 and 250."
+  }
+}
 
 # AKS Cluster Autoscaler Configuration
 variable "aks_enable_cluster_autoscaler" {
@@ -225,7 +243,7 @@ variable "aks_enable_cluster_autoscaler" {
 }
 
 variable "aks_autoscaler_profile" {
-  description = "Cluster autoscaler profile configuration"
+  description = "Autoscaler profile configuration for AKS"
   type = object({
     scale_down_delay_after_add       = string
     scale_down_delay_after_delete    = string
@@ -243,6 +261,20 @@ variable "aks_autoscaler_profile" {
     scale_down_unneeded              = "10m"
     scale_down_unready               = "20m"
     scale_down_utilization_threshold = "0.5"
+  }
+}
+
+variable "aks_timeouts" {
+  description = "Timeouts for AKS cluster operations"
+  type = object({
+    create = string
+    update = string
+    delete = string
+  })
+  default = {
+    create = "60m"
+    update = "60m"
+    delete = "60m"
   }
 }
 
@@ -458,6 +490,112 @@ variable "viewer_role" {
   description = "Azure RBAC role for viewer group"
   type        = string
   default     = "Azure Kubernetes Service RBAC Reader"
+}
+
+# Key Vault RBAC Role Names
+variable "keyvault_admin_role" {
+  description = "Azure RBAC role for admin group in Key Vault"
+  type        = string
+  default     = "Key Vault Administrator"
+}
+
+variable "keyvault_secrets_officer_role" {
+  description = "Azure RBAC role for developer group in Key Vault"
+  type        = string
+  default     = "Key Vault Secrets Officer"
+}
+
+variable "keyvault_reader_role" {
+  description = "Azure RBAC role for viewer group in Key Vault"
+  type        = string
+  default     = "Key Vault Reader"
+}
+
+# Key Vault Configuration Variables
+variable "keyvault_soft_delete_retention_days" {
+  description = "Soft delete retention days for Key Vault"
+  type        = number
+  default     = 7
+}
+
+variable "keyvault_purge_protection_enabled" {
+  description = "Enable purge protection for Key Vault"
+  type        = bool
+  default     = false
+}
+
+variable "keyvault_sku_name" {
+  description = "SKU name for Key Vault"
+  type        = string
+  default     = "standard"
+}
+
+variable "keyvault_network_acls" {
+  description = "Network ACLs configuration for Key Vault"
+  type = object({
+    default_action = string
+    bypass         = string
+  })
+  default = {
+    default_action = "Allow"
+    bypass         = "AzureServices"
+  }
+}
+
+variable "keyvault_terraform_role_name" {
+  description = "Azure RBAC role name for Terraform access to Key Vault"
+  type        = string
+  default     = "Key Vault Administrator"
+}
+
+variable "keyvault_aks_role_name" {
+  description = "Azure RBAC role name for AKS access to Key Vault"
+  type        = string
+  default     = "Key Vault Secrets User"
+}
+
+# Identity Role Names
+variable "acr_pull_role_name" {
+  description = "Azure RBAC role name for ACR pull access"
+  type        = string
+  default     = "AcrPull"
+}
+
+variable "acr_push_role_name" {
+  description = "Azure RBAC role name for ACR push access"
+  type        = string
+  default     = "AcrPush"
+}
+
+variable "network_contributor_role_name" {
+  description = "Azure RBAC role name for network contributor access"
+  type        = string
+  default     = "Network Contributor"
+}
+
+# Identity Module Variables
+variable "role_assignment_description" {
+  description = "Description for role assignments"
+  type        = string
+  default     = null
+}
+
+variable "role_assignment_condition" {
+  description = "Condition for role assignments"
+  type        = string
+  default     = null
+}
+
+variable "role_assignment_condition_version" {
+  description = "Condition version for role assignments"
+  type        = string
+  default     = "2.0"
+}
+
+variable "role_assignment_skip_existing_check" {
+  description = "Whether to skip checking if role assignment already exists"
+  type        = bool
+  default     = false
 }
 
 # Note: Secrets are managed via Azure Portal
