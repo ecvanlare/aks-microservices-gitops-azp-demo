@@ -24,6 +24,11 @@ output "cluster_principal_id" {
   value       = azurerm_kubernetes_cluster.aks.identity[0].principal_id
 }
 
+output "kubelet_identity_object_id" {
+  description = "The object ID of the kubelet identity"
+  value       = var.kubelet_identity_object_id
+}
+
 output "aad_rbac_enabled" {
   description = "Whether Azure AD RBAC is enabled on the cluster"
   value       = length(azurerm_kubernetes_cluster.aks.azure_active_directory_role_based_access_control) > 0
@@ -37,9 +42,4 @@ output "admin_group_object_ids" {
 output "azure_rbac_enabled" {
   description = "Whether Azure RBAC is enabled for Kubernetes authorization"
   value       = azurerm_kubernetes_cluster.aks.azure_active_directory_role_based_access_control[0].azure_rbac_enabled
-}
-
-output "kubelet_identity_object_id" {
-  description = "The object ID of the kubelet identity"
-  value       = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
 } 

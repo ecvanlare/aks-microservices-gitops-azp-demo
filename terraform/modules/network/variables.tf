@@ -31,7 +31,6 @@ variable "address_prefixes" {
 variable "service_endpoints" {
   description = "Service endpoints for the subnet"
   type        = list(string)
-  default     = []
 }
 
 variable "aks_nsg_name" {
@@ -52,11 +51,9 @@ variable "security_rules" {
     source_address_prefix      = string
     destination_address_prefix = string
   }))
-  default = []
 }
 
 variable "tags" {
   description = "Tags to be applied to all network resources"
   type        = map(string)
-  default     = {}
 } 
