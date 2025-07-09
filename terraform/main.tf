@@ -222,7 +222,7 @@ module "user_group_roles" {
 
 # Key Vault role assignments for user groups
 module "keyvault_user_group_roles" {
-  source   = "./modules/identity"
+  source = "./modules/identity"
   for_each = {
     admins     = { group = "admins", role = "Key Vault Administrator" }
     developers = { group = "developers", role = "Key Vault Secrets Officer" }
