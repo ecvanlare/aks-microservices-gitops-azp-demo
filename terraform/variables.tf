@@ -184,7 +184,7 @@ variable "aks_ingress_node_pool" {
   })
   default = {
     name                = "ingress"
-    vm_size             = "Standard_B1s" # 1 vCPU, 1GB RAM - sufficient for ingress controllers
+    vm_size             = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest compliant size for AKS node pools
     os_disk_size_gb     = 32
     enable_auto_scaling = true
     min_count           = 1
