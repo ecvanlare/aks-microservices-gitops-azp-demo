@@ -1,5 +1,5 @@
 apiVersion: v2
-name: helm-charts/app-chart
+name: app-chart
 description: Online Boutique - Umbrella chart for all microservices
 type: application
 version: 0.1.0
