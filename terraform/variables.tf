@@ -192,8 +192,7 @@ variable "aks_ingress_node_pool" {
     max_pods            = 30
     node_taints         = ["ingress=true:NoSchedule"]
     node_labels = {
-      "agentpool"                                               = "ingress"
-      "node.kubernetes.io/exclude-from-external-load-balancers" = "false"
+      "agentpool" = "ingress"
     }
     enable_node_public_ip = true
   }
