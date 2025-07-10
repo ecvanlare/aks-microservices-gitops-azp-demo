@@ -1,21 +1,15 @@
-{{- if .Values.argocd.enabled }}
+{{- if and .Values.argocd.enabled .Values.argocdIngress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: argocd-ingress
   namespace: {{ .Release.Namespace }}
   annotations:
-    # cert-manager.io/cluster-issuer: "letsencrypt-prod"  # Temporarily disabled
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.argocd.ingress.host | quote }}
+{{- toYaml .Values.argocdIngress.annotations | nindent 4 }}
 spec:
-  ingressClassName: nginx
-  # tls:
-  # - hosts:
-  #   - {{ .Values.argocd.ingress.host }}
-  #   secretName: argocd-server-tls
+  ingressClassName: {{ .Values.argocdIngress.ingressClassName }}
   rules:
-  - host: {{ .Values.argocd.ingress.host }}
+  - host: {{ .Values.argocdIngress.host }}
     http:
       paths:
       - path: /
@@ -24,5 +18,9 @@ spec:
           service:
             name: {{ .Release.Name }}-argocd-server
             port:
-              number: 443
+              number: {{ .Values.argocdIngress.port }}
+  tls:
+  - hosts:
+    - {{ .Values.argocdIngress.host }}
+    secretName: {{ .Values.argocdIngress.tls.secretName }}
 {{- end }} 
