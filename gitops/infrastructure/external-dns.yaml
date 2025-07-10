@@ -20,9 +20,15 @@ spec:
             - ecvlsolutions.com
           env:
             - name: CF_API_TOKEN
-              value: "ix2sv-NeOqnk7MQi1ZiPHIJJmhgNae6L6uexPVDN"
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-secrets
+                  key: CF_API_TOKEN
             - name: CF_ZONE_ID
-              value: "3b92c2482c1ccf5f87e36c519680666d"
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-secrets
+                  key: CF_ZONE_ID
   destination:
     server: https://kubernetes.default.svc
     namespace: infra
