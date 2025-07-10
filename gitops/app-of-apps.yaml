@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: git@github.com:ecvanlare/azure-devops-online-boutique.git
-    targetRevision: HEAD
+    targetRevision: argocd
     path: gitops/applications/
   destination:
     server: https://kubernetes.default.svc
