@@ -281,49 +281,8 @@ ssl:
   enabled: true
   clusterIssuer: "letsencrypt-prod"  # References the cluster-level issuer
 
-# Infrastructure dependencies
-cert-manager:
-  enabled: true
-
-
-
-ingress-nginx:
-  enabled: true
-  controller:
-    fullnameOverride: ingress-nginx-controller
-    replicaCount: 2
-    publishService:
-      enabled: true
-    service:
-      type: LoadBalancer
-      annotations:
-        service.beta.kubernetes.io/azure-load-balancer-internal: "false"
-        service.beta.kubernetes.io/azure-load-balancer-resource-group: "rg-online-boutique"
-    config:
-      use-proxy-protocol: "false"
-      proxy-real-ip-cidr: "0.0.0.0/0"
-      use-forwarded-headers: "true"
-      enable-real-ip: "true"
-      proxy-connect-timeout: "5"
-      proxy-send-timeout: "60"
-      proxy-read-timeout: "60"
-    metrics:
-      enabled: true
-    nodeSelector: {}
-    tolerations:
-    - key: "ingress"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: agentpool
-              operator: In
-              values:
-              - ingress
+# Infrastructure dependencies are now managed by infra-chart
+# This chart focuses only on application microservices
 
 # --- HPA Config ---
 hpa:
@@ -349,3 +308,7 @@ hpa:
     maxReplicas: 4
     cpu:
       targetAverageUtilization: 70
+
+# --- ArgoCD Configuration ---
+# ArgoCD is managed separately via argocd-application.yaml
+# This ensures no circular dependencies and proper GitOps workflow

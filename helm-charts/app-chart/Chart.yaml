@@ -1,5 +1,5 @@
 apiVersion: v2
-name: helm-chart
+name: helm-charts/app-chart
 description: Online Boutique - Umbrella chart for all microservices
 type: application
 version: 0.1.0
@@ -42,10 +42,4 @@ dependencies:
   - name: shoppingassistantservice
     version: "0.1.0"
     repository: "file://charts/shoppingassistantservice" 
-  - name: ingress-nginx
-    version: 4.7.1
-    repository: "https://kubernetes.github.io/ingress-nginx"
-  - name: cert-manager
-    version: 1.0.0
-    repository: "file://infra/cert-manager"
-    condition: cert-manager.enabled 
+ 

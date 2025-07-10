@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: infra
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:ecvanlare/azure-devops-online-boutique.git
+    targetRevision: HEAD
+    path: helm-charts/infra-chart/
+    helm:
+      values: |
+        ingress-nginx:
+          enabled: true
+          controller:
+            service:
+              type: LoadBalancer
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  revisionHistoryLimit: 10

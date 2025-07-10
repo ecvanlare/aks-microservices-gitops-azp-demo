@@ -1,0 +1,28 @@
+{{- if .Values.argocd.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"  # Temporarily disabled
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.argocd.ingress.host | quote }}
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - hosts:
+  #   - {{ .Values.argocd.ingress.host }}
+  #   secretName: argocd-server-tls
+  rules:
+  - host: {{ .Values.argocd.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-argocd-server
+            port:
+              number: 443
+{{- end }} 

@@ -7,74 +7,63 @@
 - Domain name pointing to cluster IP
 - Cloudflare account (for ExternalDNS automation)
 
+## GitOps with ArgoCD
+
+This setup uses ArgoCD for GitOps deployment. The ArgoCD Application is defined in `argocd-application.yaml` at the repository root, not within the Helm chart to avoid circular dependencies.
+
+### ArgoCD Deployment Flow
+1. **Infrastructure components** (ingress-nginx, cert-manager, external-dns) are deployed via the deployment script
+2. **ArgoCD** is installed and configured
+3. **ArgoCD Application** is applied to manage the application deployment
+4. **Application** is automatically deployed and managed by ArgoCD
+
 ## What Gets Deployed
 
-- ✅ **Cert-Manager** (cluster-wide SSL certificate management)
-- ✅ **NGINX Ingress** (load balancer)
 - ✅ **All microservices** (frontend, cart, checkout, etc.)
-- ✅ **ClusterIssuer** (Let's Encrypt configuration)
-- ✅ **SSL certificates** (automatic via Let's Encrypt)
-- ✅ **ExternalDNS** (automatic DNS management with Cloudflare)
+- ✅ **Redis cache** (session storage)
+- ✅ **HPA** (Horizontal Pod Autoscaler)
+- ✅ **Ingress** (application routing)
+
+**Note**: Infrastructure components (Cert-Manager, NGINX Ingress, External-DNS, ArgoCD) are now managed by the `infra-chart`.
 
 ## Quick Deployment
 
-### Step 1: Deploy Everything
+### Step 1: Deploy Infrastructure First
 ```bash
-# 1. Add repositories and install dependencies
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo add jetstack https://charts.jetstack.io
-helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
-helm repo update
-
-# 2. Install Cert-Manager CRDs (required first)
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.crds.yaml
-
-# 3. Install Cert-Manager cluster-wide
-helm upgrade --install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --set installCRDs=false \
-  --wait --timeout=5m
-
-# 4. Deploy ExternalDNS (automated DNS management)
-kubectl create namespace external-dns --dry-run=client -o yaml | kubectl apply -f -
-helm upgrade --install external-dns external-dns/external-dns \
-  --namespace external-dns \
-  --values infra/external-dns/external-dns-values.yaml \
-  --wait --timeout=5m
-
-# 5. Deploy the application
-cd helm-chart
+# 1. Deploy infrastructure components
+cd infra-chart
 helm dependency update
-helm upgrade --install test . --namespace test --create-namespace --wait --timeout=15m
+helm upgrade --install infra . --namespace infra --create-namespace --wait --timeout=15m
+cd ..
 ```
 
-### Step 2: Enable SSL (Optional)
+### Step 2: Deploy Application
 ```bash
-# Enable SSL in values.yaml (edit helm-chart/values.yaml)
-# Set ssl.enabled: true
-
-# Redeploy with SSL enabled
-helm upgrade test . --namespace test --wait --timeout=5m
+# 2. Deploy the application
+cd helm-charts/app-chart
+helm dependency update
+helm upgrade --install online-boutique . --namespace online-boutique --create-namespace --wait --timeout=15m
 ```
 
-### Step 3: Verify Deployment
+### Step 3: Enable SSL (Optional)
 ```bash
-# Check all components
-kubectl get pods -n cert-manager          # Verify Cert-Manager is running
-kubectl get pods -n test                  # Check application pods
-kubectl get pods -n external-dns          # Verify ExternalDNS is running
-kubectl get ingress -n test               # Check ingress configuration
+# SSL is automatically managed by the infra-chart
+# Certificates are created automatically via cert-manager
+```
+
+### Step 4: Verify Deployment
+```bash
+# Check infrastructure components
+kubectl get pods -n infra                 # Verify infrastructure pods
+kubectl get pods -n online-boutique       # Check application pods
+kubectl get ingress -n online-boutique    # Check ingress configuration
 
 # Check SSL certificates (if enabled)
-kubectl get certificates -n test          # Verify SSL certificate status
-
-# Check ExternalDNS logs
-kubectl logs deployment/external-dns -n external-dns  # Verify DNS automation is working
+kubectl get certificates -n online-boutique  # Verify SSL certificate status
 
 # Test access
-curl -I http://yourdomain.com             # Test HTTP access
-curl -I https://yourdomain.com            # Test HTTPS access (if SSL enabled)
+curl -I http://ecvlsolutions.com          # Test HTTP access
+curl -I https://ecvlsolutions.com         # Test HTTPS access (if SSL enabled)
 ```
 
 ## Success Indicators
@@ -89,14 +78,14 @@ curl -I https://yourdomain.com            # Test HTTPS access (if SSL enabled)
 
 #### Certificate Not Ready
 ```bash
-kubectl describe certificate test-helm-chart-tls -n test    # Check certificate details and errors
+kubectl describe certificate test-helm-charts/app-chart-tls -n test    # Check certificate details and errors
 kubectl get orders -n test                                  # Check Let's Encrypt orders
 kubectl get challenges -n test                              # Check ACME challenges
 ```
 
 #### Retry Certificate Issuance
 ```bash
-kubectl delete certificate test-helm-chart-tls -n test      # Delete failed certificate
+kubectl delete certificate test-helm-charts/app-chart-tls -n test      # Delete failed certificate
 # Certificate will be recreated automatically
 ```
 
@@ -115,10 +104,11 @@ kubectl describe pod -l app.kubernetes.io/name=external-dns -n external-dns  # C
 
 This deployment follows infrastructure-as-code best practices:
 
-- **Cert-Manager**: Installed cluster-wide for SSL certificate management
-- **NGINX Ingress**: Installed via Helm dependency for load balancing
-- **ExternalDNS**: Automatically manages DNS records in Cloudflare
-- **Application**: All microservices deployed in the `test` namespace
+- **Infrastructure Chart**: Manages ingress-nginx, cert-manager, external-dns, and argocd
+- **Application Chart**: Manages all microservices and application components
+- **GitOps**: ArgoCD automatically deploys and manages the application
+- **SSL**: Automatic certificate management via cert-manager
+- **DNS**: Automated DNS management via external-dns
 
 ## Configuration
 
@@ -210,7 +200,7 @@ If you want to test via port-forward or direct IP, you have two options:
 4. **The Zone ID** is the `abc123def456` part
 
 #### Configure ExternalDNS Values
-Edit `helm-chart/infra/external-dns/external-dns-values.yaml`:
+Edit `helm-charts/app-chart/infra/external-dns/external-dns-values.yaml`:
 
 ```yaml
 # Environment variables for Cloudflare configuration

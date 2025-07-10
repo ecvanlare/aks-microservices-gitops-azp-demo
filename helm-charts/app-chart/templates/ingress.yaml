@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "helm-chart.fullname" . }}-ingress
+  name: {{ include "helm-charts/app-chart.fullname" . }}-ingress
   labels:
-    {{- include "helm-chart.labels" . | nindent 4 }}
+    {{- include "helm-charts/app-chart.labels" . | nindent 4 }}
   annotations:
     {{- if .Values.ssl.enabled }}
     cert-manager.io/cluster-issuer: {{ .Values.ssl.clusterIssuer | quote }}
@@ -46,6 +46,6 @@ spec:
   tls:
   - hosts:
     - {{ .Values.ingress.host | quote }}
-    secretName: {{ include "helm-chart.fullname" . }}-tls
+    secretName: {{ include "helm-charts/app-chart.fullname" . }}-tls
   {{- end }}
 {{- end }} 

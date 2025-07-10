@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: infra
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:ecvanlare/azure-devops-online-boutique.git
+    targetRevision: HEAD
+    path: helm-charts/infra-chart/
+    helm:
+      values: |
+        external-dns:
+          enabled: true
+          provider: cloudflare
+          domainFilters:
+            - ecvlsolutions.com
+          env:
+            - name: CF_API_TOKEN
+              value: "ix2sv-NeOqnk7MQi1ZiPHIJJmhgNae6L6uexPVDN"
+            - name: CF_ZONE_ID
+              value: "3b92c2482c1ccf5f87e36c519680666d"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  revisionHistoryLimit: 10
