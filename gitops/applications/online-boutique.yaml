@@ -8,12 +8,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/ecvanlare/online-boutique-private.git'
-    targetRevision: HEAD
+    repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
+    targetRevision: argocd
     path: helm-charts/app-chart/
   destination:
     server: https://kubernetes.default.svc
-    namespace: app
+    namespace: online-boutique
   syncPolicy:
     automated:
       prune: true
