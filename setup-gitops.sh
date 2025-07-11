@@ -40,7 +40,7 @@ echo "------------------------------"
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 
-helm install argocd argo/argo-cd \
+helm install infra argo/argo-cd \
   --namespace infra \
   --create-namespace \
   --set server.ingress.enabled=true \
@@ -57,7 +57,7 @@ helm install argocd argo/argo-cd \
 echo ""
 echo "⏳ Step 3: Waiting for Argo CD to be Ready"
 echo "------------------------------------------"
-kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n infra
+kubectl wait --for=condition=available --timeout=300s deployment/infra-server -n infra
 echo "✅ Argo CD is ready!"
 
 # Step 4: Show Credentials
@@ -67,7 +67,7 @@ echo "-------------------------------"
 echo "🌐 URL: https://argocd.ecvlsolutions.com"
 echo "👤 Username: admin"
 echo "🔐 Password:"
-kubectl -n infra get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+kubectl -n infra get secret infra-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 echo ""
 
 # Step 5: Deploy Infrastructure
@@ -75,7 +75,7 @@ echo ""
 echo "🏗️  Step 5: Deploying Infrastructure via GitOps"
 echo "-----------------------------------------------"
 echo "Applying bootstrap application..."
-kubectl apply -f gitops/bootstrap.yaml
+kubectl apply -f gitops-bootstrap.yaml
 
 # Step 6: Monitor Infrastructure Deployment
 echo ""

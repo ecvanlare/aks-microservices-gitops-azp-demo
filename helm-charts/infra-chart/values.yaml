@@ -77,70 +77,70 @@ external-dns:
     - name: CF_ZONE_ID
       value: "3b92c2482c1ccf5f87e36c519680666d"
 
-# ArgoCD Configuration
-argocd:
-  enabled: true
-  server:
-    service:
-      type: ClusterIP
-      port: 443
-      targetPort: 8080
-    # Disable TLS temporarily for testing
-    extraArgs:
-      - --insecure
-  # RBAC configuration
-  rbac:
-    create: true
-    pspEnabled: false
-  # Resource limits - matches app chart global resources
-  controller:
-    replicas: 1
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-  repoServer:
-    replicas: 1
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-  applicationSet:
-    enabled: true
-    replicas: 1
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-  # Redis for HA (optional)
-  redis:
-    enabled: false
-  # HA configuration
-  ha:
-    enabled: false
+# ArgoCD Configuration (Disabled - installed manually via Terraform)
+# argocd:
+#   enabled: true
+#   server:
+#     service:
+#       type: ClusterIP
+#       port: 443
+#       targetPort: 8080
+#     # Disable TLS temporarily for testing
+#     extraArgs:
+#       - --insecure
+#   # RBAC configuration
+#   rbac:
+#     create: true
+#     pspEnabled: false
+#   # Resource limits - matches app chart global resources
+#   controller:
+#     replicas: 1
+#     resources:
+#       requests:
+#         cpu: 100m
+#         memory: 128Mi
+#       limits:
+#         cpu: 200m
+#         memory: 256Mi
+#   repoServer:
+#     replicas: 1
+#     resources:
+#       requests:
+#         cpu: 100m
+#         memory: 128Mi
+#       limits:
+#         cpu: 200m
+#         memory: 256Mi
+#   applicationSet:
+#     enabled: true
+#     replicas: 1
+#     resources:
+#       requests:
+#         cpu: 100m
+#         memory: 128Mi
+#       limits:
+#         cpu: 200m
+#         memory: 256Mi
+#   # Redis for HA (optional)
+#   redis:
+#     enabled: false
+#   # HA configuration
+#   ha:
+#     enabled: false
 
-# ArgoCD Ingress Configuration
-argocdIngress:
-  enabled: true
-  host: argocd.ecvlsolutions.com
-  ingressClassName: nginx
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-  tls:
-    secretName: argocd-tls
-  port: 443
+# ArgoCD Ingress Configuration (Disabled - installed manually via Terraform)
+# argocdIngress:
+#   enabled: true
+#   host: argocd.ecvlsolutions.com
+#   ingressClassName: nginx
+#   annotations:
+#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+#     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+#     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+#     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#   tls:
+#     secretName: argocd-tls
+#   port: 443
 
 clusterIssuer:
   enabled: true

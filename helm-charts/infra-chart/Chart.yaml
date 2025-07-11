@@ -18,7 +18,7 @@ dependencies:
     version: 1.14.1
     repository: https://kubernetes-sigs.github.io/external-dns/
     condition: external-dns.enabled
-  - name: argo-cd
-    version: 5.51.6
-    repository: https://argoproj.github.io/argo-helm
-    condition: argocd.enabled 
+  # - name: argo-cd
+  #   version: 5.51.6
+  #   repository: https://argoproj.github.io/argo-helm
+  #   condition: argocd.enabled 
