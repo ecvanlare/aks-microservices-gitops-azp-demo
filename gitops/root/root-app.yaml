@@ -10,10 +10,9 @@ spec:
   source:
     repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
     targetRevision: argocd
-    path: gitops/
+    path: gitops/infrastructure/
     directory:
       recurse: true
-      exclude: '**/cluster-issuer.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -24,4 +23,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
   revisionHistoryLimit: 10
-  # This app bootstraps infrastructure apps first, excluding ClusterIssuer 
+  # This app manages only infrastructure components 
