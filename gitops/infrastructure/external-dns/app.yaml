@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: external-dns
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/kubernetes-sigs/external-dns.git'
+    targetRevision: v0.14.2
+    path: charts/external-dns
+    helm:
+      values: |
+        provider: cloudflare
+        sources:
+          - ingress
+        policy: sync
+        registry: txt
+        domainFilters:
+          - "ecvlsolutions.com"
+        logLevel: info
+        interval: 1m
+        rbac:
+          create: true
+        serviceAccount:
+          create: true
+          name: "external-dns"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: CF_API_TOKEN
+            value: "ix2sv-NeOqnk7MQi1ZiPHIJJmhgNae6L6uexPVDN"
+          - name: CF_ZONE_ID
+            value: "3b92c2482c1ccf5f87e36c519680666d"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-dns
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+  # external-dns installed via Helm with Cloudflare configuration 

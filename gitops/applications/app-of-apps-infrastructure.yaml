@@ -2,22 +2,25 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: infrastructure
-  namespace: infra
+  namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: git@github.com:ecvanlare/online-boutique-private.git
+    repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
     targetRevision: argocd
-    path: helm-charts/infra-chart/
+    path: gitops/infrastructure/
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: infra
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  revisionHistoryLimit: 10 
+  revisionHistoryLimit: 10
+  # This app manages all infra Argo CD apps (argocd, cert-manager, ingress-nginx, external-dns) 

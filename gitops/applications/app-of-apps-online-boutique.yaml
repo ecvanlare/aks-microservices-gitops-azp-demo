@@ -2,22 +2,20 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: online-boutique
-  namespace: infra
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  namespace: argocd
 spec:
   project: default
   source:
     repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
-    targetRevision: argocd
+    targetRevision: HEAD
     path: helm-charts/app-chart/
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: online-boutique
+    namespace: argocd
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+    automated: {}
     syncOptions:
       - CreateNamespace=true
-  revisionHistoryLimit: 10 
+  # This app manages all microservices/apps 

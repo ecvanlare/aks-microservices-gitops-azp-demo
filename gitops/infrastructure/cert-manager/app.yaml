@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: cert-manager
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/cert-manager/cert-manager.git'
+    targetRevision: v1.14.4
+    path: deploy/charts/cert-manager
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+  # cert-manager installed via Helm 

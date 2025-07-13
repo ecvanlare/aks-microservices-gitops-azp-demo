@@ -1,0 +1,54 @@
+# ArgoCD Configuration from infra-chart
+server:
+  service:
+    type: ClusterIP
+    port: 443
+    targetPort: 8080
+  # Disable TLS temporarily for testing
+  extraArgs:
+    - --insecure
+
+# RBAC configuration
+rbac:
+  create: true
+  pspEnabled: false
+
+# Resource limits - matches app chart global resources
+controller:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+applicationSet:
+  enabled: true
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Redis for HA (optional)
+redis:
+  enabled: false
+
+# HA configuration
+ha:
+  enabled: false 
