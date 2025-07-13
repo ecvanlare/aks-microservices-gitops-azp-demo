@@ -10,7 +10,7 @@ spec:
     targetRevision: argocd
     path: gitops/infrastructure/cert-manager/
     directory:
-      include: [cluster-issuer.yaml]
+      include: cluster-issuer.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
