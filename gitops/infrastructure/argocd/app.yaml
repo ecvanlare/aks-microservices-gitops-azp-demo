@@ -19,6 +19,4 @@ spec:
     automated: {}
     syncOptions:
       - CreateNamespace=true
-    dependsOn:
-      - cert-manager
-  # Argo CD manages itself via Helm with custom configuration 
+  # ArgoCD with LoadBalancer for external access 

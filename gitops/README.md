@@ -19,8 +19,7 @@ gitops/
 │   │   └── app.yaml                     # external-dns (dependsOn: ingress-nginx)
 │   └── argocd/
 │       ├── app.yaml                     # ArgoCD self-management
-│       ├── values.yaml                  # ArgoCD Helm values
-│       └── ingress.yaml                 # ArgoCD ingress config
+│       └── values.yaml                  # ArgoCD Helm values (LoadBalancer config)
 └── applications/
     └── app-of-apps-online-boutique.yaml # Application workloads
 ```
@@ -55,7 +54,21 @@ The infrastructure components deploy in the following order due to `dependsOn` r
 
 ## 🚀 Usage
 
-### Bootstrap Everything
+### Bootstrap ArgoCD (One-time Manual Setup)
+```bash
+# 1. Install ArgoCD with LoadBalancer
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -f argocd-server-lb.yaml
+
+# 2. Wait for external IP
+kubectl get svc -n argocd
+
+# 3. Access ArgoCD at https://<EXTERNAL-IP>
+# Username: admin
+# Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+### Deploy GitOps Applications
 ```bash
 # Create the root application in ArgoCD
 argocd app create root-app \
@@ -91,7 +104,7 @@ argocd app get root-app
 - **cert-manager**: v1.14.4 with CRDs
 - **ingress-nginx**: controller-v1.10.1 with Azure LoadBalancer
 - **external-dns**: v0.14.2 with Cloudflare
-- **ArgoCD**: Self-managed with custom values
+- **ArgoCD**: Self-managed with LoadBalancer service type
 
 ### Dependencies
 All `dependsOn` relationships ensure proper installation order and prevent race conditions.
