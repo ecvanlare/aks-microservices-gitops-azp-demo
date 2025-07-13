@@ -77,6 +77,8 @@ argocd login <EXTERNAL-IP> --username admin --password <ADMIN_PASSWORD> --insecu
 
 # 6. Register your private repo with ArgoCD CLI (required for private repos)
 argocd repo add git@github.com:ecvanlare/online-boutique-private.git --ssh-private-key-path ~/.ssh/argo-cd
+
+
 ```
 
 ### Deploy GitOps Applications
@@ -128,6 +130,14 @@ argocd app get root-app
 
 ### Dependencies
 All `dependsOn` relationships ensure proper installation order and prevent race conditions.
+
+### Git Repositories
+The infrastructure applications use public Git repositories which ArgoCD can access without additional configuration:
+- **cert-manager**: `https://github.com/cert-manager/cert-manager.git`
+- **external-dns**: `https://github.com/kubernetes-sigs/external-dns.git`
+- **ArgoCD**: `https://github.com/argoproj/argo-helm.git`
+
+These are public repositories, so no additional repository configuration is needed in ArgoCD.
 
 ## 🎯 Benefits
 
