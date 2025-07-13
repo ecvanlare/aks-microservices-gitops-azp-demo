@@ -44,4 +44,6 @@ spec:
     automated: {}
     syncOptions:
       - CreateNamespace=true
+    dependsOn:
+      - ingress-nginx
   # external-dns installed via Helm with Cloudflare configuration 

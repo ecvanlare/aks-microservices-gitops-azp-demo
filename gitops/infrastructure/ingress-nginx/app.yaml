@@ -53,4 +53,6 @@ spec:
     automated: {}
     syncOptions:
       - CreateNamespace=true
+    dependsOn:
+      - cert-manager
   # ingress-nginx installed via Helm with Azure LoadBalancer configuration 

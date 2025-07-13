@@ -1,26 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infrastructure
+  name: cluster-issuer
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
     targetRevision: argocd
-    path: gitops/infrastructure/
+    path: gitops/infrastructure/cert-manager/
     directory:
-      recurse: true
+      include: [cluster-issuer.yaml]
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: cert-manager
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+    automated: {}
     syncOptions:
       - CreateNamespace=true
-  revisionHistoryLimit: 10
-  # This app manages all infra Argo CD apps (argocd, cert-manager, ingress-nginx, external-dns) 
+  dependsOn:
+    - cert-manager
+  # This app creates the ClusterIssuer after cert-manager is ready 
