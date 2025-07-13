@@ -6,6 +6,8 @@ This directory contains the GitOps configuration for the Online Boutique applica
 
 ```
 gitops/
+├── bootstrap/
+│   └── argocd-server-lb.yaml           # Manual bootstrap LoadBalancer service
 ├── root/
 │   └── root-app.yaml                    # Main "App of Apps" - bootstraps everything
 ├── infrastructure/                       # Infrastructure components
@@ -58,7 +60,7 @@ The infrastructure components deploy in the following order due to `dependsOn` r
 ```bash
 # 1. Install ArgoCD with LoadBalancer
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-kubectl apply -f argocd-server-lb.yaml
+kubectl apply -f gitops/bootstrap/argocd-server-lb.yaml
 
 # 2. Wait for external IP
 kubectl get svc -n argocd
