@@ -13,6 +13,7 @@ spec:
     path: gitops/
     directory:
       recurse: true
+      exclude: '**/cluster-issuer.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -23,4 +24,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
   revisionHistoryLimit: 10
-  # This app bootstraps all other Argo CD apps (infrastructure + applications) 
+  # This app bootstraps infrastructure apps first, excluding ClusterIssuer 
