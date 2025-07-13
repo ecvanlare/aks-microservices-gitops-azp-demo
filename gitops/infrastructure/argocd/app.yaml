@@ -6,12 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/argoproj/argo-helm.git'
-    targetRevision: HEAD
-    chart: argo-cd
-    helm:
-      valueFiles:
-        - values.yaml
+    repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
+    targetRevision: argocd
+    path: gitops/infrastructure/argocd
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -19,4 +16,4 @@ spec:
     automated: {}
     syncOptions:
       - CreateNamespace=true
-  # ArgoCD with LoadBalancer for external access 
+  # ArgoCD self-management with local manifests 
