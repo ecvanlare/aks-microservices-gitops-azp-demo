@@ -16,5 +16,4 @@ spec:
       port: 443
       targetPort: 8080
   selector:
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd 
+    app.kubernetes.io/name: argocd-server 
