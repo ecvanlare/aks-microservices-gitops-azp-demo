@@ -68,6 +68,15 @@ kubectl get svc -n argocd
 # 3. Access ArgoCD at https://<EXTERNAL-IP>
 # Username: admin
 # Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+# 4. Add SSH key for private repository access
+kubectl -n argocd create secret generic argocd-repo-credentials --from-file=sshPrivateKey=~/.ssh/argo-cd
+
+# 5. Login to ArgoCD CLI (required for private repos)
+argocd login <EXTERNAL-IP> --username admin --password <ADMIN_PASSWORD> --insecure
+
+# 6. Register your private repo with ArgoCD CLI (required for private repos)
+argocd repo add git@github.com:ecvanlare/online-boutique-private.git --ssh-private-key-path ~/.ssh/argo-cd
 ```
 
 ### Deploy GitOps Applications
@@ -84,6 +93,14 @@ argocd app create root-app \
 
 # Sync the root application
 argocd app sync root-app
+
+# Or create via ArgoCD UI:
+# 1. Go to Applications → + New App
+# 2. Set Repository URL: git@github.com:ecvanlare/online-boutique-private.git
+# 3. Set Path: gitops/
+# 4. Enable Directory Recurse
+# 5. Set Revision: argocd
+# 6. Enable Auto-Sync
 ```
 
 ### Monitor Progress
@@ -101,6 +118,7 @@ argocd app get root-app
 - **URL**: `git@github.com:ecvanlare/online-boutique-private.git`
 - **Branch**: `argocd`
 - **SSH Key**: Uses `~/.ssh/argo-cd` for authentication
+- **SSH Setup**: Add SSH key to ArgoCD for private repo access
 
 ### Infrastructure Components
 - **cert-manager**: v1.14.4 with CRDs

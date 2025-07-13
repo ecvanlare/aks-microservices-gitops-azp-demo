@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
     targetRevision: argocd
-    path: gitops/infrastructure/
+    path: gitops/
     directory:
       recurse: true
   destination:
