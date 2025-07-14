@@ -1,12 +1,9 @@
 # ArgoCD Configuration from infra-chart
 server:
   service:
-    type: LoadBalancer
-    annotations:
-      service.beta.kubernetes.io/azure-load-balancer-internal: "false"
-      service.beta.kubernetes.io/azure-load-balancer-resource-group: "rg-online-boutique"
+    type: ClusterIP
   ingress:
-    enabled: false  # Disable ingress, use LoadBalancer instead
+    enabled: false  # Keep false if using raw ingress manifest
   extraArgs:
     - --insecure  # For development
   resources:
