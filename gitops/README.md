@@ -54,37 +54,45 @@ The infrastructure components deploy in the following order due to `dependsOn` r
 
 ## 🚀 Usage
 
-### Bootstrap ArgoCD (One-time Manual Setup)
+### Stage 1: Basic ArgoCD Setup
 ```bash
 # 1. Create argocd namespace
 kubectl create namespace argocd
 
-# 2. Install ArgoCD
+# 2. Install ArgoCD (basic installation)
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-# 3. Apply LoadBalancer service for external access
-kubectl apply -f gitops/infrastructure/argocd/server-lb.yaml
+# 3. Port-forward for access (until DNS is ready)
+kubectl port-forward -n argocd svc/argocd-server 8080:443
 
-# 2. Wait for external IP
-kubectl get svc -n argocd
-
-# 3. Access ArgoCD at https://<EXTERNAL-IP>
+# 4. Access ArgoCD at https://localhost:8080
 # Username: admin
 # Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
-# 4. Add SSH key for private repository access
+# 5. Add SSH key for private repository access
 kubectl -n argocd create secret generic argocd-repo-credentials --from-file=sshPrivateKey=/Users/edem/.ssh/argo-cd
 
-# 5. Login to ArgoCD CLI (required for private repos)
-argocd login <EXTERNAL-IP> --username admin --password <ADMIN_PASSWORD> --insecure
+# 6. Login to ArgoCD CLI
+argocd login localhost:8080 --username admin --password <ADMIN_PASSWORD> --insecure
 
-# 6. Register your private repo with ArgoCD CLI (required for private repos)
+# 7. Register your private repo with ArgoCD CLI
 argocd repo add git@github.com:ecvanlare/online-boutique-private.git --ssh-private-key-path ~/.ssh/argo-cd
 
-# 7. Add external repositories for infrastructure components
+# 8. Add external repositories for infrastructure components
 argocd repo add https://charts.jetstack.io --type helm --name jetstack
 argocd repo add https://github.com/kubernetes/ingress-nginx.git --type git
 argocd repo add https://github.com/kubernetes-sigs/external-dns.git --type git
+```
+
+### Stage 2: Deploy Root App and Infrastructure
+```bash
+# 1. Apply the root app (this will deploy all infrastructure)
+kubectl apply -f gitops/root/root-app.yaml
+
+# 2. Wait for infrastructure to deploy (cert-manager, ingress-nginx, external-dns)
+
+# 3. Once DNS resolves, access ArgoCD at https://argocd.ecvlsolutions.com
+```
 
 
 ```
