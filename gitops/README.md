@@ -6,8 +6,6 @@ This directory contains the GitOps configuration for the Online Boutique applica
 
 ```
 gitops/
-├── bootstrap/
-│   └── argocd-server-lb.yaml           # Manual bootstrap LoadBalancer service
 ├── root/
 │   └── root-app.yaml                    # Main "App of Apps" - bootstraps everything
 ├── infrastructure/                       # Infrastructure components
@@ -58,9 +56,14 @@ The infrastructure components deploy in the following order due to `dependsOn` r
 
 ### Bootstrap ArgoCD (One-time Manual Setup)
 ```bash
-# 1. Install ArgoCD with LoadBalancer
+# 1. Create argocd namespace
+kubectl create namespace argocd
+
+# 2. Install ArgoCD
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-kubectl apply -f gitops/bootstrap/argocd-server-lb.yaml
+
+# 3. Apply LoadBalancer service for external access
+kubectl apply -f gitops/infrastructure/argocd/server-lb.yaml
 
 # 2. Wait for external IP
 kubectl get svc -n argocd
@@ -70,7 +73,7 @@ kubectl get svc -n argocd
 # Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
 # 4. Add SSH key for private repository access
-kubectl -n argocd create secret generic argocd-repo-credentials --from-file=sshPrivateKey=~/.ssh/argo-cd
+kubectl -n argocd create secret generic argocd-repo-credentials --from-file=sshPrivateKey=/Users/edem/.ssh/argo-cd
 
 # 5. Login to ArgoCD CLI (required for private repos)
 argocd login <EXTERNAL-IP> --username admin --password <ADMIN_PASSWORD> --insecure
@@ -83,7 +86,10 @@ argocd repo add git@github.com:ecvanlare/online-boutique-private.git --ssh-priva
 
 ### Deploy GitOps Applications
 ```bash
-# Create the root application in ArgoCD
+# Option 1: Apply root app directly with kubectl
+kubectl apply -f gitops/root/root-app.yaml
+
+# Option 2: Create via ArgoCD CLI
 argocd app create root-app \
   --repo git@github.com:ecvanlare/online-boutique-private.git \
   --path gitops/ \
@@ -93,7 +99,7 @@ argocd app create root-app \
   --sync-policy automated \
   --revision argocd
 
-# Sync the root application
+# Sync the root application (if using CLI method)
 argocd app sync root-app
 
 # Or create via ArgoCD UI:

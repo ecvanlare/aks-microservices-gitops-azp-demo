@@ -40,7 +40,7 @@ cd ..
 ### Step 2: Deploy Application
 ```bash
 # 2. Deploy the application
-cd helm-charts/app-chart
+cd gitops/helm-charts/app-chart
 helm dependency update
 helm upgrade --install online-boutique . --namespace online-boutique --create-namespace --wait --timeout=15m
 ```
@@ -200,7 +200,7 @@ If you want to test via port-forward or direct IP, you have two options:
 4. **The Zone ID** is the `abc123def456` part
 
 #### Configure ExternalDNS Values
-Edit `helm-charts/app-chart/infra/external-dns/external-dns-values.yaml`:
+Edit `gitops/helm-charts/app-chart/infra/external-dns/external-dns-values.yaml`:
 
 ```yaml
 # Environment variables for Cloudflare configuration

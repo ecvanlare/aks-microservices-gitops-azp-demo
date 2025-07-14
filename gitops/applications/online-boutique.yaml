@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
     targetRevision: argocd
-    path: helm-charts/app-chart/
+    path: gitops/helm-charts/app-chart/
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
