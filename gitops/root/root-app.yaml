@@ -11,9 +11,7 @@ spec:
     path: gitops/
     directory:
       recurse: true
-      include:
-        - "**/*-app.yaml"
-        - "**/app.yaml"
+      include: "**/*-app.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
