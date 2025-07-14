@@ -19,8 +19,4 @@ spec:
           service:
             name: argocd-server
             port:
-              number: 443
-  tls:
-  - hosts:
-    - argocd.ecvlsolutions.com
-    secretName: argocd-tls 
+              number: 443 
