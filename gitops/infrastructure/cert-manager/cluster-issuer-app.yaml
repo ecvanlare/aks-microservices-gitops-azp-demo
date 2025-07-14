@@ -17,7 +17,4 @@ spec:
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
-  dependsOn:
-    - name: cert-manager
-      namespace: argocd 
+      selfHeal: true 
