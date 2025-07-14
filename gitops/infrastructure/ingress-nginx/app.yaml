@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: ingress-nginx
-  namespace: ingress-nginx
+  namespace: argocd
 spec:
   project: default
   source:
@@ -33,26 +33,27 @@ spec:
             enabled: true
           nodeSelector: {}
           tolerations:
-          - key: "ingress"
-            operator: "Equal"
-            value: "true"
-            effect: "NoSchedule"
+            - key: "ingress"
+              operator: "Equal"
+              value: "true"
+              effect: "NoSchedule"
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
                 nodeSelectorTerms:
-                - matchExpressions:
-                  - key: agentpool
-                    operator: In
-                    values:
-                    - ingress
+                  - matchExpressions:
+                      - key: agentpool
+                        operator: In
+                        values:
+                          - ingress
   destination:
     server: https://kubernetes.default.svc
     namespace: ingress-nginx
   syncPolicy:
-    automated: {}
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
-    dependsOn:
-      - cert-manager
-  # ingress-nginx installed via Helm with Azure LoadBalancer configuration 
+  dependencies:
+    - name: cert-manager 

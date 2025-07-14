@@ -24,4 +24,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
   revisionHistoryLimit: 10
-  # This app manages only infrastructure components 

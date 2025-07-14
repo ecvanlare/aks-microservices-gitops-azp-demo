@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: external-dns
-  namespace: external-dns
+  namespace: argocd 
 spec:
   project: default
   source:
@@ -41,9 +41,10 @@ spec:
     server: https://kubernetes.default.svc
     namespace: external-dns
   syncPolicy:
-    automated: {}
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
-    dependsOn:
-      - ingress-nginx
-  # external-dns installed via Helm with Cloudflare configuration 
+  dependencies:
+    - name: ingress-nginx
