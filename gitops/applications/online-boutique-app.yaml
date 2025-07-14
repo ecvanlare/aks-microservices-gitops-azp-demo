@@ -13,7 +13,7 @@ spec:
     path: gitops/helm-charts/app-chart/
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: online-boutique
   syncPolicy:
     automated:
       prune: true
