@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-issuer
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
+    targetRevision: argocd
+    path: gitops/infrastructure/cert-manager
+    directory:
+      include: cluster-issuer.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  dependsOn:
+    - name: cert-manager
+      namespace: argocd 
