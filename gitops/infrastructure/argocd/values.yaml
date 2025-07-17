@@ -5,7 +5,10 @@ server:
   ingress:
     enabled: false  # Keep false if using raw ingress manifest
   extraArgs:
-    - --insecure  # For development
+    - --rootpath
+    - /
+    - --basehref
+    - /
   resources:
     requests:
       cpu: 100m
