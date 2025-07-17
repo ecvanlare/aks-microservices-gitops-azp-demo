@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
-    targetRevision: argocd
+    targetRevision: dev
     path: gitops/infrastructure/cert-manager
     directory:
       include: cluster-issuer.yaml
