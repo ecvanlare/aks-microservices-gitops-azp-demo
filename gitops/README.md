@@ -76,7 +76,7 @@ kubectl -n argocd create secret generic argocd-repo-credentials --from-file=sshP
 argocd login localhost:8080 --username admin --password <ADMIN_PASSWORD> --insecure
 
 # 7. Register your private repo with ArgoCD CLI
-argocd repo add git@github.com:ecvanlare/online-boutique-private.git --ssh-private-key-path ~/.ssh/argo-cd
+argocd repo add git@github.com:ecvanlare/aks-microservices-gitops-demo.git --ssh-private-key-path ~/.ssh/argo-cd
 
 # 8. Add external repositories for infrastructure components
 argocd repo add https://charts.jetstack.io --type helm --name jetstack
@@ -104,7 +104,7 @@ kubectl apply -f gitops/root/root-app.yaml
 
 # Option 2: Create via ArgoCD CLI
 argocd app create root-app \
-  --repo git@github.com:ecvanlare/online-boutique-private.git \
+  --repo git@github.com:ecvanlare/aks-microservices-gitops-demo.git \
   --path gitops/ \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace argocd \
@@ -117,7 +117,7 @@ argocd app sync root-app
 
 # Or create via ArgoCD UI:
 # 1. Go to Applications → + New App
-# 2. Set Repository URL: git@github.com:ecvanlare/online-boutique-private.git
+# 2. Set Repository URL: git@github.com:ecvanlare/aks-microservices-gitops-demo.git
 # 3. Set Path: gitops/
 # 4. Enable Directory Recurse
 # 5. Set Revision: argocd
@@ -136,7 +136,7 @@ argocd app get root-app
 ## 🔧 Configuration
 
 ### Repository
-- **URL**: `git@github.com:ecvanlare/online-boutique-private.git`
+- **URL**: `git@github.com:ecvanlare/aks-microservices-gitops-demo.git`
 - **Branch**: `argocd`
 - **SSH Key**: Uses `~/.ssh/argo-cd` for authentication
 - **SSH Setup**: Add SSH key to ArgoCD for private repo access

@@ -8,9 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
+    repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
     targetRevision: dev
-    path: gitops/helm-charts/app-chart/
+    path: gitops/workloads/online-boutique/
   destination:
     server: https://kubernetes.default.svc
     namespace: online-boutique

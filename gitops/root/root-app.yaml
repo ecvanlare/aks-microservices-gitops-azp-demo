@@ -6,12 +6,14 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
+    repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
     targetRevision: dev
-    path: gitops/
+    path: gitops/root
     directory:
       recurse: true
-      include: "**/*-app.yaml"
+      include: 
+        - "**/apps-of-apps.yaml"
+        - "**/infra-of-infra.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
