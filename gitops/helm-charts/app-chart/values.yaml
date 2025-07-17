@@ -42,7 +42,7 @@ cartservice:
       memory: 256Mi
   image:
     repository: cartservice
-    tag: 0.1.0-argocd.1
+    tag: 0.1.0
   service:
     type: ClusterIP
     port: 7070
