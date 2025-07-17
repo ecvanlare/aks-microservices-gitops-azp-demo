@@ -1,0 +1,71 @@
+replicaCount: 1
+
+image:
+  repository: frontend
+  tag: 0.1.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  annotations: {}
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 600m
+    memory: 768Mi
+
+env:
+  PORT: "8080"
+  AD_SERVICE_ADDR: "adservice:9555"
+  CART_SERVICE_ADDR: "cartservice:7070"
+  CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
+  CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+  PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+  RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
+  SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+  SHOPPING_ASSISTANT_SERVICE_ADDR: "shoppingassistantservice:8080"
+
+# User pool tolerations
+tolerations:
+  - key: "userpool"
+    operator: "Equal"
+    value: "true"
+    effect: "NoSchedule"
+
+# Node affinity - require user pool
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: agentpool
+          operator: In
+          values:
+          - userpool
+
+# Node placement - inherits from parent chart global values
+
+podSecurityContext: {}
+securityContext: {}
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3

@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: cartservice
+  repository: emailservice
   tag: 0.1.0
   pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
-  port: 7070
+  port: 8080
   annotations: {}
 
 resources:
@@ -19,8 +19,8 @@ resources:
     memory: 768Mi
 
 env:
-  PORT: "7070"
-  REDIS_ADDR: "redis-cart:6379"
+  PORT: "8080"
+  DISABLE_PROFILER: "1"
 
 # User pool tolerations
 tolerations:
@@ -47,7 +47,7 @@ securityContext: {}
 
 livenessProbe:
   grpc:
-    port: 7070
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -55,7 +55,7 @@ livenessProbe:
 
 readinessProbe:
   grpc:
-    port: 7070
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
