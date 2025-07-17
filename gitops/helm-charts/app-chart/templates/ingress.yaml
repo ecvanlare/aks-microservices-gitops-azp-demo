@@ -1,0 +1,51 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "app-chart.fullname" . }}-ingress
+  labels:
+    {{- include "app-chart.labels" . | nindent 4 }}
+  annotations:
+    {{- if .Values.ssl.enabled }}
+    cert-manager.io/cluster-issuer: {{ .Values.ssl.clusterIssuer | quote }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{- if .Values.ssl.enabled }}true{{- else }}false{{- end }}"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    {{- if .Values.ingress.host }}
+    external-dns.alpha.kubernetes.io/hostname: "{{ .Values.ingress.host }},www.{{ .Values.ingress.host }}"
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className | default "nginx" }}
+  rules:
+  {{- if .Values.ingress.host }}
+  # Host-specific rule
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: {{ .Values.frontend.service.port }}
+  {{- end }}
+  # Default rule (no host) - handles requests without host header
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: {{ .Values.frontend.service.port }}
+  {{- if .Values.ssl.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host | quote }}
+    secretName: {{ include "app-chart.fullname" . }}-tls
+  {{- end }}
+{{- end }} 

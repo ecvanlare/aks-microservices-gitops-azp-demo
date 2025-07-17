@@ -1,0 +1,45 @@
+apiVersion: v2
+name: app-chart
+description: Online Boutique - Umbrella chart for all microservices
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: adservice
+    version: 0.1.0
+    repository: "file://charts/adservice"
+  - name: cartservice
+    version: 0.1.0
+    repository: "file://charts/cartservice"
+  - name: checkoutservice
+    version: 0.1.0
+    repository: "file://charts/checkoutservice"
+  - name: currencyservice
+    version: 0.1.0
+    repository: "file://charts/currencyservice"
+  - name: emailservice
+    version: 0.1.0
+    repository: "file://charts/emailservice"
+  - name: frontend
+    version: 0.1.0
+    repository: "file://charts/frontend"
+  - name: paymentservice
+    version: 0.1.0
+    repository: "file://charts/paymentservice"
+  - name: productcatalogservice
+    version: 0.1.0
+    repository: "file://charts/productcatalogservice"
+  - name: recommendationservice
+    version: 0.1.0
+    repository: "file://charts/recommendationservice"
+  - name: redis-cart
+    version: "0.1.0"
+    repository: "file://charts/redis-cart"
+  - name: shippingservice
+    version: 0.1.0
+    repository: "file://charts/shippingservice"
+  - name: shoppingassistantservice
+    version: "0.1.0"
+    repository: "file://charts/shoppingassistantservice" 
+ 
