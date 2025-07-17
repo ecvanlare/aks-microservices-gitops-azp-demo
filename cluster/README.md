@@ -87,7 +87,7 @@ argocd repo add https://github.com/kubernetes-sigs/external-dns.git --type git
 ### Stage 2: Deploy Root App and Infrastructure
 ```bash
 # 1. Apply the root app (this will deploy all infrastructure)
-kubectl apply -f gitops/root/root-app.yaml
+kubectl apply -f cluster/root/root-app.yaml
 
 # 2. Wait for infrastructure to deploy (cert-manager, ingress-nginx, external-dns)
 
@@ -100,7 +100,7 @@ kubectl apply -f gitops/root/root-app.yaml
 ### Deploy GitOps Applications
 ```bash
 # Option 1: Apply root app directly with kubectl
-kubectl apply -f gitops/root/root-app.yaml
+kubectl apply -f cluster/root/root-app.yaml
 
 # Option 2: Create via ArgoCD CLI
 argocd app create root-app \

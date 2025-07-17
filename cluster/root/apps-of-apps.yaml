@@ -1,27 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: online-boutique
+  name: apps-of-apps
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
     targetRevision: dev
-    path: cluster/workloads/online-boutique/
+    path: cluster/workloads
+    directory:
+      recurse: true
+      include: "**/Chart.yaml"
   destination:
     server: https://kubernetes.default.svc
-    namespace: online-boutique
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  dependsOn:
-    - cert-manager
-    - ingress-nginx
-    - external-dns
-  # This app deploys the online-boutique application after infrastructure is ready 
+  revisionHistoryLimit: 10 

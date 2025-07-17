@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
     targetRevision: dev
-    path: gitops/infrastructure/cert-manager
+    path: cluster/infrastructure/cert-manager
     directory:
       include: cluster-issuer.yaml
   destination:

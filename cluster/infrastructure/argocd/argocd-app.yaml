@@ -1,17 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infra-of-infra
+  name: argocd
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
     targetRevision: dev
-    path: gitops/infrastructure
+    path: cluster/infrastructure/argocd
     directory:
       recurse: true
-      include: "**/*-app.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -21,4 +20,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  revisionHistoryLimit: 10 
