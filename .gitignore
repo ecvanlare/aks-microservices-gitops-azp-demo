@@ -20,7 +20,9 @@
 *.tfvars
 *~
 bin/
+# Ignore build artifacts but not template directories
 build/
+!**/templates/build/
 Dockerfile.pip
 node_modules/
 obj/

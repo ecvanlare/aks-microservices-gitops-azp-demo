@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: online-boutique
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'git@github.com:ecvanlare/online-boutique-private.git'
+    targetRevision: dev
+    path: gitops/helm-charts/app-chart/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: online-boutique
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  dependsOn:
+    - cert-manager
+    - ingress-nginx
+    - external-dns
+  # This app deploys the online-boutique application after infrastructure is ready 

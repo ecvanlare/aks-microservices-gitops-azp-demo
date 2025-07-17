@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/kubernetes/ingress-nginx.git'
+    targetRevision: controller-v1.10.1
+    path: charts/ingress-nginx
+    helm:
+      values: |
+        controller:
+          fullnameOverride: ingress-nginx-controller
+          replicaCount: 2
+          publishService:
+            enabled: true
+          service:
+            type: LoadBalancer
+            annotations:
+              service.beta.kubernetes.io/azure-load-balancer-internal: "false"
+              service.beta.kubernetes.io/azure-load-balancer-resource-group: "rg-online-boutique"
+          config:
+            use-proxy-protocol: "false"
+            proxy-real-ip-cidr: "0.0.0.0/0"
+            use-forwarded-headers: "true"
+            enable-real-ip: "true"
+            proxy-connect-timeout: "5"
+            proxy-send-timeout: "60"
+            proxy-read-timeout: "60"
+          metrics:
+            enabled: true
+          nodeSelector: {}
+          tolerations:
+            - key: "ingress"
+              operator: "Equal"
+              value: "true"
+              effect: "NoSchedule"
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: agentpool
+                        operator: In
+                        values:
+                          - ingress
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  dependencies:
+    - name: cert-manager 
