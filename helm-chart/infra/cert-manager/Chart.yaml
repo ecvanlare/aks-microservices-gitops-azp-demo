@@ -1,9 +1,0 @@
-apiVersion: v2
-name: cert-manager
-version: 1.0.0
-description: Cert-Manager infrastructure for SSL certificate management
-dependencies:
-  - name: cert-manager
-    version: v1.18.2
-    repository: https://charts.jetstack.io
-    condition: cert-manager.enabled 

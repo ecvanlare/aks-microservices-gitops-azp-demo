@@ -1,6 +1,0 @@
-apiVersion: v2
-name: redis-cart
-description: Redis instance for cart service
-type: application
-version: 0.1.0
-appVersion: "7.4.1"
