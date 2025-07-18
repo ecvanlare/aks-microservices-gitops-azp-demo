@@ -8,10 +8,7 @@ spec:
   source:
     repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
     targetRevision: dev
-    path: cluster/workloads
-    directory:
-      recurse: true
-      include: "**/Chart.yaml"
+    path: cluster/workloads/online-boutique/
   destination:
     server: https://kubernetes.default.svc
     namespace: online-boutique
