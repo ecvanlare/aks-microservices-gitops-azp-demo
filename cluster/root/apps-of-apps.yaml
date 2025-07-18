@@ -14,11 +14,14 @@ spec:
       include: "**/Chart.yaml"
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: online-boutique
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  revisionHistoryLimit: 10 
+  dependsOn:
+    - cert-manager
+    - ingress-nginx
+    - external-dns
