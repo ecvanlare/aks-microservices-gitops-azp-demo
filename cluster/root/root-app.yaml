@@ -11,9 +11,7 @@ spec:
     path: cluster/root
     directory:
       recurse: true
-      include: 
-        - "**/apps-of-apps.yaml"
-        - "**/infra-of-infra.yaml"
+      include: "**/*-of-*.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
