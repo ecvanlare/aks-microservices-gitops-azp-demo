@@ -17,18 +17,18 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  # HTTPS rule for normal access
-  - host: argocd.ecvlsolutions.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: argocd-server
-            port:
-              name: https
+    # HTTPS rule for normal access
+    - host: argocd.ecvlsolutions.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: https
   tls:
-  - hosts:
-    - argocd.ecvlsolutions.com
-    secretName: argocd-tls 
+    - hosts:
+        - argocd.ecvlsolutions.com
+      secretName: argocd-tls

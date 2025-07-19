@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/kubernetes/ingress-nginx.git'
+    repoURL: "https://github.com/kubernetes/ingress-nginx.git"
     targetRevision: controller-v1.10.1
     path: charts/ingress-nginx
     helm:
@@ -56,4 +56,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
   dependencies:
-    - name: cert-manager 
+    - name: cert-manager

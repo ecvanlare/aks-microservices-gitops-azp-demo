@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
+    repoURL: "git@github.com:ecvanlare/aks-microservices-gitops-demo.git"
     targetRevision: dev
     path: cluster/infrastructure
     directory:
@@ -28,4 +28,4 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  revisionHistoryLimit: 10 
+  revisionHistoryLimit: 10

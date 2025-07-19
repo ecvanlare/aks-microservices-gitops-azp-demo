@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'git@github.com:ecvanlare/aks-microservices-gitops-demo.git'
+    repoURL: "git@github.com:ecvanlare/aks-microservices-gitops-demo.git"
     targetRevision: dev
     path: cluster/workloads/online-boutique/
   destination:

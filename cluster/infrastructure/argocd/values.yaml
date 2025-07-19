@@ -3,7 +3,7 @@ server:
   service:
     type: ClusterIP
   ingress:
-    enabled: false  # Keep false if using raw ingress manifest
+    enabled: false # Keep false if using raw ingress manifest
   extraArgs:
     - --rootpath
     - /
@@ -82,4 +82,4 @@ dex:
 
 # HA configuration
 ha:
-  enabled: false 
+  enabled: false
