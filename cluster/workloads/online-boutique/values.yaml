@@ -260,7 +260,9 @@ shoppingassistantservice:
 # --- Ingress Config ---
 ingress:
   enabled: true
-  host: "www.ecvlsolutions.com"
+  hosts:
+    - "ecvlsolutions.com"
+    - "www.ecvlsolutions.com"
   className: "nginx"
 # SSL Configuration (uses cluster-level Cert-Manager)
 ssl:
