@@ -1,0 +1,17 @@
+# Build outputs
+dist/
+build/
+coverage/
+
+cluster/helm/
+**/*.css
+**/*.html 
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Reports
+reports/

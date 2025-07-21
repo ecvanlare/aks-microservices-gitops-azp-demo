@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps-of-apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "git@github.com:ecvanlare/aks-microservices-gitops-demo.git"
+    targetRevision: dev
+    path: cluster/helm/online-boutique/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: online-boutique
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - TimeoutSeconds=300
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  dependsOn:
+    - cert-manager
+    - ingress-nginx
+    - external-dns
