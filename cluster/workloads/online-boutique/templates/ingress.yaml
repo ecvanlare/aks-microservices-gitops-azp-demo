@@ -13,15 +13,16 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    {{- if .Values.ingress.host }}
-    external-dns.alpha.kubernetes.io/hostname: "{{ join \",\" .Values.ingress.hosts }}"
+    {{- if .Values.ingress.hosts }}
+    external-dns.alpha.kubernetes.io/hostname: "{{ join "," .Values.ingress.hosts }}"
     {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className | default "nginx" }}
   rules:
-  {{- if .Values.ingress.host }}
+  {{- if .Values.ingress.hosts }}
+  {{- range .Values.ingress.hosts }}
   # Host-specific rule
-  - host: {{ .Values.ingress.host }}
+  - host: {{ . }}
     http:
       paths:
       - path: /
@@ -30,7 +31,8 @@ spec:
           service:
             name: frontend
             port:
-              number: {{ .Values.frontend.service.port }}
+              number: {{ $.Values.frontend.service.port }}
+  {{- end }}
   {{- end }}
   # Default rule (no host) - handles requests without host header
   - http:
@@ -45,7 +47,9 @@ spec:
   {{- if .Values.ssl.enabled }}
   tls:
   - hosts:
-    - {{ .Values.ingress.host | quote }}
+    {{- range .Values.ingress.hosts }}
+    - {{ . | quote }}
+    {{- end }}
     secretName: {{ include "app-chart.fullname" . }}-tls
   {{- end }}
 {{- end }} 
