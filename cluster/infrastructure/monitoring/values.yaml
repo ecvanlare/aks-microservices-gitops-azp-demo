@@ -3,6 +3,12 @@ prometheusOperator:
   # Disable CRD creation completely
   crds:
     enabled: false
+  # Disable CRD management
+  manageCrds: false
+
+# Disable CRD installation at the chart level
+crds:
+  enabled: false
 
 grafana:
   # Admin password (change this in production!)

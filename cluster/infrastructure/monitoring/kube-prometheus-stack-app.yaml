@@ -22,6 +22,8 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - TimeoutSeconds=600
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
     retry:
       limit: 3
       backoff:
