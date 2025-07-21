@@ -10,8 +10,8 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: argocd.ecvlsolutions.com
     kubernetes.io/tls-acme: "true"
     # Temporarily disable SSL redirect to allow ACME challenges
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 spec:
