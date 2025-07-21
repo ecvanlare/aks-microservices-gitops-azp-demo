@@ -1,3 +1,6 @@
+prometheusOperator:
+  createCustomResource: false
+
 grafana:
   # Admin password (change this in production!)
   adminPassword: "admin123"
