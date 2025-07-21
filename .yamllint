@@ -1,0 +1,35 @@
+extends: default
+
+rules:
+  # Basic formatting rules (simple best practices)
+  line-length: disable          # Allow long lines for readability
+  trailing-spaces: enable       # Remove trailing spaces
+  new-line-at-end-of-file: enable  # Files should end with newline
+  indentation:
+    spaces: 2                   # Use 2 spaces for indentation
+    indent-sequences: true      # Consistent indentation
+  document-start: disable       # Don't require --- at start
+  document-end: disable         # Don't require ... at end
+  empty-lines:
+    max: 1                      # Max 1 empty line between sections
+    max-end: 0                  # No empty lines at end
+  
+  # Spacing rules
+  hyphens:
+    max-spaces-after: 1         # Consistent hyphen spacing
+  colons:
+    max-spaces-before: 0        # No space before colon
+    max-spaces-after: 1         # One space after colon
+  commas:
+    max-spaces-before: 0        # No space before comma
+    min-spaces-after: 1         # At least one space after comma
+  
+  # Comments
+  comments:
+    min-spaces-from-content: 1  # Space between content and comment
+  comments-indentation: disable  # Don't enforce comment indentation
+  
+  # Critical syntax checks
+  key-duplicates: enable        # No duplicate keys
+  truthy:
+    check-keys: false           # Allow flexible boolean values 
