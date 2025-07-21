@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "git@github.com:ecvanlare/aks-microservices-gitops-demo.git"
     targetRevision: dev
-    path: cluster/workloads/online-boutique/
+    path: cluster/helm/online-boutique/
   destination:
     server: https://kubernetes.default.svc
     namespace: online-boutique

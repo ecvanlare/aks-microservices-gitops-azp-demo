@@ -40,7 +40,7 @@ cd ..
 ### Step 2: Deploy Application
 ```bash
 # 2. Deploy the application
-cd cluster/workloads/online-boutique
+cd cluster/helm/online-boutique
 helm dependency update
 helm upgrade --install online-boutique . --namespace online-boutique --create-namespace --wait --timeout=15m
 ```
@@ -78,14 +78,14 @@ curl -I https://ecvlsolutions.com         # Test HTTPS access (if SSL enabled)
 
 #### Certificate Not Ready
 ```bash
-kubectl describe certificate test-workloads/online-boutique-tls -n test    # Check certificate details and errors
+kubectl describe certificate test-helm/online-boutique-tls -n test    # Check certificate details and errors
 kubectl get orders -n test                                  # Check Let's Encrypt orders
 kubectl get challenges -n test                              # Check ACME challenges
 ```
 
 #### Retry Certificate Issuance
 ```bash
-kubectl delete certificate test-workloads/online-boutique-tls -n test      # Delete failed certificate
+kubectl delete certificate test-helm/online-boutique-tls -n test      # Delete failed certificate
 # Certificate will be recreated automatically
 ```
 
@@ -200,7 +200,7 @@ If you want to test via port-forward or direct IP, you have two options:
 4. **The Zone ID** is the `abc123def456` part
 
 #### Configure ExternalDNS Values
-Edit `cluster/workloads/online-boutique/infra/external-dns/external-dns-values.yaml`:
+Edit `cluster/helm/online-boutique/infra/external-dns/external-dns-values.yaml`:
 
 ```yaml
 # Environment variables for Cloudflare configuration

@@ -34,7 +34,7 @@ yamllint -c .yamllint cluster/ .azure/
 
 # Lint Helm charts
 echo "🔍 Linting Helm charts..."
-helm lint cluster/workloads/online-boutique
+helm lint cluster/helm/online-boutique
 
 # Check YAML formatting
 echo "🔍 Checking YAML formatting..."

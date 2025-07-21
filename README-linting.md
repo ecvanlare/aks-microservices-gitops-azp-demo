@@ -14,7 +14,7 @@ This project uses comprehensive linting to ensure code quality and consistency.
 
 # Or run individual checks
 yamllint -c .yamllint cluster/root/ cluster/infrastructure/ .azure/
-helm lint cluster/workloads/online-boutique
+helm lint cluster/helm/online-boutique
 prettier --check ".azure/**/*.yml" "cluster/root/*.yaml" "cluster/infrastructure/**/*.yaml"
 cd terraform && tflint --init && tflint --format=compact && cd ..
 terraform fmt -check -recursive terraform/
@@ -63,7 +63,7 @@ The linting runs as part of the `LintAndFormat` stage in your build pipeline:
     - job: Lint
       steps:
         - script: yamllint -c .yamllint cluster/root/ cluster/infrastructure/ .azure/
-        - script: helm lint cluster/workloads/online-boutique
+        - script: helm lint cluster/helm/online-boutique
         - script: prettier --check ".azure/**/*.yml" "cluster/root/*.yaml"
         - script: |
             cd terraform
@@ -92,7 +92,7 @@ jobs:
     displayName: "Lint & Format Check"
     steps:
       - script: yamllint -c .yamllint cluster/root/ cluster/infrastructure/ .azure/
-      - script: helm lint cluster/workloads/online-boutique
+      - script: helm lint cluster/helm/online-boutique
       - script: prettier --check ".azure/**/*.yml" "cluster/root/*.yaml"
       - script: |
           cd terraform
