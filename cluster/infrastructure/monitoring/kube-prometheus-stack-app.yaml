@@ -24,6 +24,7 @@ spec:
       - TimeoutSeconds=600
       - PrunePropagationPolicy=foreground
       - PruneLast=true
+      - ServerSideApply=true
     retry:
       limit: 3
       backoff:
