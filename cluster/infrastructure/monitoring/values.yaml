@@ -1,14 +1,13 @@
 prometheusOperator:
   createCustomResource: false
-  # Disable CRD creation completely
+  # Enable CRD creation and management
   crds:
-    enabled: false
-  # Disable CRD management
-  manageCrds: false
+    enabled: true
+  manageCrds: true
 
-# Disable CRD installation at the chart level
+# Enable CRD installation at the chart level
 crds:
-  enabled: false
+  enabled: true
 
 grafana:
   # Admin password (change this in production!)
