@@ -6,12 +6,114 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "git@github.com:ecvanlare/aks-microservices-gitops-demo.git"
-    targetRevision: dev
-    path: cluster/infrastructure/monitoring
+    repoURL: "https://prometheus-community.github.io/helm-charts"
+    chart: kube-prometheus-stack
+    targetRevision: "51.8.0"
     helm:
-      valueFiles:
-        - monitoring-values.yaml
+      values: |
+        prometheusOperator:
+          createCustomResource: false
+          # Enable CRD creation and management
+          crds:
+            enabled: true
+          manageCrds: true
+
+        # Enable CRD installation at the chart level
+        crds:
+          enabled: true
+
+        grafana:
+          # Admin password (change this in production!)
+          adminPassword: "admin123"
+          
+          # Persistent storage for dashboards and configs
+          persistence:
+            enabled: true
+            size: 10Gi
+            storageClassName: "managed-csi"
+            accessMode: ReadWriteOnce
+          
+          # Security settings
+          security:
+            adminUser: "admin"
+            adminPassword: "admin123"
+          
+          # Default dashboards and datasources
+          dashboardProviders:
+            dashboardproviders.yaml:
+              apiVersion: 1
+              providers:
+                - name: 'default'
+                  orgId: 1
+                  folder: ''
+                  type: file
+                  disableDeletion: false
+                  updateIntervalSeconds: 10
+                  allowUiUpdates: true
+                  options:
+                    path: /var/lib/grafana/dashboards/default
+          
+          dashboards:
+            default:
+              kubernetes-cluster:
+                gnetId: 7249
+                revision: 1
+                datasource: Prometheus
+              kubernetes-pods:
+                gnetId: 6417
+                revision: 1
+                datasource: Prometheus
+              kubernetes-nodes:
+                gnetId: 6418
+                revision: 1
+                datasource: Prometheus
+          
+          # Ingress configuration
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - grafana.ecvlsolutions.com
+            annotations:
+              kubernetes.io/ingress.class: nginx
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              external-dns.alpha.kubernetes.io/hostname: grafana.ecvlsolutions.com
+            tls:
+              - hosts:
+                  - grafana.ecvlsolutions.com
+                secretName: grafana-tls
+          
+          # Resource limits
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+
+        prometheus:
+          prometheusSpec:
+            resources:
+              requests:
+                cpu: 500m
+                memory: 1Gi
+              limits:
+                cpu: 1
+                memory: 2Gi
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - prometheus.ecvlsolutions.com
+            annotations:
+              kubernetes.io/ingress.class: nginx
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              external-dns.alpha.kubernetes.io/hostname: prometheus.ecvlsolutions.com
+            tls:
+              - hosts:
+                  - prometheus.ecvlsolutions.com
+                secretName: prometheus-tls
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
