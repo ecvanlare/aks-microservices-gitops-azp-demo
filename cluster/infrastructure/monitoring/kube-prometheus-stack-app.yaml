@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "https://prometheus-community.github.io/helm-charts"
-    chart: kube-prometheus-stack
-    targetRevision: "51.8.0" # Use a stable version, update as needed
+    repoURL: https://github.com/your-user/aks-microservices-gitops-demo
+    targetRevision: dev
+    path: cluster/infrastructure/monitoring
     helm:
       valueFiles:
         - monitoring-values.yaml
@@ -30,4 +30,4 @@ spec:
       backoff:
         duration: 5s
         factor: 2
-        maxDuration: 3m 
+        maxDuration: 3m
