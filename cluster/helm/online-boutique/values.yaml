@@ -49,6 +49,15 @@ cartservice:
   env:
     PORT: "7070"
     REDIS_ADDR: "redis-cart:6379"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - userpool
 checkoutservice:
   enabled: true
   replicaCount: 1
@@ -137,6 +146,15 @@ frontend:
     RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
     SHIPPING_SERVICE_ADDR: "shippingservice:50051"
     SHOPPING_ASSISTANT_SERVICE_ADDR: "shoppingassistantservice:8080"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - userpool
 paymentservice:
   enabled: true
   replicaCount: 1
