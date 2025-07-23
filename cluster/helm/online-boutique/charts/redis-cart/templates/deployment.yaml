@@ -19,8 +19,18 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
         app.kubernetes.io/component: service
     spec:
+      {{- if .Values.affinity }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      tolerations:
+        {{- if .Values.tolerations }}
+        {{- toYaml .Values.tolerations | nindent 8 }}
+        {{- else if .Values.global.tolerations }}
+        {{- toYaml .Values.global.tolerations | nindent 8 }}
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -57,7 +67,7 @@ spec:
         - name: {{ .Values.volumeName }}
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-{{ .Chart.Name }}
+            claimName: {{ .Release.Name }}-{{ .Chart.Name }}-pvc
           {{- else }}
           emptyDir: {}
           {{- end }} 

@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "git@github.com:ecvanlare/aks-microservices-gitops-demo.git"
+    repoURL: "git@github.com:ecvanlare/aks-microservices-gitops-azp-demo.git"
     targetRevision: dev
     path: cluster/infrastructure
     directory:
@@ -21,11 +21,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - TimeoutSeconds=300
-    retry:
-      limit: 3
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m
-  revisionHistoryLimit: 10
