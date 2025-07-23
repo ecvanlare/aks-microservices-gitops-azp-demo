@@ -75,17 +75,17 @@ output "user_groups" {
   value = [
     {
       name      = var.admin_group_name
-      object_id = azuread_group.aks_groups["admins"].object_id
+      object_id = data.azuread_group.aks_groups["admins"].object_id
       role      = var.admin_role
     },
     {
       name      = var.developer_group_name
-      object_id = azuread_group.aks_groups["developers"].object_id
+      object_id = data.azuread_group.aks_groups["developers"].object_id
       role      = var.developer_role
     },
     {
       name      = var.viewer_group_name
-      object_id = azuread_group.aks_groups["viewers"].object_id
+      object_id = data.azuread_group.aks_groups["viewers"].object_id
       role      = var.viewer_role
     }
   ]
@@ -191,30 +191,26 @@ output "node_pools" {
   description = "The node pool configurations"
   value = {
     default = {
-      name                = var.aks_node_pool.name
-      vm_size             = var.aks_node_pool.vm_size
-      min_count           = var.aks_node_pool.min_count
-      max_count           = var.aks_node_pool.max_count
-      enable_auto_scaling = var.aks_node_pool.enable_auto_scaling
+      name      = var.aks_node_pool.name
+      vm_size   = var.aks_node_pool.vm_size
+      min_count = var.aks_node_pool.min_count
+      max_count = var.aks_node_pool.max_count
     }
     user = {
-      name                = var.aks_user_node_pool.name
-      vm_size             = var.aks_user_node_pool.vm_size
-      min_count           = var.aks_user_node_pool.min_count
-      max_count           = var.aks_user_node_pool.max_count
-      enable_auto_scaling = var.aks_user_node_pool.enable_auto_scaling
-      max_pods            = var.aks_user_node_pool.max_pods
+      name      = var.aks_user_node_pool.name
+      vm_size   = var.aks_user_node_pool.vm_size
+      min_count = var.aks_user_node_pool.min_count
+      max_count = var.aks_user_node_pool.max_count
+      max_pods  = var.aks_user_node_pool.max_pods
     }
     ingress = var.aks_ingress_node_pool_enabled ? {
-      name                  = var.aks_ingress_node_pool.name
-      vm_size               = var.aks_ingress_node_pool.vm_size
-      min_count             = var.aks_ingress_node_pool.min_count
-      max_count             = var.aks_ingress_node_pool.max_count
-      enable_auto_scaling   = var.aks_ingress_node_pool.enable_auto_scaling
-      max_pods              = var.aks_ingress_node_pool.max_pods
-      node_taints           = var.aks_ingress_node_pool.node_taints
-      node_labels           = var.aks_ingress_node_pool.node_labels
-      enable_node_public_ip = var.aks_ingress_node_pool.enable_node_public_ip
+      name        = var.aks_ingress_node_pool.name
+      vm_size     = var.aks_ingress_node_pool.vm_size
+      min_count   = var.aks_ingress_node_pool.min_count
+      max_count   = var.aks_ingress_node_pool.max_count
+      max_pods    = var.aks_ingress_node_pool.max_pods
+      node_taints = var.aks_ingress_node_pool.node_taints
+      node_labels = var.aks_ingress_node_pool.node_labels
     } : null
   }
 }
