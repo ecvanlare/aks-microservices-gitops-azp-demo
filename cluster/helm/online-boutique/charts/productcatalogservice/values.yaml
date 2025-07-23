@@ -41,8 +41,22 @@ affinity:
 
 # Node placement - inherits from parent chart global values
 
-podSecurityContext: {}
-securityContext: {}
+# Pod Security Context - Run as non-root user
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Container Security Context - Security hardening
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
 
 livenessProbe:
   grpc:
