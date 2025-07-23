@@ -17,6 +17,10 @@ spec:
           crds:
             enabled: true
           manageCrds: true
+          # Service configuration for Prometheus Operator
+          service:
+            type: ClusterIP
+            port: 8080
 
         # Enable CRD installation at the chart level
         crds:
@@ -97,6 +101,11 @@ spec:
           service:
             type: ClusterIP
             port: 9090
+
+        alertmanager:
+          enabled: false
+
+        prometheus:
           prometheusSpec:
             storageSpec:
               volumeClaimTemplate:
