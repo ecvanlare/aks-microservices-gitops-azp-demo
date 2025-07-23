@@ -230,7 +230,7 @@ redis-cart:
     port: 6379
   persistence:
     enabled: true
-    size: 100Mi
+    size: 2Gi
     storageClass: "managed-csi"
     accessMode: ReadWriteOnce
   auth:

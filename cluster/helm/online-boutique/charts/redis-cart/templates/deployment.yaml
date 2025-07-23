@@ -67,7 +67,7 @@ spec:
         - name: {{ .Values.volumeName }}
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-{{ .Chart.Name }}
+            claimName: {{ .Release.Name }}-{{ .Chart.Name }}-pvc
           {{- else }}
           emptyDir: {}
           {{- end }} 

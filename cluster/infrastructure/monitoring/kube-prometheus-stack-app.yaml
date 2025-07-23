@@ -29,7 +29,7 @@ spec:
           # Persistent storage for dashboards and configs
           persistence:
             enabled: true
-            size: 10Gi
+            size: 3Gi
             storageClassName: "managed-csi"
             accessMode: ReadWriteOnce
           

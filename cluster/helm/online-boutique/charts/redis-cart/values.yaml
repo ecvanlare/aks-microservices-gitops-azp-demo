@@ -17,7 +17,7 @@ resources:
 
 persistence:
   enabled: true
-  size: 100Mi
+  size: 2Gi
   storageClass: "managed-csi"
   accessMode: ReadWriteOnce
 
