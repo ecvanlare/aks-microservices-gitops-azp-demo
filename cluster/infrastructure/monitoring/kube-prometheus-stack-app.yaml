@@ -94,6 +94,14 @@ spec:
 
         prometheus:
           prometheusSpec:
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: "managed-csi"
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 5Gi
             resources:
               requests:
                 cpu: 500m
