@@ -5,12 +5,6 @@ variable "subscription_id" {
   default     = null
 }
 
-variable "tenant_id" {
-  description = "Azure tenant ID"
-  type        = string
-  default     = null
-}
-
 # Resource Group Variables
 variable "environment" {
   description = "Environment name (e.g., dev, staging, prod)"
