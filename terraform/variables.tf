@@ -153,11 +153,7 @@ variable "aks_user_node_pool" {
   }
 }
 
-variable "aks_ingress_node_pool_enabled" {
-  description = "Whether to create a dedicated ingress node pool"
-  type        = bool
-  default     = true
-}
+
 
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"

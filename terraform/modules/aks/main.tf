@@ -9,8 +9,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name            = var.node_pool.name
     vm_size         = var.node_pool.vm_size
     os_disk_size_gb = var.node_pool.os_disk_size_gb
-    min_count       = var.node_pool.min_count
-    max_count       = var.node_pool.max_count
+    node_count      = var.node_pool.min_count
     vnet_subnet_id  = var.network.subnet_id
     max_pods        = var.max_pods_per_node
   }
@@ -86,7 +85,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
 
 # Dedicated ingress node pool for ingress controllers
 resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
-  count                 = var.ingress_node_pool_enabled ? 1 : 0
   name                  = var.ingress_node_pool.name
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
   vm_size               = var.ingress_node_pool.vm_size

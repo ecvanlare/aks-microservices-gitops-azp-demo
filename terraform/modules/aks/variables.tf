@@ -118,11 +118,6 @@ variable "timeouts" {
   })
 }
 
-# Additional Node Pools
-variable "ingress_node_pool_enabled" {
-  description = "Whether to create a dedicated ingress node pool"
-  type        = bool
-}
 
 variable "user_node_pool" {
   description = "The user node pool configuration"

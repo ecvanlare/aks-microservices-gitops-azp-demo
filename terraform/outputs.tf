@@ -165,19 +165,14 @@ output "managed_identities" {
 
 
 # Node Pool Outputs
-output "ingress_node_pool_enabled" {
-  description = "Whether the ingress node pool is enabled"
-  value       = var.aks_ingress_node_pool_enabled
-}
-
 output "ingress_node_pool_name" {
   description = "The name of the ingress node pool"
-  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.name : null
+  value       = var.aks_ingress_node_pool.name
 }
 
 output "ingress_node_pool_vm_size" {
   description = "The VM size of the ingress node pool"
-  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.vm_size : null
+  value       = var.aks_ingress_node_pool.vm_size
 }
 
 # Network Security Group Outputs
@@ -203,7 +198,7 @@ output "node_pools" {
       max_count = var.aks_user_node_pool.max_count
       max_pods  = var.aks_user_node_pool.max_pods
     }
-    ingress = var.aks_ingress_node_pool_enabled ? {
+    ingress = {
       name        = var.aks_ingress_node_pool.name
       vm_size     = var.aks_ingress_node_pool.vm_size
       min_count   = var.aks_ingress_node_pool.min_count
@@ -211,7 +206,7 @@ output "node_pools" {
       max_pods    = var.aks_ingress_node_pool.max_pods
       node_taints = var.aks_ingress_node_pool.node_taints
       node_labels = var.aks_ingress_node_pool.node_labels
-    } : null
+    }
   }
 }
 

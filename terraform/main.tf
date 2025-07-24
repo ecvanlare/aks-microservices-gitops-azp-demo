@@ -120,10 +120,9 @@ module "aks" {
   private_cluster_enabled = var.aks_private_cluster_enabled
 
   # Node Pools Configuration
-  node_pool                 = var.aks_node_pool
-  user_node_pool            = var.aks_user_node_pool
-  ingress_node_pool_enabled = var.aks_ingress_node_pool_enabled
-  ingress_node_pool         = var.aks_ingress_node_pool
+  node_pool         = var.aks_node_pool
+  user_node_pool    = var.aks_user_node_pool
+  ingress_node_pool = var.aks_ingress_node_pool
 
   # Network Configuration
   network = {
