@@ -132,7 +132,7 @@ frontend:
       memory: 128Mi
   image:
     repository: frontend
-    tag: 0.1.0-alpha.214
+    tag: 0.1.0-alpha.227
   service:
     type: ClusterIP
     port: 8080
@@ -331,7 +331,7 @@ hpa:
   enabled: true
   global:
     cpu:
-      targetAverageUtilization: 50 
+      targetAverageUtilization: 50
     memory:
       targetAverageUtilization: 70
   frontend:
@@ -341,7 +341,7 @@ hpa:
     cpu:
       targetAverageUtilization: 50
     memory:
-      targetAverageUtilization: 70   
+      targetAverageUtilization: 70
   cartservice:
     enabled: true
     minReplicas: 1
@@ -349,7 +349,7 @@ hpa:
     cpu:
       targetAverageUtilization: 50
     memory:
-      targetAverageUtilization: 70  
+      targetAverageUtilization: 70
   productcatalogservice:
     enabled: true
     minReplicas: 1
