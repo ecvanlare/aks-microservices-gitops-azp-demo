@@ -73,6 +73,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
   os_disk_size_gb       = var.user_node_pool.os_disk_size_gb
   vnet_subnet_id        = var.network.subnet_id
   max_pods              = var.user_node_pool.max_pods
+  auto_scaling_enabled  = var.user_node_pool.auto_scaling_enabled
 
   # Node taints to ensure only pods with tolerations can schedule here
   node_taints = var.user_node_pool.node_taints
@@ -93,6 +94,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
   os_disk_size_gb       = var.ingress_node_pool.os_disk_size_gb
   vnet_subnet_id        = var.network.subnet_id
   max_pods              = var.ingress_node_pool.max_pods
+  auto_scaling_enabled  = var.ingress_node_pool.auto_scaling_enabled
 
   # Node taints to prevent other workloads from scheduling here
   node_taints = var.ingress_node_pool.node_taints

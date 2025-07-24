@@ -122,28 +122,30 @@ variable "timeouts" {
 variable "user_node_pool" {
   description = "The user node pool configuration"
   type = object({
-    name            = string
-    vm_size         = string
-    os_disk_size_gb = number
-    min_count       = number
-    max_count       = number
-    max_pods        = number
-    node_taints     = list(string)
-    node_labels     = map(string)
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
 }
 
 variable "ingress_node_pool" {
   description = "The ingress node pool configuration"
   type = object({
-    name            = string
-    vm_size         = string
-    os_disk_size_gb = number
-    min_count       = number
-    max_count       = number
-    max_pods        = number
-    node_taints     = list(string)
-    node_labels     = map(string)
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
 }
 

@@ -130,14 +130,15 @@ variable "aks_node_pool" {
 variable "aks_user_node_pool" {
   description = "The user node pool configuration for AKS (application workloads)"
   type = object({
-    name            = string
-    vm_size         = string
-    os_disk_size_gb = number
-    min_count       = number
-    max_count       = number
-    max_pods        = number
-    node_taints     = list(string)
-    node_labels     = map(string)
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
   default = {
     name            = "userpool"
@@ -150,6 +151,7 @@ variable "aks_user_node_pool" {
     node_labels = {
       "agentpool" = "userpool"
     }
+    auto_scaling_enabled = true
   }
 }
 
@@ -158,14 +160,15 @@ variable "aks_user_node_pool" {
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"
   type = object({
-    name            = string
-    vm_size         = string
-    os_disk_size_gb = number
-    min_count       = number
-    max_count       = number
-    max_pods        = number
-    node_taints     = list(string)
-    node_labels     = map(string)
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
   default = {
     name            = "ingress"
@@ -178,6 +181,7 @@ variable "aks_ingress_node_pool" {
     node_labels = {
       "agentpool" = "ingress"
     }
+    auto_scaling_enabled = true
   }
 }
 
