@@ -6,12 +6,16 @@ resource "azurerm_kubernetes_cluster" "aks" {
   private_cluster_enabled = var.private_cluster_enabled
 
   default_node_pool {
-    name            = var.node_pool.name
-    vm_size         = var.node_pool.vm_size
-    os_disk_size_gb = var.node_pool.os_disk_size_gb
-    node_count      = var.node_pool.min_count
-    vnet_subnet_id  = var.network.subnet_id
-    max_pods        = var.max_pods_per_node
+    name                        = var.node_pool.name
+    vm_size                     = var.node_pool.vm_size
+    os_disk_size_gb             = var.node_pool.os_disk_size_gb
+    min_count                   = var.node_pool.min_count
+    max_count                   = var.node_pool.max_count
+    vnet_subnet_id              = var.network.subnet_id
+    max_pods                    = var.node_pool.max_pods
+    auto_scaling_enabled        = var.node_pool.auto_scaling_enabled
+    node_labels                 = var.node_pool.node_labels
+    temporary_name_for_rotation = "temp${var.node_pool.name}"
   }
 
   network_profile {

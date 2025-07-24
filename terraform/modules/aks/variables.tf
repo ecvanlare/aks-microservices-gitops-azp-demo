@@ -27,11 +27,14 @@ variable "private_cluster_enabled" {
 variable "node_pool" {
   description = "Node pool configuration"
   type = object({
-    name            = string
-    vm_size         = string
-    os_disk_size_gb = number
-    min_count       = number
-    max_count       = number
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
 }
 

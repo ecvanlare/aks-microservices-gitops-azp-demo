@@ -63,7 +63,7 @@ variable "subnets" {
   default = {
     aks = {
       name              = "snet-aks"
-      address_prefixes  = ["10.0.0.0/24"]
+      address_prefixes  = ["10.0.0.0/22"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
   }
@@ -111,18 +111,24 @@ variable "aks_private_cluster_enabled" {
 variable "aks_node_pool" {
   description = "The default node pool configuration for AKS (system workloads)"
   type = object({
-    name            = string
-    vm_size         = string
-    os_disk_size_gb = number
-    min_count       = number
-    max_count       = number
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
   default = {
-    name            = "default"
-    vm_size         = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest size that meets Azure minimum requirements
-    os_disk_size_gb = 30
-    min_count       = 1
-    max_count       = 2
+    name                 = "default"
+    vm_size              = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest size that meets Azure minimum requirements
+    os_disk_size_gb      = 30
+    min_count            = 1
+    max_count            = 5
+    max_pods             = 50
+    node_labels          = {}
+    auto_scaling_enabled = true
   }
 }
 
