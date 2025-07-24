@@ -1,9 +1,3 @@
-# Azure Subscription Variables
-variable "subscription_id" {
-  description = "Azure subscription ID"
-  type        = string
-  default     = null
-}
 
 # Resource Group Variables
 variable "environment" {
