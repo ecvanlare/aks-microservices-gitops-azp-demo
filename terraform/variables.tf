@@ -62,8 +62,8 @@ variable "subnets" {
   }))
   default = {
     aks = {
-      name              = "snet-aks"
-      address_prefixes  = ["10.0.0.0/22"]
+      name              = "snet-aks-cluster"
+      address_prefixes  = ["10.0.8.0/22"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
   }
