@@ -30,14 +30,17 @@ resource "azurerm_user_assigned_identity" "identities" {
 }
 
 # Azure AD Groups 
-data "azuread_group" "aks_groups" {
+resource "azuread_group" "aks_groups" {
   for_each = {
-    admins     = var.admin_group_name
-    developers = var.developer_group_name
-    viewers    = var.viewer_group_name
+    admins     = { name = var.admin_group_name, description = "AKS Cluster Administrators" }
+    developers = { name = var.developer_group_name, description = "AKS Developers - Can create/modify resources" }
+    viewers    = { name = var.viewer_group_name, description = "AKS Viewers - Read-only access" }
   }
 
-  display_name = each.value
+  display_name     = each.value.name
+  mail_nickname    = each.value.name
+  security_enabled = true
+  description      = each.value.description
 }
 
 # =============================================================================
@@ -146,22 +149,22 @@ module "aks" {
 
   # RBAC Configuration
   aad_rbac = {
-    admin_group_object_ids = [data.azuread_group.aks_groups["admins"].object_id]
+    admin_group_object_ids = [azuread_group.aks_groups["admins"].object_id]
     azure_rbac_enabled     = true
     user_groups = [
       {
         name      = var.admin_group_name
-        object_id = data.azuread_group.aks_groups["admins"].object_id
+        object_id = azuread_group.aks_groups["admins"].object_id
         roles     = [var.admin_role]
       },
       {
         name      = var.developer_group_name
-        object_id = data.azuread_group.aks_groups["developers"].object_id
+        object_id = azuread_group.aks_groups["developers"].object_id
         roles     = [var.developer_role]
       },
       {
         name      = var.viewer_group_name
-        object_id = data.azuread_group.aks_groups["viewers"].object_id
+        object_id = azuread_group.aks_groups["viewers"].object_id
         roles     = [var.viewer_role]
       }
     ]
@@ -282,7 +285,7 @@ module "user_group_roles" {
 
   scope                = module.aks.cluster_id
   role_definition_name = each.value.role
-  principal_id         = data.azuread_group.aks_groups[each.value.group].object_id
+  principal_id         = azuread_group.aks_groups[each.value.group].object_id
   description          = var.role_assignment_description
   condition            = var.role_assignment_condition
   condition_version    = var.role_assignment_condition_version
@@ -296,7 +299,7 @@ module "keyvault_user_group_roles" {
 
   scope                = module.keyvault.key_vault_id
   role_definition_name = each.value.role
-  principal_id         = data.azuread_group.aks_groups[each.value.group].object_id
+  principal_id         = azuread_group.aks_groups[each.value.group].object_id
   description          = var.role_assignment_description
   condition            = var.role_assignment_condition
   condition_version    = var.role_assignment_condition_version

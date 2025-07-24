@@ -75,17 +75,17 @@ output "user_groups" {
   value = [
     {
       name      = var.admin_group_name
-      object_id = data.azuread_group.aks_groups["admins"].object_id
+      object_id = azuread_group.aks_groups["admins"].object_id
       role      = var.admin_role
     },
     {
       name      = var.developer_group_name
-      object_id = data.azuread_group.aks_groups["developers"].object_id
+      object_id = azuread_group.aks_groups["developers"].object_id
       role      = var.developer_role
     },
     {
       name      = var.viewer_group_name
-      object_id = data.azuread_group.aks_groups["viewers"].object_id
+      object_id = azuread_group.aks_groups["viewers"].object_id
       role      = var.viewer_role
     }
   ]
