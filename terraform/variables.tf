@@ -61,11 +61,6 @@ variable "subnets" {
     service_endpoints = list(string)
   }))
   default = {
-    aks = {
-      name              = "snet-aks"
-      address_prefixes  = ["10.0.0.0/24"]
-      service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
-    }
     aks-cluster = {
       name              = "snet-aks-cluster"
       address_prefixes  = ["10.0.8.0/22"]

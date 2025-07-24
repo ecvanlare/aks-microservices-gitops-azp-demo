@@ -77,7 +77,7 @@ module "nsg" {
   name                            = var.nsg_name
   resource_group_name             = module.resource_group.resource_group_name
   location                        = module.resource_group.resource_group_location
-  subnet_id                       = module.subnets["aks"].subnet_id
+  subnet_id                       = module.subnets["aks-cluster"].subnet_id
   rules                           = var.nsg_rules
   enable_admin_source_restriction = var.enable_admin_source_restriction
   admin_source_ips                = var.admin_source_ips
@@ -128,7 +128,7 @@ module "aks" {
   network = {
     plugin         = var.aks_network_plugin
     policy         = var.aks_network_policy
-    subnet_id      = module.subnets["aks"].subnet_id
+    subnet_id      = module.subnets["aks-cluster"].subnet_id
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }

@@ -27,7 +27,7 @@ output "vnet_id" {
 
 output "aks_subnet_id" {
   description = "The ID of the AKS subnet"
-  value       = module.subnets["aks"].subnet_id
+  value       = module.subnets["aks-cluster"].subnet_id
 }
 
 
