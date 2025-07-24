@@ -152,16 +152,14 @@ variable "aks_user_node_pool" {
     auto_scaling_enabled = bool
   })
   default = {
-    name            = "userpool"
-    vm_size         = "Standard_B2ms" # 2 vCPU, 8GB RAM - sufficient for 12 microservices
-    os_disk_size_gb = 32
-    min_count       = 1
-    max_count       = 3
-    max_pods        = 50
-    node_taints     = ["userpool=true:NoSchedule"]
-    node_labels = {
-      "agentpool" = "userpool"
-    }
+    name                 = "userpool"
+    vm_size              = "Standard_B2ms" # 2 vCPU, 8GB RAM - sufficient for 12 microservices
+    os_disk_size_gb      = 32
+    min_count            = 1
+    max_count            = 3
+    max_pods             = 50
+    node_taints          = ["userpool=true:NoSchedule"]
+    node_labels          = {}
     auto_scaling_enabled = true
   }
 }
@@ -182,16 +180,14 @@ variable "aks_ingress_node_pool" {
     auto_scaling_enabled = bool
   })
   default = {
-    name            = "ingress"
-    vm_size         = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest compliant size for AKS node pools
-    os_disk_size_gb = 32
-    min_count       = 1
-    max_count       = 3
-    max_pods        = 30
-    node_taints     = ["ingress=true:NoSchedule"]
-    node_labels = {
-      "agentpool" = "ingress"
-    }
+    name                 = "ingress"
+    vm_size              = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest compliant size for AKS node pools
+    os_disk_size_gb      = 32
+    min_count            = 1
+    max_count            = 3
+    max_pods             = 30
+    node_taints          = ["ingress=true:NoSchedule"]
+    node_labels          = {}
     auto_scaling_enabled = true
   }
 }
