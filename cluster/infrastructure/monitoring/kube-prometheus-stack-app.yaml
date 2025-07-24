@@ -90,11 +90,11 @@ spec:
           # Resource limits
           resources:
             requests:
-              cpu: 250m
-              memory: 512Mi
+              cpu: 200m
+              memory: 256Mi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 512Mi
 
         prometheus:
           # Service configuration for internal access
@@ -117,11 +117,11 @@ spec:
                       storage: 5Gi
             resources:
               requests:
-                cpu: 500m
-                memory: 1Gi
+                cpu: 300m
+                memory: 512Mi
               limits:
                 cpu: 1
-                memory: 2Gi
+                memory: 1Gi
           ingress:
             enabled: true
             ingressClassName: nginx

@@ -122,11 +122,11 @@ variable "aks_node_pool" {
   })
   default = {
     name                 = "default"
-    vm_size              = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest size that meets Azure minimum requirements
+    vm_size              = "Standard_B2s"
     os_disk_size_gb      = 30
-    min_count            = 1
+    min_count            = 2
     max_count            = 5
-    max_pods             = 50
+    max_pods             = 30
     node_labels          = {}
     auto_scaling_enabled = true
   }
@@ -242,12 +242,12 @@ variable "aks_autoscaler_profile" {
     scale_down_utilization_threshold = string
   })
   default = {
-    scale_down_delay_after_add       = "15m"
+    scale_down_delay_after_add       = "5m"
     scale_down_delay_after_delete    = "15s"
     scale_down_delay_after_failure   = "3m"
-    scan_interval                    = "10s"
-    scale_down_unneeded              = "10m"
-    scale_down_unready               = "20m"
+    scan_interval                    = "5s"
+    scale_down_unneeded              = "5m"
+    scale_down_unready               = "10m"
     scale_down_utilization_threshold = "0.5"
   }
 }
