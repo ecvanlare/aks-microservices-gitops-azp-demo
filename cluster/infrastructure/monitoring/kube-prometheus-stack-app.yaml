@@ -106,6 +106,15 @@ spec:
           enabled: false
 
         prometheus:
+          # Service configuration for internal access
+          service:
+            type: ClusterIP
+            port: 9090
+
+        alertmanager:
+          enabled: false
+
+        prometheus:
           prometheusSpec:
             storageSpec:
               volumeClaimTemplate:

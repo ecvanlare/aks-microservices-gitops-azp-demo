@@ -42,7 +42,11 @@ cartservice:
       memory: 256Mi
   image:
     repository: cartservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 7070
@@ -53,11 +57,19 @@ cartservice:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
+<<<<<<< HEAD
           - matchExpressions:
               - key: agentpool
                 operator: In
                 values:
                   - userpool
+=======
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - userpool
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
 checkoutservice:
   enabled: true
   replicaCount: 1
@@ -70,7 +82,11 @@ checkoutservice:
       memory: 128Mi
   image:
     repository: checkoutservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 5050
@@ -94,7 +110,11 @@ currencyservice:
       memory: 256Mi
   image:
     repository: currencyservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 7000
@@ -113,7 +133,11 @@ emailservice:
       memory: 128Mi
   image:
     repository: emailservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 8080
@@ -132,7 +156,11 @@ frontend:
       memory: 128Mi
   image:
     repository: frontend
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 8080
@@ -150,11 +178,19 @@ frontend:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
+<<<<<<< HEAD
           - matchExpressions:
               - key: agentpool
                 operator: In
                 values:
                   - userpool
+=======
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - userpool
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
 paymentservice:
   enabled: true
   replicaCount: 1
@@ -167,7 +203,11 @@ paymentservice:
       memory: 256Mi
   image:
     repository: paymentservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 50051
@@ -185,7 +225,11 @@ productcatalogservice:
       memory: 128Mi
   image:
     repository: productcatalogservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 3550
@@ -203,7 +247,11 @@ recommendationservice:
       memory: 450Mi
   image:
     repository: recommendationservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 8080
@@ -250,7 +298,11 @@ shippingservice:
       memory: 128Mi
   image:
     repository: shippingservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 50051
@@ -261,7 +313,11 @@ shoppingassistantservice:
   replicaCount: 1
   image:
     repository: shoppingassistantservice
+<<<<<<< HEAD
     tag: 0.1.0-alpha.230
+=======
+    tag: 0.1.0-alpha.2587
+>>>>>>> 9c7a741f3ffaca98c80427aab418fe652c00092c
   service:
     type: ClusterIP
     port: 8080
