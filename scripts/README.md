@@ -4,9 +4,9 @@ This directory contains helper scripts for development and maintenance tasks.
 
 ## Available Scripts
 
-### cleanup-namespaces.sh
+### teardown-cluster.sh
 ```bash
-./cleanup-namespaces.sh
+./teardown-cluster.sh
 ```
 Removes all non-system namespaces when tearing down the cluster. Use this script before destroying the cluster infrastructure to ensure clean removal of all application resources.
 
