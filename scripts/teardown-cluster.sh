@@ -9,11 +9,11 @@ echo "🧹 Starting namespace cleanup..."
 
 # Array of namespaces to delete
 NAMESPACES=(
+    "argocd"
     "online-boutique"
     "cert-manager"
     "ingress-nginx"
     "external-dns"
-    "argocd"
     "monitoring"
 )
 
