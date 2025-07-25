@@ -88,6 +88,7 @@ services:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     environment:
       - PORT=${FRONTEND_PORT}
+      - ENV_PLATFORM=${ENV_PLATFORM}
       - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:${PRODUCTCATALOGSERVICE_PORT}
       - CURRENCY_SERVICE_ADDR=currencyservice:${CURRENCYSERVICE_PORT}
       - CART_SERVICE_ADDR=cartservice:${CARTSERVICE_PORT}

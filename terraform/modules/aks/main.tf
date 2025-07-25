@@ -5,18 +5,17 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix              = var.dns_prefix
   private_cluster_enabled = var.private_cluster_enabled
 
-  # Enable public network access for pipeline connectivity
-  public_network_access_enabled = var.public_network_access_enabled
-
   default_node_pool {
-    name                = var.node_pool.name
-    vm_size             = var.node_pool.vm_size
-    os_disk_size_gb     = var.node_pool.os_disk_size_gb
-    enable_auto_scaling = var.node_pool.enable_auto_scaling
-    min_count           = var.node_pool.min_count
-    max_count           = var.node_pool.max_count
-    vnet_subnet_id      = var.network.subnet_id
-    max_pods            = var.max_pods_per_node
+    name                        = var.node_pool.name
+    vm_size                     = var.node_pool.vm_size
+    os_disk_size_gb             = var.node_pool.os_disk_size_gb
+    min_count                   = var.node_pool.min_count
+    max_count                   = var.node_pool.max_count
+    vnet_subnet_id              = var.network.subnet_id
+    max_pods                    = var.node_pool.max_pods
+    auto_scaling_enabled        = var.node_pool.auto_scaling_enabled
+    node_labels                 = var.node_pool.node_labels
+    temporary_name_for_rotation = "temp${var.node_pool.name}"
   }
 
   network_profile {
@@ -40,7 +39,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   azure_active_directory_role_based_access_control {
-    managed                = true
     admin_group_object_ids = var.aad_rbac.admin_group_object_ids
     azure_rbac_enabled     = var.aad_rbac.azure_rbac_enabled
   }
@@ -71,15 +69,16 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
 # User node pool (always enabled for workload separation)
 resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
-  name                  = var.user_node_pool.name
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  vm_size               = var.user_node_pool.vm_size
-  enable_auto_scaling   = var.user_node_pool.enable_auto_scaling
-  min_count             = var.user_node_pool.min_count
-  max_count             = var.user_node_pool.max_count
-  os_disk_size_gb       = var.user_node_pool.os_disk_size_gb
-  vnet_subnet_id        = var.network.subnet_id
-  max_pods              = var.user_node_pool.max_pods
+  name                        = var.user_node_pool.name
+  kubernetes_cluster_id       = azurerm_kubernetes_cluster.aks.id
+  vm_size                     = var.user_node_pool.vm_size
+  min_count                   = var.user_node_pool.min_count
+  max_count                   = var.user_node_pool.max_count
+  os_disk_size_gb             = var.user_node_pool.os_disk_size_gb
+  vnet_subnet_id              = var.network.subnet_id
+  max_pods                    = var.user_node_pool.max_pods
+  auto_scaling_enabled        = var.user_node_pool.auto_scaling_enabled
+  temporary_name_for_rotation = "temp${var.user_node_pool.name}"
 
   # Node taints to ensure only pods with tolerations can schedule here
   node_taints = var.user_node_pool.node_taints
@@ -92,16 +91,16 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
 
 # Dedicated ingress node pool for ingress controllers
 resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
-  count                 = var.ingress_node_pool_enabled ? 1 : 0
-  name                  = var.ingress_node_pool.name
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  vm_size               = var.ingress_node_pool.vm_size
-  enable_auto_scaling   = var.ingress_node_pool.enable_auto_scaling
-  min_count             = var.ingress_node_pool.min_count
-  max_count             = var.ingress_node_pool.max_count
-  os_disk_size_gb       = var.ingress_node_pool.os_disk_size_gb
-  vnet_subnet_id        = var.network.subnet_id
-  max_pods              = var.ingress_node_pool.max_pods
+  name                        = var.ingress_node_pool.name
+  kubernetes_cluster_id       = azurerm_kubernetes_cluster.aks.id
+  vm_size                     = var.ingress_node_pool.vm_size
+  min_count                   = var.ingress_node_pool.min_count
+  max_count                   = var.ingress_node_pool.max_count
+  os_disk_size_gb             = var.ingress_node_pool.os_disk_size_gb
+  vnet_subnet_id              = var.network.subnet_id
+  max_pods                    = var.ingress_node_pool.max_pods
+  auto_scaling_enabled        = var.ingress_node_pool.auto_scaling_enabled
+  temporary_name_for_rotation = "temp${var.ingress_node_pool.name}"
 
   # Node taints to prevent other workloads from scheduling here
   node_taints = var.ingress_node_pool.node_taints
@@ -110,7 +109,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
   node_labels = var.ingress_node_pool.node_labels
 
   # Enable public IPs for ingress nodes to allow LoadBalancer services
-  enable_node_public_ip = var.ingress_node_pool.enable_node_public_ip
 
   tags = merge(var.tags, {
     Purpose = "ingress-controllers"

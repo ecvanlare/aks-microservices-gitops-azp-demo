@@ -1,3 +1,4 @@
+
 # Resource Group Variables
 variable "environment" {
   description = "Environment name (e.g., dev, staging, prod)"
@@ -60,9 +61,9 @@ variable "subnets" {
     service_endpoints = list(string)
   }))
   default = {
-    aks = {
-      name              = "snet-aks"
-      address_prefixes  = ["10.0.0.0/24"]
+    aks-cluster = {
+      name              = "snet-aks-cluster"
+      address_prefixes  = ["10.0.8.0/22"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
   }
@@ -106,30 +107,28 @@ variable "aks_private_cluster_enabled" {
   default     = false
 }
 
-variable "aks_public_network_access_enabled" {
-  description = "Whether to enable public network access for AKS"
-  type        = bool
-  default     = true
-}
-
 # AKS Node Pools Configuration
 variable "aks_node_pool" {
   description = "The default node pool configuration for AKS (system workloads)"
   type = object({
-    name                = string
-    vm_size             = string
-    os_disk_size_gb     = number
-    enable_auto_scaling = bool
-    min_count           = number
-    max_count           = number
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
   default = {
-    name                = "default"
-    vm_size             = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest size that meets Azure minimum requirements
-    os_disk_size_gb     = 30
-    enable_auto_scaling = true
-    min_count           = 1
-    max_count           = 2
+    name                 = "default"
+    vm_size              = "Standard_B2s"
+    os_disk_size_gb      = 30
+    min_count            = 2
+    max_count            = 5
+    max_pods             = 30
+    node_labels          = {}
+    auto_scaling_enabled = true
   }
 }
 
@@ -137,64 +136,54 @@ variable "aks_node_pool" {
 variable "aks_user_node_pool" {
   description = "The user node pool configuration for AKS (application workloads)"
   type = object({
-    name                = string
-    vm_size             = string
-    os_disk_size_gb     = number
-    enable_auto_scaling = bool
-    min_count           = number
-    max_count           = number
-    max_pods            = number
-    node_taints         = list(string)
-    node_labels         = map(string)
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
   default = {
-    name                = "userpool"
-    vm_size             = "Standard_B2ms" # 2 vCPU, 8GB RAM - sufficient for 12 microservices
-    os_disk_size_gb     = 32
-    enable_auto_scaling = true
-    min_count           = 1
-    max_count           = 3
-    max_pods            = 50
-    node_taints         = ["userpool=true:NoSchedule"]
-    node_labels = {
-      "agentpool" = "userpool"
-    }
+    name                 = "userpool"
+    vm_size              = "Standard_B2ms" # 2 vCPU, 8GB RAM - sufficient for 12 microservices
+    os_disk_size_gb      = 32
+    min_count            = 1
+    max_count            = 3
+    max_pods             = 50
+    node_taints          = ["userpool=true:NoSchedule"]
+    node_labels          = {}
+    auto_scaling_enabled = true
   }
 }
 
-variable "aks_ingress_node_pool_enabled" {
-  description = "Whether to create a dedicated ingress node pool"
-  type        = bool
-  default     = true
-}
+
 
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"
   type = object({
-    name                  = string
-    vm_size               = string
-    os_disk_size_gb       = number
-    enable_auto_scaling   = bool
-    min_count             = number
-    max_count             = number
-    max_pods              = number
-    node_taints           = list(string)
-    node_labels           = map(string)
-    enable_node_public_ip = bool
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
   default = {
-    name                = "ingress"
-    vm_size             = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest compliant size for AKS node pools
-    os_disk_size_gb     = 32
-    enable_auto_scaling = true
-    min_count           = 1
-    max_count           = 3
-    max_pods            = 30
-    node_taints         = ["ingress=true:NoSchedule"]
-    node_labels = {
-      "agentpool" = "ingress"
-    }
-    enable_node_public_ip = true
+    name                 = "ingress"
+    vm_size              = "Standard_B2s" # 2 vCPU, 4GB RAM - smallest compliant size for AKS node pools
+    os_disk_size_gb      = 32
+    min_count            = 1
+    max_count            = 3
+    max_pods             = 30
+    node_taints          = ["ingress=true:NoSchedule"]
+    node_labels          = {}
+    auto_scaling_enabled = true
   }
 }
 
@@ -253,12 +242,12 @@ variable "aks_autoscaler_profile" {
     scale_down_utilization_threshold = string
   })
   default = {
-    scale_down_delay_after_add       = "15m"
+    scale_down_delay_after_add       = "5m"
     scale_down_delay_after_delete    = "15s"
     scale_down_delay_after_failure   = "3m"
-    scan_interval                    = "10s"
-    scale_down_unneeded              = "10m"
-    scale_down_unready               = "20m"
+    scan_interval                    = "5s"
+    scale_down_unneeded              = "5m"
+    scale_down_unready               = "10m"
     scale_down_utilization_threshold = "0.5"
   }
 }

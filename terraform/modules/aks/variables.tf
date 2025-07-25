@@ -23,21 +23,18 @@ variable "private_cluster_enabled" {
   type        = bool
 }
 
-variable "public_network_access_enabled" {
-  description = "Whether to enable public network access"
-  type        = bool
-}
-
 # Node Pool Configuration
 variable "node_pool" {
   description = "Node pool configuration"
   type = object({
-    name                = string
-    vm_size             = string
-    os_disk_size_gb     = number
-    enable_auto_scaling = bool
-    min_count           = number
-    max_count           = number
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
 }
 
@@ -124,40 +121,34 @@ variable "timeouts" {
   })
 }
 
-# Additional Node Pools
-variable "ingress_node_pool_enabled" {
-  description = "Whether to create a dedicated ingress node pool"
-  type        = bool
-}
 
 variable "user_node_pool" {
   description = "The user node pool configuration"
   type = object({
-    name                = string
-    vm_size             = string
-    os_disk_size_gb     = number
-    enable_auto_scaling = bool
-    min_count           = number
-    max_count           = number
-    max_pods            = number
-    node_taints         = list(string)
-    node_labels         = map(string)
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
 }
 
 variable "ingress_node_pool" {
   description = "The ingress node pool configuration"
   type = object({
-    name                  = string
-    vm_size               = string
-    os_disk_size_gb       = number
-    enable_auto_scaling   = bool
-    min_count             = number
-    max_count             = number
-    max_pods              = number
-    node_taints           = list(string)
-    node_labels           = map(string)
-    enable_node_public_ip = bool
+    name                 = string
+    vm_size              = string
+    os_disk_size_gb      = number
+    min_count            = number
+    max_count            = number
+    max_pods             = number
+    node_taints          = list(string)
+    node_labels          = map(string)
+    auto_scaling_enabled = bool
   })
 }
 

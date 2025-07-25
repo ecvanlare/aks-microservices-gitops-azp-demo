@@ -27,7 +27,7 @@ output "vnet_id" {
 
 output "aks_subnet_id" {
   description = "The ID of the AKS subnet"
-  value       = module.subnets["aks"].subnet_id
+  value       = module.subnets["aks-cluster"].subnet_id
 }
 
 
@@ -165,19 +165,14 @@ output "managed_identities" {
 
 
 # Node Pool Outputs
-output "ingress_node_pool_enabled" {
-  description = "Whether the ingress node pool is enabled"
-  value       = var.aks_ingress_node_pool_enabled
-}
-
 output "ingress_node_pool_name" {
   description = "The name of the ingress node pool"
-  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.name : null
+  value       = var.aks_ingress_node_pool.name
 }
 
 output "ingress_node_pool_vm_size" {
   description = "The VM size of the ingress node pool"
-  value       = var.aks_ingress_node_pool_enabled ? var.aks_ingress_node_pool.vm_size : null
+  value       = var.aks_ingress_node_pool.vm_size
 }
 
 # Network Security Group Outputs
@@ -191,31 +186,27 @@ output "node_pools" {
   description = "The node pool configurations"
   value = {
     default = {
-      name                = var.aks_node_pool.name
-      vm_size             = var.aks_node_pool.vm_size
-      min_count           = var.aks_node_pool.min_count
-      max_count           = var.aks_node_pool.max_count
-      enable_auto_scaling = var.aks_node_pool.enable_auto_scaling
+      name      = var.aks_node_pool.name
+      vm_size   = var.aks_node_pool.vm_size
+      min_count = var.aks_node_pool.min_count
+      max_count = var.aks_node_pool.max_count
     }
     user = {
-      name                = var.aks_user_node_pool.name
-      vm_size             = var.aks_user_node_pool.vm_size
-      min_count           = var.aks_user_node_pool.min_count
-      max_count           = var.aks_user_node_pool.max_count
-      enable_auto_scaling = var.aks_user_node_pool.enable_auto_scaling
-      max_pods            = var.aks_user_node_pool.max_pods
+      name      = var.aks_user_node_pool.name
+      vm_size   = var.aks_user_node_pool.vm_size
+      min_count = var.aks_user_node_pool.min_count
+      max_count = var.aks_user_node_pool.max_count
+      max_pods  = var.aks_user_node_pool.max_pods
     }
-    ingress = var.aks_ingress_node_pool_enabled ? {
-      name                  = var.aks_ingress_node_pool.name
-      vm_size               = var.aks_ingress_node_pool.vm_size
-      min_count             = var.aks_ingress_node_pool.min_count
-      max_count             = var.aks_ingress_node_pool.max_count
-      enable_auto_scaling   = var.aks_ingress_node_pool.enable_auto_scaling
-      max_pods              = var.aks_ingress_node_pool.max_pods
-      node_taints           = var.aks_ingress_node_pool.node_taints
-      node_labels           = var.aks_ingress_node_pool.node_labels
-      enable_node_public_ip = var.aks_ingress_node_pool.enable_node_public_ip
-    } : null
+    ingress = {
+      name        = var.aks_ingress_node_pool.name
+      vm_size     = var.aks_ingress_node_pool.vm_size
+      min_count   = var.aks_ingress_node_pool.min_count
+      max_count   = var.aks_ingress_node_pool.max_count
+      max_pods    = var.aks_ingress_node_pool.max_pods
+      node_taints = var.aks_ingress_node_pool.node_taints
+      node_labels = var.aks_ingress_node_pool.node_labels
+    }
   }
 }
 

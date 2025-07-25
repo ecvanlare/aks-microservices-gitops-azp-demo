@@ -94,7 +94,7 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Only override from env variable if set + valid env
 	if env == "" || stringinSlice(validEnvs, env) == false {
 		fmt.Println("env platform is either empty or invalid")
-		env = "local"
+		env = "azure"
 	}
 	// Autodetect GCP
 	addrs, err := net.LookupHost("metadata.google.internal.")

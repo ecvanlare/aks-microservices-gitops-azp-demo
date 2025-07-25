@@ -29,7 +29,7 @@ resource "azurerm_user_assigned_identity" "identities" {
   tags                = var.tags
 }
 
-# Azure AD Groups (must be created before AKS)
+# Azure AD Groups 
 resource "azuread_group" "aks_groups" {
   for_each = {
     admins     = { name = var.admin_group_name, description = "AKS Cluster Administrators" }
@@ -77,7 +77,7 @@ module "nsg" {
   name                            = var.nsg_name
   resource_group_name             = module.resource_group.resource_group_name
   location                        = module.resource_group.resource_group_location
-  subnet_id                       = module.subnets["aks"].subnet_id
+  subnet_id                       = module.subnets["aks-cluster"].subnet_id
   rules                           = var.nsg_rules
   enable_admin_source_restriction = var.enable_admin_source_restriction
   admin_source_ips                = var.admin_source_ips
@@ -113,24 +113,22 @@ module "aks" {
   source = "./modules/aks"
 
   # Basic Configuration
-  resource_group_name           = module.resource_group.resource_group_name
-  location                      = module.resource_group.resource_group_location
-  name                          = var.aks_name
-  dns_prefix                    = var.aks_dns_prefix
-  private_cluster_enabled       = var.aks_private_cluster_enabled
-  public_network_access_enabled = var.aks_public_network_access_enabled
+  resource_group_name     = module.resource_group.resource_group_name
+  location                = module.resource_group.resource_group_location
+  name                    = var.aks_name
+  dns_prefix              = var.aks_dns_prefix
+  private_cluster_enabled = var.aks_private_cluster_enabled
 
   # Node Pools Configuration
-  node_pool                 = var.aks_node_pool
-  user_node_pool            = var.aks_user_node_pool
-  ingress_node_pool_enabled = var.aks_ingress_node_pool_enabled
-  ingress_node_pool         = var.aks_ingress_node_pool
+  node_pool         = var.aks_node_pool
+  user_node_pool    = var.aks_user_node_pool
+  ingress_node_pool = var.aks_ingress_node_pool
 
   # Network Configuration
   network = {
     plugin         = var.aks_network_plugin
     policy         = var.aks_network_policy
-    subnet_id      = module.subnets["aks"].subnet_id
+    subnet_id      = module.subnets["aks-cluster"].subnet_id
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
   }
