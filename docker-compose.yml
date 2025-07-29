@@ -107,15 +107,6 @@ services:
       - adservice
       - shoppingassistantservice
 
-  # loadgenerator:
-  #   build: ./src/loadgenerator
-  #   environment:
-  #     - FRONTEND_ADDR=frontend:${FRONTEND_PORT}
-  #     - USERS=${LOADGEN_USERS}
-  #     - RATE=${LOADGEN_RATE}
-  #   depends_on:
-  #     - frontend
-
 volumes:
   redis-data:
 
