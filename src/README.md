@@ -1,22 +1,27 @@
 # Source Code
 
-This directory contains the source code for all microservices in the Online Boutique application.
+## Service Architecture
+
+![Container Structure](/docs/images/c4-container-internal.png)
 
 ## Microservices
 
-| Service | Language | Description |
-|---------|----------|-------------|
-| [frontend](./frontend) | Go | Web UI and external API endpoint |
-| [cartservice](./cartservice) | C# | Shopping cart data management |
-| [productcatalogservice](./productcatalogservice) | Go | Product catalog management |
-| [currencyservice](./currencyservice) | Node.js | Currency conversion |
-| [paymentservice](./paymentservice) | Node.js | Payment processing |
-| [shippingservice](./shippingservice) | Go | Shipping cost calculation |
-| [emailservice](./emailservice) | Python | Order confirmation emails |
-| [checkoutservice](./checkoutservice) | Go | Order processing orchestration |
-| [recommendationservice](./recommendationservice) | Python | Product recommendations |
-| [adservice](./adservice) | Java | Targeted ad serving |
-| [shoppingassistantservice](./shoppingassistantservice) | Python | AI shopping assistant |
+### Frontend & API
+- **frontend** (Go): Web UI and external API endpoint
+- **adservice** (Java): Targeted ad serving
+- **shoppingassistantservice** (Python): AI shopping assistant
+
+### Core Services
+- **productcatalogservice** (Go): Product catalog management
+- **cartservice** (C#): Shopping cart data management
+- **checkoutservice** (Go): Order processing orchestration
+
+### Supporting Services
+- **currencyservice** (Node.js): Currency conversion
+- **paymentservice** (Node.js): Payment processing
+- **shippingservice** (Go): Shipping cost calculation
+- **emailservice** (Python): Order confirmation emails
+- **recommendationservice** (Python): Product recommendations
 
 ## Local Development
 
@@ -24,4 +29,4 @@ This directory contains the source code for all microservices in the Online Bout
 2. Configure environment variables
 3. Run `docker-compose up` to start all services
 
-[![Container Structure](/docs/images/c4-container-internal.png)]
+For service-specific instructions, see each service's directory.

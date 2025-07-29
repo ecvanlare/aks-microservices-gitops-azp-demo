@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements Google's Online Boutique microservices demo application on a production-grade **Azure Kubernetes Service (AKS)** cluster. It showcases modern cloud-native practices using **Azure Pipelines** for CI/CD, **Terraform** for infrastructure management, and **ArgoCD** for GitOps-based deployments. The implementation includes **Azure Container Registry (ACR)** for container management, **NGINX Ingress Controller** for traffic routing, **Cert-Manager** for SSL automation, **ExternalDNS** for DNS management, and **Prometheus** & **Grafana** for comprehensive monitoring.
+This project implements Google's Online Boutique, a cloud-native microservices demo application for an e-commerce website, on a production-grade **Azure Kubernetes Service (AKS)** cluster. It showcases modern cloud-native practices using **Azure Pipelines** for CI/CD, **Terraform** for infrastructure management, and **ArgoCD** for GitOps-based deployments. The implementation includes **Azure Container Registry (ACR)** for container management, **NGINX Ingress Controller** for traffic routing, **Cert-Manager** for SSL automation, **ExternalDNS** for DNS management, and **Prometheus** & **Grafana** for comprehensive monitoring.
 
 ## Table of Contents
 
@@ -23,11 +23,11 @@ This project implements Google's Online Boutique microservices demo application 
 
 ## Online Boutique Demo Application
 
-[![Online Boutique Demo](/docs/images/online-boutique-prod-demo.gif)]
+![Online Boutique Demo](/docs/images/online-boutique-prod-demo.gif)
 
 ## Solution Architecture
 
-[![Architecture](/docs/images/architecture.png)]
+![Architecture](/docs/images/architecture.png)
 
 ## Key Components
 
@@ -66,32 +66,34 @@ This project implements Google's Online Boutique microservices demo application 
 
 ## Project Structure
 
-The project is organized into several key directories, each with its own documentation:
+```
+.
+├── .azure/                 # Azure DevOps Pipeline Configurations
+├── cluster/               # Kubernetes & Helm Configurations
+│   ├── helm/             # Helm charts for all services
+│   ├── infrastructure/   # Platform components (ArgoCD, Monitoring)
+│   └── root/            # Root application configs
+├── docs/                 # Documentation and images
+├── src/                 # Microservices source code
+│   ├── frontend/       # Web UI (Go)
+│   ├── cartservice/   # Cart management (C#)
+│   ├── checkoutservice/ # Order processing (Go)
+│   └── ...            # Other microservices
+├── terraform/          # Infrastructure as Code
+│   ├── modules/       # Reusable Terraform modules
+│   └── bootstrap/    # State storage setup
+└── scripts/          # Utility scripts for development
+```
 
-- [`.azure`](./.azure/README.md) - Azure DevOps Pipeline Configurations
-  - GitOps pipeline definitions
-  - Security and compliance pipelines
-  - Application build pipelines
-  - Infrastructure pipelines
+### Documentation
 
-- [`cluster`](./cluster/README.md) - Kubernetes Configurations
-  - Helm charts for services
-  - Infrastructure components
-  - Root application configs
+Each major component has its own detailed documentation:
 
-- [`src`](./src/README.md) - Microservices Source Code
-  - Web UI (Go)
-  - Cart management (C#)
-  - Order processing (Go)
-  - Additional microservices
-
-- [`terraform`](./terraform/README.md) - Infrastructure as Code
-  - Reusable Terraform modules
-  - Environment configurations
-
-- [`scripts`](./scripts/README.md) - Utility Scripts
-  - Development helpers
-  - Maintenance utilities
+- [`.azure/`](./.azure/README.md): Pipeline configurations and CI/CD setup
+- [`cluster/`](./cluster/README.md): Kubernetes deployment and platform setup
+- [`src/`](./src/README.md): Microservice implementations and local development
+- [`terraform/`](./terraform/README.md): Infrastructure provisioning
+- [`scripts/`](./scripts/README.md): Development utilities
 
 ## Platform Implementation
 
@@ -99,75 +101,99 @@ Our platform follows a comprehensive approach integrating infrastructure, securi
 
 ### Infrastructure
 
+The foundation of our platform is built on Azure cloud services, provisioned and managed through Infrastructure as Code practices.
+
 #### Infrastructure Provisioning
 
 The infrastructure pipeline handles the creation and management of all Azure resources:
 
-[![Infrastructure Apply](/docs/images/infra-apply.png)]
+![Infrastructure Apply](/docs/images/infra-apply.png)
 
 ### Security
+
+Security is embedded throughout our platform using DevSecOps practices, ensuring protection at every layer.
 
 #### DevSecOps Pipeline
 
 Our comprehensive security pipeline ensures infrastructure and application security at every stage:
 
-[![DevSecOps](/docs/images/devsecops.png)]
+![DevSecOps](/docs/images/devsecops.png)
 
 ### Application
+
+The application layer manages the deployment and operation of our microservices through automated pipelines.
 
 #### CI/CD Pipeline Overview
 
 Our end-to-end CI/CD pipeline orchestrates the entire deployment process:
 
-[![Application CICD](/docs/images/application-cicd.png)]
+![Application CICD](/docs/images/application-cicd.png)
 
-#### Build Pipeline
+### Build Pipeline
 
-The build pipeline handles container image creation and security scanning:
+The build pipeline intelligently handles container image creation and security scanning:
 
-[![App Build](/docs/images/app-build.png)]
+- **Conditional Builds**: Only rebuilds services with code changes
+- **Smart Caching**: Uses layer caching for faster builds
+- **Security Scans**: Runs container vulnerability scanning
 
-#### Deployment Pipeline
+![App Build](/docs/images/app-build.png)
 
-The deployment pipeline manages the GitOps-based deployment process:
+### Deployment Pipeline
 
-[![App Deploy](/docs/images/app-deploy.png)]
+The deployment pipeline manages the GitOps-based deployment process with built-in safeguards:
+
+- **Development**: Direct deployment to dev environment
+- **Production**: 
+  - Pre-deployment approval gate
+  - Security compliance checks
+  - Configuration validation
+- **GitOps**: ArgoCD-managed deployments
+- **Rollback**: Automated rollback on failure
+
+![App Deploy](/docs/images/app-deploy.png)
 
 ### GitOps
+
+GitOps practices ensure that our infrastructure and application deployments are version controlled and automated.
 
 #### ArgoCD Deployment
 
 Continuous deployment is managed through ArgoCD, providing GitOps-based application delivery:
 
-[![ArgoCD](/docs/images/argocd.gif)]
+![ArgoCD](/docs/images/argocd.gif)
 
 ### DNS Management
+
+Automated DNS management ensures reliable access to our services through proper domain configuration.
 
 #### Cloudflare Integration
 
 Automated DNS management through Cloudflare ensures proper routing and domain configuration:
 
-[![Cloudflare](/docs/images/cloudflare.png)]
+![Cloudflare](/docs/images/cloudflare.png)
 
 ### Monitoring
+
+Comprehensive monitoring provides visibility into the health and performance of our platform.
 
 #### Prometheus Metrics
 
 Comprehensive metrics collection and alerting through Prometheus:
 
-[![Prometheus](/docs/images/prometheus.png)]
+![Prometheus](/docs/images/prometheus.png)
 
 #### Grafana Dashboards
 
 Advanced visualization and monitoring through Grafana:
 
-[![Grafana Overview](/docs/images/grafana.png)]
+![Grafana Overview](/docs/images/grafana.png)
 
-[![Grafana Detailed](/docs/images/grafana2.png)]
+![Grafana Detailed](/docs/images/grafana2.png)
 
 ## Local Development
 
-For local development and testing of individual microservices, please refer to the [`src`](./src/README.md) directory which contains detailed instructions for each service:
+For local development and testing of individual microservices, please refer to the [`src`](./src/README.md) directory which contains detailed instructions for each service.
 
 Quick Start:
 1. Copy `env.template` to `.env` in the root directory
@@ -177,17 +203,3 @@ Quick Start:
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-Copyright 2024 [Your Organization]
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
