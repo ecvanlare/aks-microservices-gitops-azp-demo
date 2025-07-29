@@ -4,11 +4,34 @@
 
 This project implements Google's Online Boutique microservices demo application on a production-grade **Azure Kubernetes Service (AKS)** cluster. It showcases modern cloud-native practices using **Azure Pipelines** for CI/CD, **Terraform** for infrastructure management, and **ArgoCD** for GitOps-based deployments. The implementation includes **Azure Container Registry (ACR)** for container management, **NGINX Ingress Controller** for traffic routing, **Cert-Manager** for SSL automation, **ExternalDNS** for DNS management, and **Prometheus** & **Grafana** for comprehensive monitoring.
 
-## End-to-End Architecture
+## Table of Contents
 
+- [Overview](#overview)
+- [Online Boutique Demo Application](#online-boutique-demo-application)
+- [Solution Architecture](#solution-architecture)
+- [Key Components](#key-components)
+- [Project Structure](#project-structure)
+- [Platform Implementation](#platform-implementation)
+  - [Infrastructure](#infrastructure)
+  - [Security](#security)
+  - [Application](#application)
+  - [GitOps](#gitops)
+  - [DNS Management](#dns-management)
+  - [Monitoring](#monitoring)
+- [Local Development](#local-development)
+- [License](#license)
 
+## Online Boutique Demo Application
+
+[![Online Boutique Demo](/docs/images/online-boutique-prod-demo.gif)]
+
+## Solution Architecture
+
+[![Architecture](/docs/images/architecture.png)]
 
 ## Key Components
+
+### Cloud & Infrastructure Components
 
 | Component | Description |
 |-----------|-------------|
@@ -26,7 +49,7 @@ This project implements Google's Online Boutique microservices demo application 
 | Helm | Package manager for Kubernetes applications |
 | Let's Encrypt | Certificate Authority for SSL certificates |
 
-### Tools
+### Development Tools
 
 | Tool | Purpose |
 |------|----------|
@@ -70,52 +93,101 @@ The project is organized into several key directories, each with its own documen
   - Development helpers
   - Maintenance utilities
 
-## Deployment Process
+## Platform Implementation
 
-The deployment process is fully automated and follows these stages:
+Our platform follows a comprehensive approach integrating infrastructure, security, deployment, and monitoring to ensure a robust and reliable system.
 
-1. **Infrastructure Provisioning**:
-   - Terraform creates all required Azure resources
-   - AKS cluster setup with necessary add-ons
-   - Network and security configurations
+### Infrastructure
 
-2. **Application Deployment**:
-   - Container images built and pushed to ACR
-   - ArgoCD syncs Kubernetes manifests
-   - Services deployed with proper configurations
+#### Infrastructure Provisioning
 
-3. **Configuration and Security**:
-   - SSL certificates automatically provisioned
-   - DNS records automatically updated
-   - Security policies and network rules applied
+The infrastructure pipeline handles the creation and management of all Azure resources:
 
-4. **Monitoring Setup**:
-   - Prometheus metrics collection
-   - Grafana dashboards deployment
-   - Alerting rules configuration
+[![Infrastructure Apply](/docs/images/infra-apply.png)]
 
+### Security
+
+#### DevSecOps Pipeline
+
+Our comprehensive security pipeline ensures infrastructure and application security at every stage:
+
+[![DevSecOps](/docs/images/devsecops.png)]
+
+### Application
+
+#### CI/CD Pipeline Overview
+
+Our end-to-end CI/CD pipeline orchestrates the entire deployment process:
+
+[![Application CICD](/docs/images/application-cicd.png)]
+
+#### Build Pipeline
+
+The build pipeline handles container image creation and security scanning:
+
+[![App Build](/docs/images/app-build.png)]
+
+#### Deployment Pipeline
+
+The deployment pipeline manages the GitOps-based deployment process:
+
+[![App Deploy](/docs/images/app-deploy.png)]
+
+### GitOps
+
+#### ArgoCD Deployment
+
+Continuous deployment is managed through ArgoCD, providing GitOps-based application delivery:
+
+[![ArgoCD](/docs/images/argocd.gif)]
+
+### DNS Management
+
+#### Cloudflare Integration
+
+Automated DNS management through Cloudflare ensures proper routing and domain configuration:
+
+[![Cloudflare](/docs/images/cloudflare.png)]
+
+### Monitoring
+
+#### Prometheus Metrics
+
+Comprehensive metrics collection and alerting through Prometheus:
+
+[![Prometheus](/docs/images/prometheus.png)]
+
+#### Grafana Dashboards
+
+Advanced visualization and monitoring through Grafana:
+
+[![Grafana Overview](/docs/images/grafana.png)]
+
+[![Grafana Detailed](/docs/images/grafana2.png)]
 
 ## Local Development
 
-For local development of the microservices:
+For local development and testing of individual microservices, please refer to the [`src`](./src/README.md) directory which contains detailed instructions for each service:
 
-1. **Prerequisites**:
-   - Docker
-   - Docker Compose
-   - Language-specific tools (Go, .NET, Node.js, Java, Python)
-
-2. **Run Locally**:
-   ```bash
-   docker-compose up
-   ```
+Quick Start:
+1. Copy `env.template` to `.env` in the root directory
+2. Configure environment variables
+3. Run `docker-compose up` to start all services
 
 ## License
 
-[Add your license information here]
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
-## Support
+Copyright 2024 [Your Organization]
 
-For issues and questions:
-1. Check existing GitHub issues
-2. Review documentation
-3. Create a new issue 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

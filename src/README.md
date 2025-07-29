@@ -16,16 +16,7 @@ This directory contains the source code for all microservices in the Online Bout
 | [checkoutservice](./checkoutservice) | Go | Order processing orchestration |
 | [recommendationservice](./recommendationservice) | Python | Product recommendations |
 | [adservice](./adservice) | Java | Targeted ad serving |
-| [loadgenerator](./loadgenerator) | Python | Load testing |
 | [shoppingassistantservice](./shoppingassistantservice) | Python | AI shopping assistant |
-
-## Key Features
-
-- gRPC communication between services
-- Redis-based cart storage
-- REST/JSON external API
-- Distributed tracing and metrics
-- Multi-language implementation
 
 ## Local Development
 
@@ -33,4 +24,4 @@ This directory contains the source code for all microservices in the Online Bout
 2. Configure environment variables
 3. Run `docker-compose up` to start all services
 
-For service-specific instructions, see the README in each service directory. 
+[![Container Structure](/docs/images/c4-container-internal.png)]

@@ -18,7 +18,3 @@ This directory contains all Kubernetes and Helm configurations for the microserv
 - [`/root`](./root) - Root application configurations
   - Apps-of-apps pattern for ArgoCD
   - Infrastructure components orchestration
-
-## Usage
-
-The configurations in this directory are managed by ArgoCD and follow the GitOps pattern. Changes to these files will be automatically synchronized with the cluster when merged to the main branch. 
