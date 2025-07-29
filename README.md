@@ -97,11 +97,11 @@ Each major component has its own detailed documentation:
 
 ## Platform Implementation
 
-Our platform follows a comprehensive approach integrating infrastructure, security, deployment, and monitoring to ensure a robust and reliable system.
+The platform follows a comprehensive approach integrating infrastructure, security, deployment, and monitoring to ensure a robust and reliable system.
 
 ### Infrastructure
 
-The foundation of our platform is built on Azure cloud services, provisioned and managed through Infrastructure as Code practices.
+The foundation is built on Azure cloud services, provisioned and managed through Infrastructure as Code practices.
 
 #### Infrastructure Provisioning
 
@@ -111,21 +111,21 @@ The infrastructure pipeline handles the creation and management of all Azure res
 
 ### Security
 
-Security is embedded throughout our platform using DevSecOps practices, ensuring protection at every layer.
+Security is embedded throughout the platform using DevSecOps practices, ensuring protection at every layer.
 
 #### DevSecOps Pipeline
 
-Our comprehensive security pipeline ensures infrastructure and application security at every stage:
+The comprehensive security pipeline ensures infrastructure and application security at every stage:
 
 ![DevSecOps](/docs/images/devsecops.png)
 
 ### Application
 
-The application layer manages the deployment and operation of our microservices through automated pipelines.
+The application layer manages the deployment and operation of microservices through automated pipelines.
 
 #### CI/CD Pipeline Overview
 
-Our end-to-end CI/CD pipeline orchestrates the entire deployment process:
+The end-to-end CI/CD pipeline orchestrates the entire deployment process:
 
 ![Application CICD](/docs/images/application-cicd.png)
 
@@ -155,7 +155,7 @@ The deployment pipeline manages the GitOps-based deployment process with built-i
 
 ### GitOps
 
-GitOps practices ensure that our infrastructure and application deployments are version controlled and automated.
+GitOps practices ensure that infrastructure and application deployments are version controlled and automated.
 
 #### ArgoCD Deployment
 
@@ -165,7 +165,7 @@ Continuous deployment is managed through ArgoCD, providing GitOps-based applicat
 
 ### DNS Management
 
-Automated DNS management ensures reliable access to our services through proper domain configuration.
+Automated DNS management ensures reliable access to services through proper domain configuration.
 
 #### Cloudflare Integration
 
@@ -175,7 +175,7 @@ Automated DNS management through Cloudflare ensures proper routing and domain co
 
 ### Monitoring
 
-Comprehensive monitoring provides visibility into the health and performance of our platform.
+Comprehensive monitoring provides visibility into the health and performance of the platform.
 
 #### Prometheus Metrics
 
