@@ -274,18 +274,8 @@ variable "network_security_groups" {
     private = {
       name = "nsg-aks-private"
       rules = {
-        allow_aks_control_plane = {
-          priority                   = 100
-          direction                  = "Inbound"
-          access                     = "Allow"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = "443"
-          source_address_prefix      = "Microsoft.ContainerService"
-          destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
-          description                = "Allow AKS control plane access"
-        }
-        allow_vnet_cluster_traffic = {
+
+        allow_vnet_tcp = {
           priority                   = 110
           direction                  = "Inbound"
           access                     = "Allow"
@@ -296,16 +286,16 @@ variable "network_security_groups" {
           destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
           description                = "Allow TCP traffic from VNet"
         }
-        allow_vnet_dns = {
-          priority                   = 110
+        allow_vnet_udp = {
+          priority                   = 120
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Udp"
           source_port_range          = "*"
-          destination_port_range     = "53"
+          destination_port_range     = "1-65535"
           source_address_prefix      = "10.0.0.0/16" # VNet CIDR
           destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
-          description                = "Allow DNS queries from VNet"
+          description                = "Allow UDP traffic from VNet"
         }
 
         deny_inbound = {
@@ -335,17 +325,7 @@ variable "network_security_groups" {
     public = {
       name = "nsg-aks-public"
       rules = {
-        allow_aks_control_plane = {
-          priority                   = 100
-          direction                  = "Inbound"
-          access                     = "Allow"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = "443"
-          source_address_prefix      = "Microsoft.ContainerService"
-          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
-          description                = "Allow AKS control plane access"
-        }
+
         allow_internet_http = {
           priority                   = 110
           direction                  = "Inbound"
