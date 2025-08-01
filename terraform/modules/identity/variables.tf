@@ -17,7 +17,4 @@ variable "description" {
   description = "A description of the role assignment."
   type        = string
 }
-
-
-
  

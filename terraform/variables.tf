@@ -373,16 +373,27 @@ variable "nsg_rules" {
       destination_address_prefix = "10.0.8.0/22"
       description                = "Allow internal cluster TCP traffic"
     }
-    cluster_udp = {
+    cluster_dns = {
       priority                   = 171
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "Udp"
       source_port_range          = "*"
-      destination_port_range     = "53,1024-65535"
+      destination_port_range     = "53"
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "10.0.8.0/22"
-      description                = "Allow internal UDP and DNS traffic"
+      description                = "Allow DNS traffic"
+    }
+    cluster_udp = {
+      priority                   = 172
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Udp"
+      source_port_range          = "*"
+      destination_port_range     = "1024-65535"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "10.0.8.0/22"
+      description                = "Allow internal UDP traffic"
     }
     deny_all = {
       priority                   = 4096
@@ -527,3 +538,4 @@ variable "network_contributor_role_name" {
   type        = string
   default     = "Network Contributor"
 }
+
