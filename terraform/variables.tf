@@ -335,8 +335,19 @@ variable "network_security_groups" {
     public = {
       name = "nsg-aks-public"
       rules = {
-        allow_internet_http = {
+        allow_aks_control_plane = {
           priority                   = 100
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "443"
+          source_address_prefix      = "AzureKubernetesService"
+          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          description                = "Allow AKS control plane access"
+        }
+        allow_internet_http = {
+          priority                   = 110
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
@@ -347,7 +358,7 @@ variable "network_security_groups" {
           description                = "Allow HTTP traffic"
         }
         allow_internet_https = {
-          priority                   = 110
+          priority                   = 120
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
@@ -357,16 +368,27 @@ variable "network_security_groups" {
           destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
           description                = "Allow HTTPS traffic"
         }
-        allow_private_subnet_traffic = {
-          priority                   = 120
+        allow_cluster_tcp = {
+          priority                   = 130
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "1-65535"
-          source_address_prefix      = "VirtualNetwork"
+          source_address_prefix      = "10.0.8.0/22"  # Private subnet CIDR
           destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
-          description                = "Allow internal VNet traffic"
+          description                = "Allow cluster TCP traffic"
+        }
+        allow_cluster_udp = {
+          priority                   = 140
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Udp"
+          source_port_range          = "*"
+          destination_port_range     = "1-65535"
+          source_address_prefix      = "10.0.8.0/22"  # Private subnet CIDR
+          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          description                = "Allow cluster UDP traffic"
         }
         deny_inbound = {
           priority                   = 4096
