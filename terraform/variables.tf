@@ -212,16 +212,6 @@ variable "aks_dns_service_ip" {
   default     = "10.96.0.10"
 }
 
-# AKS Load Balancer Configuration
-variable "aks_max_pods_per_node" {
-  description = "Maximum number of pods per node"
-  type        = number
-  default     = 30
-  validation {
-    condition     = var.aks_max_pods_per_node >= 10 && var.aks_max_pods_per_node <= 250
-    error_message = "Max pods per node must be between 10 and 250."
-  }
-}
 
 # AKS Cluster Autoscaler Configuration
 variable "aks_enable_cluster_autoscaler" {
@@ -252,19 +242,7 @@ variable "aks_autoscaler_profile" {
   }
 }
 
-variable "aks_timeouts" {
-  description = "Timeouts for AKS cluster operations"
-  type = object({
-    create = string
-    update = string
-    delete = string
-  })
-  default = {
-    create = "60m"
-    update = "60m"
-    delete = "60m"
-  }
-}
+
 
 variable "aks_load_balancer_sku" {
   description = "SKU of the load balancer for AKS"
@@ -281,8 +259,7 @@ variable "aks_outbound_type" {
 # NSG Variables
 variable "nsg_rules" {
   description = "Network security group rules"
-  type = list(object({
-    name                       = string
+  type = map(object({
     priority                   = number
     direction                  = string
     access                     = string
@@ -293,9 +270,8 @@ variable "nsg_rules" {
     destination_address_prefix = string
     description                = string
   }))
-  default = [
-    {
-      name                       = "allow-kubernetes-api"
+  default = {
+    kubernetes_api = {
       priority                   = 100
       direction                  = "Inbound"
       access                     = "Allow"
@@ -305,9 +281,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow Kubernetes API server access from VNet"
-    },
-    {
-      name                       = "allow-https"
+    }
+    https_internal = {
       priority                   = 110
       direction                  = "Inbound"
       access                     = "Allow"
@@ -317,9 +292,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow HTTPS from VNet"
-    },
-    {
-      name                       = "allow-https-external"
+    }
+    https_external = {
       priority                   = 115
       direction                  = "Inbound"
       access                     = "Allow"
@@ -329,9 +303,8 @@ variable "nsg_rules" {
       source_address_prefix      = "Internet"
       destination_address_prefix = "*"
       description                = "Allow HTTPS from Internet"
-    },
-    {
-      name                       = "allow-http"
+    }
+    http_internal = {
       priority                   = 120
       direction                  = "Inbound"
       access                     = "Allow"
@@ -341,9 +314,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow HTTP from VNet"
-    },
-    {
-      name                       = "allow-http-external"
+    }
+    http_external = {
       priority                   = 125
       direction                  = "Inbound"
       access                     = "Allow"
@@ -353,9 +325,8 @@ variable "nsg_rules" {
       source_address_prefix      = "Internet"
       destination_address_prefix = "*"
       description                = "Allow HTTP from Internet"
-    },
-    {
-      name                       = "allow-ssh"
+    }
+    ssh = {
       priority                   = 130
       direction                  = "Inbound"
       access                     = "Allow"
@@ -365,9 +336,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow SSH from VNet"
-    },
-    {
-      name                       = "allow-kubelet"
+    }
+    kubelet = {
       priority                   = 140
       direction                  = "Inbound"
       access                     = "Allow"
@@ -377,9 +347,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow Kubelet API from VNet"
-    },
-    {
-      name                       = "allow-nodeport-services"
+    }
+    nodeport_services = {
       priority                   = 150
       direction                  = "Inbound"
       access                     = "Allow"
@@ -389,9 +358,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow NodePort services from VNet"
-    },
-    {
-      name                       = "allow-ingress-health"
+    }
+    ingress_health = {
       priority                   = 160
       direction                  = "Inbound"
       access                     = "Allow"
@@ -401,9 +369,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow Ingress Controller health checks"
-    },
-    {
-      name                       = "allow-all-internal"
+    }
+    internal_all = {
       priority                   = 170
       direction                  = "Inbound"
       access                     = "Allow"
@@ -413,9 +380,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow all internal traffic within VNet"
-    },
-    {
-      name                       = "deny-all-inbound"
+    }
+    deny_all = {
       priority                   = 4096
       direction                  = "Inbound"
       access                     = "Deny"
@@ -426,7 +392,7 @@ variable "nsg_rules" {
       destination_address_prefix = "*"
       description                = "Deny all other inbound traffic"
     }
-  ]
+  }
 }
 
 # Source IP restrictions for admin access

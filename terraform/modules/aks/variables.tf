@@ -82,15 +82,7 @@ variable "outbound_type" {
   type        = string
 }
 
-# Node Configuration
-variable "max_pods_per_node" {
-  description = "Maximum number of pods per node"
-  type        = number
-  validation {
-    condition     = var.max_pods_per_node >= 10 && var.max_pods_per_node <= 250
-    error_message = "Max pods per node must be between 10 and 250."
-  }
-}
+
 
 # RBAC Configuration
 variable "aad_rbac" {
@@ -112,14 +104,7 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "timeouts" {
-  description = "Timeouts for AKS cluster operations"
-  type = object({
-    create = string
-    update = string
-    delete = string
-  })
-}
+
 
 
 variable "user_node_pool" {

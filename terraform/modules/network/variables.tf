@@ -50,9 +50,8 @@ variable "nsg_name" {
 }
 
 variable "security_rules" {
-  description = "List of security rules to be applied to the NSG"
-  type = list(object({
-    name                       = string
+  description = "Map of security rules to be applied to the NSG"
+  type = map(object({
     priority                   = number
     direction                  = string
     access                     = string
@@ -61,8 +60,8 @@ variable "security_rules" {
     destination_port_range     = string
     source_address_prefix      = string
     destination_address_prefix = string
-    description                = optional(string)
+    description                = string
   }))
-  default = []
+  default = {}
 }
 

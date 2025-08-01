@@ -61,12 +61,12 @@ module "network" {
   address_space = [var.vnet_address_space]
 
   # AKS Subnet
-  subnet_name            = var.subnets["aks-cluster"].name
+  subnet_name             = var.subnets["aks-cluster"].name
   subnet_address_prefixes = var.subnets["aks-cluster"].address_prefixes
-  service_endpoints      = var.subnets["aks-cluster"].service_endpoints
+  service_endpoints       = var.subnets["aks-cluster"].service_endpoints
 
   # Network Security Group
-  nsg_name      = var.nsg_name
+  nsg_name       = var.nsg_name
   security_rules = var.nsg_rules
 }
 
@@ -94,8 +94,8 @@ module "acr" {
 locals {
   role_params = {
     description         = var.role_assignment_description
-    condition          = var.role_assignment_condition
-    condition_version  = var.role_assignment_condition_version
+    condition           = var.role_assignment_condition
+    condition_version   = var.role_assignment_condition_version
     skip_existing_check = var.role_assignment_skip_existing_check
   }
 
@@ -124,9 +124,9 @@ module "cluster_kubelet_operator" {
   role_definition_name = "Managed Identity Operator"
   principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
   description          = local.role_params.description
-  condition           = local.role_params.condition
-  condition_version   = local.role_params.condition_version
-  skip_existing_check = local.role_params.skip_existing_check
+  condition            = local.role_params.condition
+  condition_version    = local.role_params.condition_version
+  skip_existing_check  = local.role_params.skip_existing_check
 }
 
 # Identity assignment for AKS to pull from ACR
@@ -137,9 +137,9 @@ module "aks_acr_pull" {
   role_definition_name = var.acr_pull_role_name
   principal_id         = azurerm_user_assigned_identity.identities["kubelet"].principal_id
   description          = local.role_params.description
-  condition           = local.role_params.condition
-  condition_version   = local.role_params.condition_version
-  skip_existing_check = local.role_params.skip_existing_check
+  condition            = local.role_params.condition
+  condition_version    = local.role_params.condition_version
+  skip_existing_check  = local.role_params.skip_existing_check
 }
 
 # Identity assignment for ACR push operations
@@ -150,9 +150,9 @@ module "acr_push" {
   role_definition_name = var.acr_push_role_name
   principal_id         = azurerm_user_assigned_identity.identities["acr_push"].principal_id
   description          = local.role_params.description
-  condition           = local.role_params.condition
-  condition_version   = local.role_params.condition_version
-  skip_existing_check = local.role_params.skip_existing_check
+  condition            = local.role_params.condition
+  condition_version    = local.role_params.condition_version
+  skip_existing_check  = local.role_params.skip_existing_check
 }
 
 # Grant AKS cluster identity Network Contributor role for LoadBalancer services
@@ -163,9 +163,9 @@ module "aks_network_contributor" {
   role_definition_name = var.network_contributor_role_name
   principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
   description          = local.role_params.description
-  condition           = local.role_params.condition
-  condition_version   = local.role_params.condition_version
-  skip_existing_check = local.role_params.skip_existing_check
+  condition            = local.role_params.condition
+  condition_version    = local.role_params.condition_version
+  skip_existing_check  = local.role_params.skip_existing_check
 }
 
 # =============================================================================
@@ -198,7 +198,6 @@ module "aks" {
   }
   load_balancer_sku = var.aks_load_balancer_sku
   outbound_type     = var.aks_outbound_type
-  max_pods_per_node = var.aks_max_pods_per_node
 
   # Cluster Autoscaler Configuration
   enable_cluster_autoscaler = var.aks_enable_cluster_autoscaler
@@ -232,9 +231,6 @@ module "aks" {
       }
     ]
   }
-
-  # Timeouts Configuration
-  timeouts = var.aks_timeouts
 
   tags = var.tags
 
@@ -280,9 +276,9 @@ module "user_group_roles" {
   role_definition_name = each.value.role
   principal_id         = azuread_group.aks_groups[each.value.group].object_id
   description          = local.role_params.description
-  condition           = local.role_params.condition
-  condition_version   = local.role_params.condition_version
-  skip_existing_check = local.role_params.skip_existing_check
+  condition            = local.role_params.condition
+  condition_version    = local.role_params.condition_version
+  skip_existing_check  = local.role_params.skip_existing_check
 }
 
 module "keyvault_user_group_roles" {
@@ -293,9 +289,9 @@ module "keyvault_user_group_roles" {
   role_definition_name = each.value.role
   principal_id         = azuread_group.aks_groups[each.value.group].object_id
   description          = local.role_params.description
-  condition           = local.role_params.condition
-  condition_version   = local.role_params.condition_version
-  skip_existing_check = local.role_params.skip_existing_check
+  condition            = local.role_params.condition
+  condition_version    = local.role_params.condition_version
+  skip_existing_check  = local.role_params.skip_existing_check
 
   depends_on = [module.keyvault]
 }

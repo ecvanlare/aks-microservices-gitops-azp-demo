@@ -60,11 +60,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   tags = var.tags
 
-  timeouts {
-    create = var.timeouts.create
-    update = var.timeouts.update
-    delete = var.timeouts.delete
-  }
+
 }
 
 # User node pool (always enabled for workload separation)
