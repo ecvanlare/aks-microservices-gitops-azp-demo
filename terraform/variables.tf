@@ -274,7 +274,7 @@ variable "network_security_groups" {
     private = {
       name = "nsg-aks-private"
       rules = {
-        aks_control = {
+        allow_aks_control_plane = {
           priority                   = 100
           direction                  = "Inbound"
           access                     = "Allow"
@@ -285,7 +285,7 @@ variable "network_security_groups" {
           destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
           description                = "Allow AKS control plane access"
         }
-        cluster_tcp = {
+        allow_vnet_cluster_traffic = {
           priority                   = 110
           direction                  = "Inbound"
           access                     = "Allow"
@@ -296,7 +296,7 @@ variable "network_security_groups" {
           destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
           description                = "Allow TCP traffic from VNet"
         }
-        dns_inbound = {
+        allow_vnet_dns = {
           priority                   = 110
           direction                  = "Inbound"
           access                     = "Allow"
@@ -335,7 +335,7 @@ variable "network_security_groups" {
     public = {
       name = "nsg-aks-public"
       rules = {
-        http = {
+        allow_internet_http = {
           priority                   = 100
           direction                  = "Inbound"
           access                     = "Allow"
@@ -346,7 +346,7 @@ variable "network_security_groups" {
           destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
           description                = "Allow HTTP traffic"
         }
-        https = {
+        allow_internet_https = {
           priority                   = 110
           direction                  = "Inbound"
           access                     = "Allow"
@@ -357,7 +357,7 @@ variable "network_security_groups" {
           destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
           description                = "Allow HTTPS traffic"
         }
-        internal_traffic = {
+        allow_private_subnet_traffic = {
           priority                   = 120
           direction                  = "Inbound"
           access                     = "Allow"
