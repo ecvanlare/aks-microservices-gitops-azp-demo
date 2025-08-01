@@ -14,8 +14,6 @@ resource "azurerm_subnet" "aks_subnet" {
   service_endpoints    = var.service_endpoints
 }
 
-
-
 resource "azurerm_network_security_group" "aks_nsg" {
   name                = var.nsg_name
   location            = var.location

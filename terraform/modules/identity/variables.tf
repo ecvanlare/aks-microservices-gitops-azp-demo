@@ -28,7 +28,4 @@ variable "condition_version" {
   type        = string
 }
 
-variable "skip_existing_check" {
-  description = "Whether to skip checking if the role assignment already exists."
-  type        = bool
-} 
+ 

@@ -82,8 +82,6 @@ variable "outbound_type" {
   type        = string
 }
 
-
-
 # RBAC Configuration
 variable "aad_rbac" {
   description = "Azure Active Directory RBAC configuration"
@@ -103,9 +101,6 @@ variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
 }
-
-
-
 
 variable "user_node_pool" {
   description = "The user node pool configuration"
@@ -146,7 +141,6 @@ variable "enable_cluster_autoscaler" {
 variable "autoscaler_profile" {
   description = "Cluster autoscaler profile configuration (scale-down settings)"
   type = object({
-    # Scale-down configuration (supported by Azure provider)
     scale_down_delay_after_add       = string
     scale_down_delay_after_delete    = string
     scale_down_delay_after_failure   = string

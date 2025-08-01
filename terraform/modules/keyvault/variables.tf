@@ -23,7 +23,6 @@ variable "enable_rbac_authorization" {
   type        = bool
 }
 
-
 variable "soft_delete_retention_days" {
   description = "Soft delete retention days for Key Vault"
   type        = number

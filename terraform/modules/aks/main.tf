@@ -60,10 +60,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   tags = var.tags
 
-
 }
 
-# User node pool (always enabled for workload separation)
+# User node pool for workload separation
 resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
   name                        = var.user_node_pool.name
   kubernetes_cluster_id       = azurerm_kubernetes_cluster.aks.id
@@ -75,14 +74,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
   max_pods                    = var.user_node_pool.max_pods
   auto_scaling_enabled        = var.user_node_pool.auto_scaling_enabled
   temporary_name_for_rotation = "temp${var.user_node_pool.name}"
-
-  # Node taints to ensure only pods with tolerations can schedule here
-  node_taints = var.user_node_pool.node_taints
-
-  # Node labels for identification
-  node_labels = var.user_node_pool.node_labels
-
-  tags = var.tags
+  node_taints                 = var.user_node_pool.node_taints
+  node_labels                 = var.user_node_pool.node_labels
+  tags                        = var.tags
 }
 
 # Dedicated ingress node pool for ingress controllers
@@ -97,14 +91,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
   max_pods                    = var.ingress_node_pool.max_pods
   auto_scaling_enabled        = var.ingress_node_pool.auto_scaling_enabled
   temporary_name_for_rotation = "temp${var.ingress_node_pool.name}"
-
-  # Node taints to prevent other workloads from scheduling here
-  node_taints = var.ingress_node_pool.node_taints
-
-  # Node labels to make this pool eligible for Azure Load Balancer
-  node_labels = var.ingress_node_pool.node_labels
-
-  tags = merge(var.tags, {
-    Purpose = "ingress-controllers"
-  })
+  node_taints                 = var.ingress_node_pool.node_taints
+  node_labels                 = var.ingress_node_pool.node_labels
+  tags                        = var.tags
 } 

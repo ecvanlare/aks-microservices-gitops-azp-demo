@@ -132,7 +132,7 @@ variable "aks_node_pool" {
   }
 }
 
-# User Node Pool Configuration (COST-OPTIMIZED for production)
+# User Node Pool Configuration
 variable "aks_user_node_pool" {
   description = "The user node pool configuration for AKS (application workloads)"
   type = object({
@@ -148,7 +148,7 @@ variable "aks_user_node_pool" {
   })
   default = {
     name                 = "userpool"
-    vm_size              = "Standard_B2ms" # 2 vCPU, 8GB RAM - sufficient for 12 microservices
+    vm_size              = "Standard_B2ms" # 2 vCPU, 8GB RAM
     os_disk_size_gb      = 32
     min_count            = 1
     max_count            = 3
@@ -158,8 +158,6 @@ variable "aks_user_node_pool" {
     auto_scaling_enabled = true
   }
 }
-
-
 
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"
@@ -194,11 +192,7 @@ variable "aks_network_plugin" {
   default     = "azure"
 }
 
-variable "aks_network_policy" {
-  description = "Network policy for AKS"
-  type        = string
-  default     = null
-}
+
 
 variable "aks_service_cidr" {
   description = "Service CIDR for AKS cluster"
@@ -241,8 +235,6 @@ variable "aks_autoscaler_profile" {
     scale_down_utilization_threshold = "0.5"
   }
 }
-
-
 
 variable "aks_load_balancer_sku" {
   description = "SKU of the load balancer for AKS"
@@ -395,19 +387,6 @@ variable "nsg_rules" {
   }
 }
 
-# Source IP restrictions for admin access
-variable "admin_source_ips" {
-  description = "Source IP addresses allowed for admin access (CIDR notation)"
-  type        = list(string)
-  default     = []
-}
-
-variable "enable_admin_source_restriction" {
-  description = "Enable source IP restrictions for admin access"
-  type        = bool
-  default     = false
-}
-
 # Azure AD Group Names
 variable "admin_group_name" {
   description = "Name for the AKS admin group"
@@ -444,6 +423,21 @@ variable "viewer_role" {
   description = "Azure RBAC role for viewer group"
   type        = string
   default     = "Azure Kubernetes Service RBAC Reader"
+}
+
+# Role Assignment Defaults
+variable "role_assignment_defaults" {
+  description = "Default values for role assignments"
+  type = object({
+    description       = string
+    condition         = string
+    condition_version = string
+  })
+  default = {
+    description       = null
+    condition         = null
+    condition_version = null
+  }
 }
 
 # Key Vault RBAC Role Names
@@ -527,28 +521,5 @@ variable "network_contributor_role_name" {
   default     = "Network Contributor"
 }
 
-# Identity Module Variables
-variable "role_assignment_description" {
-  description = "Description for role assignments"
-  type        = string
-  default     = null
-}
 
-variable "role_assignment_condition" {
-  description = "Condition for role assignments"
-  type        = string
-  default     = null
-}
-
-variable "role_assignment_condition_version" {
-  description = "Condition version for role assignments"
-  type        = string
-  default     = "2.0"
-}
-
-variable "role_assignment_skip_existing_check" {
-  description = "Whether to skip checking if role assignment already exists"
-  type        = bool
-  default     = false
-}
 

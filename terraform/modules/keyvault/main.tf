@@ -9,9 +9,7 @@ resource "azurerm_key_vault" "main" {
   soft_delete_retention_days  = var.soft_delete_retention_days
   purge_protection_enabled    = var.purge_protection_enabled
   sku_name                    = var.sku_name
-
-  # Enable Azure RBAC for access control
-  enable_rbac_authorization = var.enable_rbac_authorization
+  enable_rbac_authorization   = var.enable_rbac_authorization
 
   network_acls {
     default_action = var.network_acls.default_action
@@ -21,8 +19,7 @@ resource "azurerm_key_vault" "main" {
   tags = var.tags
 }
 
-
-# Azure RBAC role assignments (modern approach)
+# Azure RBAC role assignments
 resource "azurerm_role_assignment" "terraform_keyvault_admin" {
 
   scope                = azurerm_key_vault.main.id

@@ -90,14 +90,8 @@ module "acr" {
 # ROLE ASSIGNMENTS & PERMISSIONS
 # =============================================================================
 
-# Common role assignment parameters
+# Role assignments configuration
 locals {
-  role_params = {
-    description         = var.role_assignment_description
-    condition           = var.role_assignment_condition
-    condition_version   = var.role_assignment_condition_version
-    skip_existing_check = var.role_assignment_skip_existing_check
-  }
 
   # User group role assignments
   role_assignments = {
@@ -123,10 +117,11 @@ module "cluster_kubelet_operator" {
   scope                = azurerm_user_assigned_identity.identities["kubelet"].id
   role_definition_name = "Managed Identity Operator"
   principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
-  description          = local.role_params.description
-  condition            = local.role_params.condition
-  condition_version    = local.role_params.condition_version
-  skip_existing_check  = local.role_params.skip_existing_check
+  description          = var.role_assignment_defaults.description
+  condition            = var.role_assignment_defaults.condition
+  condition_version    = var.role_assignment_defaults.condition_version
+
+
 }
 
 # Identity assignment for AKS to pull from ACR
@@ -136,10 +131,11 @@ module "aks_acr_pull" {
   scope                = module.acr.acr_id
   role_definition_name = var.acr_pull_role_name
   principal_id         = azurerm_user_assigned_identity.identities["kubelet"].principal_id
-  description          = local.role_params.description
-  condition            = local.role_params.condition
-  condition_version    = local.role_params.condition_version
-  skip_existing_check  = local.role_params.skip_existing_check
+  description          = var.role_assignment_defaults.description
+  condition            = var.role_assignment_defaults.condition
+  condition_version    = var.role_assignment_defaults.condition_version
+
+
 }
 
 # Identity assignment for ACR push operations
@@ -149,10 +145,11 @@ module "acr_push" {
   scope                = module.acr.acr_id
   role_definition_name = var.acr_push_role_name
   principal_id         = azurerm_user_assigned_identity.identities["acr_push"].principal_id
-  description          = local.role_params.description
-  condition            = local.role_params.condition
-  condition_version    = local.role_params.condition_version
-  skip_existing_check  = local.role_params.skip_existing_check
+  description          = var.role_assignment_defaults.description
+  condition            = var.role_assignment_defaults.condition
+  condition_version    = var.role_assignment_defaults.condition_version
+
+
 }
 
 # Grant AKS cluster identity Network Contributor role for LoadBalancer services
@@ -162,10 +159,11 @@ module "aks_network_contributor" {
   scope                = module.resource_group.resource_group_id
   role_definition_name = var.network_contributor_role_name
   principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
-  description          = local.role_params.description
-  condition            = local.role_params.condition
-  condition_version    = local.role_params.condition_version
-  skip_existing_check  = local.role_params.skip_existing_check
+  description          = var.role_assignment_defaults.description
+  condition            = var.role_assignment_defaults.condition
+  condition_version    = var.role_assignment_defaults.condition_version
+
+
 }
 
 # =============================================================================
@@ -191,7 +189,7 @@ module "aks" {
   # Network Configuration
   network = {
     plugin         = var.aks_network_plugin
-    policy         = var.aks_network_policy
+    policy         = null
     subnet_id      = module.network.subnet_id
     service_cidr   = var.aks_service_cidr
     dns_service_ip = var.aks_dns_service_ip
@@ -275,10 +273,11 @@ module "user_group_roles" {
   scope                = module.aks.cluster_id
   role_definition_name = each.value.role
   principal_id         = azuread_group.aks_groups[each.value.group].object_id
-  description          = local.role_params.description
-  condition            = local.role_params.condition
-  condition_version    = local.role_params.condition_version
-  skip_existing_check  = local.role_params.skip_existing_check
+  description          = var.role_assignment_defaults.description
+  condition            = var.role_assignment_defaults.condition
+  condition_version    = var.role_assignment_defaults.condition_version
+
+
 }
 
 module "keyvault_user_group_roles" {
@@ -288,10 +287,11 @@ module "keyvault_user_group_roles" {
   scope                = module.keyvault.key_vault_id
   role_definition_name = each.value.role
   principal_id         = azuread_group.aks_groups[each.value.group].object_id
-  description          = local.role_params.description
-  condition            = local.role_params.condition
-  condition_version    = local.role_params.condition_version
-  skip_existing_check  = local.role_params.skip_existing_check
+  description          = var.role_assignment_defaults.description
+  condition            = var.role_assignment_defaults.condition
+  condition_version    = var.role_assignment_defaults.condition_version
+
+
 
   depends_on = [module.keyvault]
 }
