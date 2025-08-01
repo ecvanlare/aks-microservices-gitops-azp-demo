@@ -63,12 +63,12 @@ variable "subnets" {
   default = {
     aks-private = {
       name              = "snet-aks-private"
-      address_prefixes  = ["10.0.8.0/22"]
+      address_prefixes  = ["10.0.16.0/20"] # Larger range: 10.0.16.0 - 10.0.31.255
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
     aks-public = {
       name              = "snet-aks-public"
-      address_prefixes  = ["10.0.12.0/24"]
+      address_prefixes  = ["10.0.32.0/24"] # Non-overlapping: 10.0.32.0 - 10.0.32.255
       service_endpoints = ["Microsoft.ContainerRegistry"]
     }
   }
@@ -281,7 +281,7 @@ variable "network_security_groups" {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "443"
-          source_address_prefix      = "AzureKubernetesService"
+          source_address_prefix      = "Microsoft.ContainerService"
           destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
           description                = "Allow AKS control plane access"
         }
@@ -342,8 +342,8 @@ variable "network_security_groups" {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "443"
-          source_address_prefix      = "AzureKubernetesService"
-          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          source_address_prefix      = "Microsoft.ContainerService"
+          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
           description                = "Allow AKS control plane access"
         }
         allow_internet_http = {
@@ -354,7 +354,7 @@ variable "network_security_groups" {
           source_port_range          = "*"
           destination_port_range     = "80"
           source_address_prefix      = "*"            # Any source (internet)
-          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
           description                = "Allow HTTP traffic"
         }
         allow_internet_https = {
@@ -365,7 +365,7 @@ variable "network_security_groups" {
           source_port_range          = "*"
           destination_port_range     = "443"
           source_address_prefix      = "*"            # Any source (internet)
-          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
           description                = "Allow HTTPS traffic"
         }
         allow_cluster_tcp = {
@@ -375,8 +375,8 @@ variable "network_security_groups" {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "1-65535"
-          source_address_prefix      = "10.0.8.0/22"  # Private subnet CIDR
-          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          source_address_prefix      = "10.0.16.0/20" # Private subnet CIDR
+          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
           description                = "Allow cluster TCP traffic"
         }
         allow_cluster_udp = {
@@ -386,8 +386,8 @@ variable "network_security_groups" {
           protocol                   = "Udp"
           source_port_range          = "*"
           destination_port_range     = "1-65535"
-          source_address_prefix      = "10.0.8.0/22"  # Private subnet CIDR
-          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          source_address_prefix      = "10.0.16.0/20" # Private subnet CIDR
+          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
           description                = "Allow cluster UDP traffic"
         }
         deny_inbound = {
@@ -398,7 +398,7 @@ variable "network_security_groups" {
           source_port_range          = "*"
           destination_port_range     = "*"
           source_address_prefix      = "*"
-          destination_address_prefix = "10.0.12.0/24" # Public subnet CIDR
+          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
           description                = "Deny all other inbound traffic"
         }
         deny_outbound = {
