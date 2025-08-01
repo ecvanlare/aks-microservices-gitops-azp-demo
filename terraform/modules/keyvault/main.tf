@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "main" {
   purge_protection_enabled    = var.purge_protection_enabled
   sku_name                    = var.sku_name
 
-  # Enable Azure RBAC instead of access policies
+  # Enable Azure RBAC for access control
   enable_rbac_authorization = var.enable_rbac_authorization
 
   network_acls {
@@ -21,34 +21,9 @@ resource "azurerm_key_vault" "main" {
   tags = var.tags
 }
 
-# Access policies (legacy approach - used when RBAC is disabled)
-resource "azurerm_key_vault_access_policy" "terraform" {
-  count = var.enable_rbac_authorization ? 0 : 1
-
-  key_vault_id = azurerm_key_vault.main.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azurerm_client_config.current.object_id
-
-  secret_permissions = [
-    "Get", "List", "Set", "Delete", "Recover", "Backup", "Restore"
-  ]
-}
-
-resource "azurerm_key_vault_access_policy" "aks" {
-  count = var.enable_rbac_authorization ? 0 : 1
-
-  key_vault_id = azurerm_key_vault.main.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = var.aks_managed_identity_object_id
-
-  secret_permissions = [
-    "Get", "List"
-  ]
-}
 
 # Azure RBAC role assignments (modern approach)
 resource "azurerm_role_assignment" "terraform_keyvault_admin" {
-  count = var.enable_rbac_authorization ? 1 : 0
 
   scope                = azurerm_key_vault.main.id
   role_definition_name = var.terraform_role_name
@@ -56,7 +31,6 @@ resource "azurerm_role_assignment" "terraform_keyvault_admin" {
 }
 
 resource "azurerm_role_assignment" "aks_keyvault_secrets_user" {
-  count = var.enable_rbac_authorization ? 1 : 0
 
   scope                = azurerm_key_vault.main.id
   role_definition_name = var.aks_role_name

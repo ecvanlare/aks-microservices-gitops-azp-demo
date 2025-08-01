@@ -108,8 +108,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
   # Node labels to make this pool eligible for Azure Load Balancer
   node_labels = var.ingress_node_pool.node_labels
 
-  # Enable public IPs for ingress nodes to allow LoadBalancer services
-
   tags = merge(var.tags, {
     Purpose = "ingress-controllers"
   })

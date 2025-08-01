@@ -586,13 +586,3 @@ variable "role_assignment_skip_existing_check" {
   default     = false
 }
 
-# Note: Secrets are managed via Azure Portal
-# Add these secrets manually in the Key Vault after deployment:
-# - cloudflare-api-token
-# - cloudflare-zone-id  
-# - domain-name
-# - cert-manager-email
-
-
-
-

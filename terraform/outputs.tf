@@ -15,26 +15,9 @@ output "resource_group_id" {
 }
 
 # Network Outputs
-output "vnet_name" {
-  description = "The name of the virtual network"
-  value       = module.vnet.vnet_name
-}
-
-output "vnet_id" {
-  description = "The ID of the virtual network"
-  value       = module.vnet.vnet_id
-}
-
 output "aks_subnet_id" {
   description = "The ID of the AKS subnet"
-  value       = module.subnets["aks-cluster"].subnet_id
-}
-
-
-
-output "nsg_id" {
-  description = "The ID of the network security group"
-  value       = module.nsg.nsg_id
+  value       = module.network.subnet_id
 }
 
 # AKS Outputs
@@ -162,8 +145,6 @@ output "managed_identities" {
   }
 }
 
-
-
 # Node Pool Outputs
 output "ingress_node_pool_name" {
   description = "The name of the ingress node pool"
@@ -230,4 +211,4 @@ output "cluster_autoscaler" {
     enabled = var.aks_enable_cluster_autoscaler
     profile = var.aks_autoscaler_profile
   }
-} 
+}
