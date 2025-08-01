@@ -118,10 +118,6 @@ module "cluster_kubelet_operator" {
   role_definition_name = "Managed Identity Operator"
   principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
   description          = var.role_assignment_defaults.description
-  condition            = var.role_assignment_defaults.condition
-  condition_version    = var.role_assignment_defaults.condition_version
-
-
 }
 
 # Identity assignment for AKS to pull from ACR
@@ -132,10 +128,6 @@ module "aks_acr_pull" {
   role_definition_name = var.acr_pull_role_name
   principal_id         = azurerm_user_assigned_identity.identities["kubelet"].principal_id
   description          = var.role_assignment_defaults.description
-  condition            = var.role_assignment_defaults.condition
-  condition_version    = var.role_assignment_defaults.condition_version
-
-
 }
 
 # Identity assignment for ACR push operations
@@ -146,10 +138,6 @@ module "acr_push" {
   role_definition_name = var.acr_push_role_name
   principal_id         = azurerm_user_assigned_identity.identities["acr_push"].principal_id
   description          = var.role_assignment_defaults.description
-  condition            = var.role_assignment_defaults.condition
-  condition_version    = var.role_assignment_defaults.condition_version
-
-
 }
 
 # Grant AKS cluster identity Network Contributor role for LoadBalancer services
@@ -160,10 +148,6 @@ module "aks_network_contributor" {
   role_definition_name = var.network_contributor_role_name
   principal_id         = azurerm_user_assigned_identity.identities["cluster"].principal_id
   description          = var.role_assignment_defaults.description
-  condition            = var.role_assignment_defaults.condition
-  condition_version    = var.role_assignment_defaults.condition_version
-
-
 }
 
 # =============================================================================
@@ -274,10 +258,6 @@ module "user_group_roles" {
   role_definition_name = each.value.role
   principal_id         = azuread_group.aks_groups[each.value.group].object_id
   description          = var.role_assignment_defaults.description
-  condition            = var.role_assignment_defaults.condition
-  condition_version    = var.role_assignment_defaults.condition_version
-
-
 }
 
 module "keyvault_user_group_roles" {
@@ -288,10 +268,6 @@ module "keyvault_user_group_roles" {
   role_definition_name = each.value.role
   principal_id         = azuread_group.aks_groups[each.value.group].object_id
   description          = var.role_assignment_defaults.description
-  condition            = var.role_assignment_defaults.condition
-  condition_version    = var.role_assignment_defaults.condition_version
-
-
 
   depends_on = [module.keyvault]
 }

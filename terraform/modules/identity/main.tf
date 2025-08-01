@@ -3,7 +3,4 @@ resource "azurerm_role_assignment" "identity" {
   role_definition_name = var.role_definition_name
   principal_id         = var.principal_id
   description          = var.description
-  condition            = var.condition
-  condition_version    = var.condition_version
-
 } 

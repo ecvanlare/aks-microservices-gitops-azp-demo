@@ -18,14 +18,6 @@ variable "description" {
   type        = string
 }
 
-variable "condition" {
-  description = "The condition which limits the resources that the role can be assigned to."
-  type        = string
-}
 
-variable "condition_version" {
-  description = "The version of the condition syntax."
-  type        = string
-}
 
  
