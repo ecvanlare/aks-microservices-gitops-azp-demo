@@ -15,9 +15,24 @@ output "resource_group_id" {
 }
 
 # Network Outputs
-output "aks_subnet_id" {
-  description = "The ID of the AKS subnet"
-  value       = module.network.subnet_id
+output "private_subnet_id" {
+  description = "The ID of the private subnet"
+  value       = module.network.private_subnet_id
+}
+
+output "public_subnet_id" {
+  description = "The ID of the public subnet"
+  value       = module.network.public_subnet_id
+}
+
+output "private_nsg_id" {
+  description = "ID of the private subnet NSG"
+  value       = module.network.private_nsg_id
+}
+
+output "public_nsg_id" {
+  description = "ID of the public subnet NSG"
+  value       = module.network.public_nsg_id
 }
 
 # AKS Outputs

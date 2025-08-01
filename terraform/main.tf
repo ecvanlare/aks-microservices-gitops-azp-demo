@@ -60,14 +60,11 @@ module "network" {
   vnet_name     = var.vnet_name
   address_space = [var.vnet_address_space]
 
-  # AKS Subnet
-  subnet_name             = var.subnets["aks-cluster"].name
-  subnet_address_prefixes = var.subnets["aks-cluster"].address_prefixes
-  service_endpoints       = var.subnets["aks-cluster"].service_endpoints
+  # Subnets
+  subnets = var.subnets
 
-  # Network Security Group
-  nsg_name       = var.nsg_name
-  security_rules = var.nsg_rules
+  # Network Security Groups
+  network_security_groups = var.network_security_groups
 }
 
 # =============================================================================
@@ -172,11 +169,12 @@ module "aks" {
 
   # Network Configuration
   network = {
-    plugin         = var.aks_network_plugin
-    policy         = null
-    subnet_id      = module.network.subnet_id
-    service_cidr   = var.aks_service_cidr
-    dns_service_ip = var.aks_dns_service_ip
+    plugin            = var.aks_network_plugin
+    policy            = null
+    private_subnet_id = module.network.private_subnet_id
+    public_subnet_id  = module.network.public_subnet_id
+    service_cidr      = var.aks_service_cidr
+    dns_service_ip    = var.aks_dns_service_ip
   }
   load_balancer_sku = var.aks_load_balancer_sku
   outbound_type     = var.aks_outbound_type
