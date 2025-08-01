@@ -95,6 +95,7 @@ output "acr_id" {
   value       = module.acr.acr_id
 }
 
+# Role Assignment Outputs
 output "aks_acr_pull_role_id" {
   description = "The ID of the AcrPull role assignment for AKS"
   value       = module.aks_acr_pull.id
@@ -110,6 +111,7 @@ output "aks_network_contributor_role_id" {
   value       = module.aks_network_contributor.id
 }
 
+# Identity Outputs
 output "acr_push_identity_principal_id" {
   description = "The principal ID of the user-assigned managed identity for ACR push"
   value       = azurerm_user_assigned_identity.identities["acr_push"].principal_id
@@ -120,7 +122,6 @@ output "aks_identity_principal_id" {
   value       = module.aks.cluster_principal_id
 }
 
-# Managed Identity Outputs
 output "managed_identities" {
   description = "The managed identities created for AKS"
   value = {
@@ -145,24 +146,7 @@ output "managed_identities" {
   }
 }
 
-# Node Pool Outputs
-output "ingress_node_pool_name" {
-  description = "The name of the ingress node pool"
-  value       = var.aks_ingress_node_pool.name
-}
-
-output "ingress_node_pool_vm_size" {
-  description = "The VM size of the ingress node pool"
-  value       = var.aks_ingress_node_pool.vm_size
-}
-
-# Network Security Group Outputs
-output "nsg_rules" {
-  description = "The network security group rules"
-  value       = var.nsg_rules
-}
-
-# Node Pool Configuration Outputs
+# Node Pool Configuration
 output "node_pools" {
   description = "The node pool configurations"
   value = {
@@ -191,20 +175,7 @@ output "node_pools" {
   }
 }
 
-# Network Configuration Outputs
-output "network_config" {
-  description = "The network configuration for AKS"
-  value = {
-    plugin             = var.aks_network_plugin
-    policy             = var.aks_network_policy
-    service_cidr       = var.aks_service_cidr
-    dns_service_ip     = var.aks_dns_service_ip
-    vnet_name          = var.vnet_name
-    vnet_address_space = var.vnet_address_space
-  }
-}
-
-# Cluster Autoscaler Outputs
+# Cluster Autoscaler Configuration
 output "cluster_autoscaler" {
   description = "The cluster autoscaler configuration"
   value = {
