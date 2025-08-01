@@ -132,7 +132,7 @@ variable "aks_node_pool" {
   }
 }
 
-# User Node Pool Configuration (COST-OPTIMIZED for production)
+# User Node Pool Configuration
 variable "aks_user_node_pool" {
   description = "The user node pool configuration for AKS (application workloads)"
   type = object({
@@ -148,7 +148,7 @@ variable "aks_user_node_pool" {
   })
   default = {
     name                 = "userpool"
-    vm_size              = "Standard_B2ms" # 2 vCPU, 8GB RAM - sufficient for 12 microservices
+    vm_size              = "Standard_B2ms" # 2 vCPU, 8GB RAM
     os_disk_size_gb      = 32
     min_count            = 1
     max_count            = 3
@@ -158,8 +158,6 @@ variable "aks_user_node_pool" {
     auto_scaling_enabled = true
   }
 }
-
-
 
 variable "aks_ingress_node_pool" {
   description = "The ingress node pool configuration for AKS (load balancers)"
@@ -194,11 +192,7 @@ variable "aks_network_plugin" {
   default     = "azure"
 }
 
-variable "aks_network_policy" {
-  description = "Network policy for AKS"
-  type        = string
-  default     = null
-}
+
 
 variable "aks_service_cidr" {
   description = "Service CIDR for AKS cluster"
@@ -212,16 +206,6 @@ variable "aks_dns_service_ip" {
   default     = "10.96.0.10"
 }
 
-# AKS Load Balancer Configuration
-variable "aks_max_pods_per_node" {
-  description = "Maximum number of pods per node"
-  type        = number
-  default     = 30
-  validation {
-    condition     = var.aks_max_pods_per_node >= 10 && var.aks_max_pods_per_node <= 250
-    error_message = "Max pods per node must be between 10 and 250."
-  }
-}
 
 # AKS Cluster Autoscaler Configuration
 variable "aks_enable_cluster_autoscaler" {
@@ -252,20 +236,6 @@ variable "aks_autoscaler_profile" {
   }
 }
 
-variable "aks_timeouts" {
-  description = "Timeouts for AKS cluster operations"
-  type = object({
-    create = string
-    update = string
-    delete = string
-  })
-  default = {
-    create = "60m"
-    update = "60m"
-    delete = "60m"
-  }
-}
-
 variable "aks_load_balancer_sku" {
   description = "SKU of the load balancer for AKS"
   type        = string
@@ -281,8 +251,7 @@ variable "aks_outbound_type" {
 # NSG Variables
 variable "nsg_rules" {
   description = "Network security group rules"
-  type = list(object({
-    name                       = string
+  type = map(object({
     priority                   = number
     direction                  = string
     access                     = string
@@ -293,9 +262,8 @@ variable "nsg_rules" {
     destination_address_prefix = string
     description                = string
   }))
-  default = [
-    {
-      name                       = "allow-kubernetes-api"
+  default = {
+    kubernetes_api = {
       priority                   = 100
       direction                  = "Inbound"
       access                     = "Allow"
@@ -305,9 +273,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow Kubernetes API server access from VNet"
-    },
-    {
-      name                       = "allow-https"
+    }
+    https_internal = {
       priority                   = 110
       direction                  = "Inbound"
       access                     = "Allow"
@@ -317,9 +284,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow HTTPS from VNet"
-    },
-    {
-      name                       = "allow-https-external"
+    }
+    https_external = {
       priority                   = 115
       direction                  = "Inbound"
       access                     = "Allow"
@@ -329,9 +295,8 @@ variable "nsg_rules" {
       source_address_prefix      = "Internet"
       destination_address_prefix = "*"
       description                = "Allow HTTPS from Internet"
-    },
-    {
-      name                       = "allow-http"
+    }
+    http_internal = {
       priority                   = 120
       direction                  = "Inbound"
       access                     = "Allow"
@@ -341,9 +306,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow HTTP from VNet"
-    },
-    {
-      name                       = "allow-http-external"
+    }
+    http_external = {
       priority                   = 125
       direction                  = "Inbound"
       access                     = "Allow"
@@ -353,9 +317,8 @@ variable "nsg_rules" {
       source_address_prefix      = "Internet"
       destination_address_prefix = "*"
       description                = "Allow HTTP from Internet"
-    },
-    {
-      name                       = "allow-ssh"
+    }
+    ssh = {
       priority                   = 130
       direction                  = "Inbound"
       access                     = "Allow"
@@ -365,9 +328,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow SSH from VNet"
-    },
-    {
-      name                       = "allow-kubelet"
+    }
+    kubelet = {
       priority                   = 140
       direction                  = "Inbound"
       access                     = "Allow"
@@ -377,9 +339,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow Kubelet API from VNet"
-    },
-    {
-      name                       = "allow-nodeport-services"
+    }
+    nodeport_services = {
       priority                   = 150
       direction                  = "Inbound"
       access                     = "Allow"
@@ -389,9 +350,8 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow NodePort services from VNet"
-    },
-    {
-      name                       = "allow-ingress-health"
+    }
+    ingress_health = {
       priority                   = 160
       direction                  = "Inbound"
       access                     = "Allow"
@@ -401,21 +361,41 @@ variable "nsg_rules" {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "*"
       description                = "Allow Ingress Controller health checks"
-    },
-    {
-      name                       = "allow-all-internal"
+    }
+    cluster_internal = {
       priority                   = 170
       direction                  = "Inbound"
       access                     = "Allow"
-      protocol                   = "*"
+      protocol                   = "Tcp"
       source_port_range          = "*"
-      destination_port_range     = "*"
+      destination_port_range     = "1024-65535"
       source_address_prefix      = "VirtualNetwork"
-      destination_address_prefix = "*"
-      description                = "Allow all internal traffic within VNet"
-    },
-    {
-      name                       = "deny-all-inbound"
+      destination_address_prefix = "10.0.8.0/22"
+      description                = "Allow internal cluster TCP traffic"
+    }
+    cluster_dns = {
+      priority                   = 171
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Udp"
+      source_port_range          = "*"
+      destination_port_range     = "53"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "10.0.8.0/22"
+      description                = "Allow DNS traffic"
+    }
+    cluster_udp = {
+      priority                   = 172
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Udp"
+      source_port_range          = "*"
+      destination_port_range     = "1024-65535"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "10.0.8.0/22"
+      description                = "Allow internal UDP traffic"
+    }
+    deny_all = {
       priority                   = 4096
       direction                  = "Inbound"
       access                     = "Deny"
@@ -426,20 +406,7 @@ variable "nsg_rules" {
       destination_address_prefix = "*"
       description                = "Deny all other inbound traffic"
     }
-  ]
-}
-
-# Source IP restrictions for admin access
-variable "admin_source_ips" {
-  description = "Source IP addresses allowed for admin access (CIDR notation)"
-  type        = list(string)
-  default     = []
-}
-
-variable "enable_admin_source_restriction" {
-  description = "Enable source IP restrictions for admin access"
-  type        = bool
-  default     = false
+  }
 }
 
 # Azure AD Group Names
@@ -478,6 +445,17 @@ variable "viewer_role" {
   description = "Azure RBAC role for viewer group"
   type        = string
   default     = "Azure Kubernetes Service RBAC Reader"
+}
+
+# Role Assignment Defaults
+variable "role_assignment_defaults" {
+  description = "Default values for role assignments"
+  type = object({
+    description = string
+  })
+  default = {
+    description = null
+  }
 }
 
 # Key Vault RBAC Role Names
@@ -560,39 +538,4 @@ variable "network_contributor_role_name" {
   type        = string
   default     = "Network Contributor"
 }
-
-# Identity Module Variables
-variable "role_assignment_description" {
-  description = "Description for role assignments"
-  type        = string
-  default     = null
-}
-
-variable "role_assignment_condition" {
-  description = "Condition for role assignments"
-  type        = string
-  default     = null
-}
-
-variable "role_assignment_condition_version" {
-  description = "Condition version for role assignments"
-  type        = string
-  default     = "2.0"
-}
-
-variable "role_assignment_skip_existing_check" {
-  description = "Whether to skip checking if role assignment already exists"
-  type        = bool
-  default     = false
-}
-
-# Note: Secrets are managed via Azure Portal
-# Add these secrets manually in the Key Vault after deployment:
-# - cloudflare-api-token
-# - cloudflare-zone-id  
-# - domain-name
-# - cert-manager-email
-
-
-
 

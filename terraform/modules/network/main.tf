@@ -7,25 +7,24 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 resource "azurerm_subnet" "aks_subnet" {
-  name                 = var.name
+  name                 = var.subnet_name
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.address_prefixes
+  address_prefixes     = var.subnet_address_prefixes
   service_endpoints    = var.service_endpoints
 }
 
-
-
 resource "azurerm_network_security_group" "aks_nsg" {
-  name                = var.aks_nsg_name
+  name                = var.nsg_name
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
+  # Security rules
   dynamic "security_rule" {
     for_each = var.security_rules
     content {
-      name                       = security_rule.value.name
+      name                       = security_rule.key
       priority                   = security_rule.value.priority
       direction                  = security_rule.value.direction
       access                     = security_rule.value.access
@@ -34,6 +33,7 @@ resource "azurerm_network_security_group" "aks_nsg" {
       destination_port_range     = security_rule.value.destination_port_range
       source_address_prefix      = security_rule.value.source_address_prefix
       destination_address_prefix = security_rule.value.destination_address_prefix
+      description                = security_rule.value.description
     }
   }
 }

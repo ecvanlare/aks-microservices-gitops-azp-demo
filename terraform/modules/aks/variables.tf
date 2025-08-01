@@ -82,16 +82,6 @@ variable "outbound_type" {
   type        = string
 }
 
-# Node Configuration
-variable "max_pods_per_node" {
-  description = "Maximum number of pods per node"
-  type        = number
-  validation {
-    condition     = var.max_pods_per_node >= 10 && var.max_pods_per_node <= 250
-    error_message = "Max pods per node must be between 10 and 250."
-  }
-}
-
 # RBAC Configuration
 variable "aad_rbac" {
   description = "Azure Active Directory RBAC configuration"
@@ -111,16 +101,6 @@ variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
 }
-
-variable "timeouts" {
-  description = "Timeouts for AKS cluster operations"
-  type = object({
-    create = string
-    update = string
-    delete = string
-  })
-}
-
 
 variable "user_node_pool" {
   description = "The user node pool configuration"
@@ -161,7 +141,6 @@ variable "enable_cluster_autoscaler" {
 variable "autoscaler_profile" {
   description = "Cluster autoscaler profile configuration (scale-down settings)"
   type = object({
-    # Scale-down configuration (supported by Azure provider)
     scale_down_delay_after_add       = string
     scale_down_delay_after_delete    = string
     scale_down_delay_after_failure   = string

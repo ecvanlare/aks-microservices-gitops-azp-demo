@@ -17,18 +17,4 @@ variable "description" {
   description = "A description of the role assignment."
   type        = string
 }
-
-variable "condition" {
-  description = "The condition which limits the resources that the role can be assigned to."
-  type        = string
-}
-
-variable "condition_version" {
-  description = "The version of the condition syntax."
-  type        = string
-}
-
-variable "skip_existing_check" {
-  description = "Whether to skip checking if the role assignment already exists."
-  type        = bool
-} 
+ 
