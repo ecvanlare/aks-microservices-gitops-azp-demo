@@ -283,7 +283,7 @@ variable "network_security_groups" {
           source_port_range          = "*"
           destination_port_range     = "1-65535"
           source_address_prefix      = "10.0.0.0/16" # VNet CIDR
-          destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
+          destination_address_prefix = "10.0.16.0/20" # Private subnet CIDR
           description                = "Allow TCP traffic from VNet"
         }
         allow_vnet_udp = {
@@ -294,7 +294,7 @@ variable "network_security_groups" {
           source_port_range          = "*"
           destination_port_range     = "1-65535"
           source_address_prefix      = "10.0.0.0/16" # VNet CIDR
-          destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
+          destination_address_prefix = "10.0.16.0/20" # Private subnet CIDR
           description                = "Allow UDP traffic from VNet"
         }
 
@@ -306,7 +306,7 @@ variable "network_security_groups" {
           source_port_range          = "*"
           destination_port_range     = "*"
           source_address_prefix      = "*"
-          destination_address_prefix = "10.0.8.0/22" # Private subnet CIDR
+          destination_address_prefix = "10.0.16.0/20" # Private subnet CIDR
           description                = "Deny all other inbound traffic"
         }
         deny_outbound = {
@@ -316,7 +316,7 @@ variable "network_security_groups" {
           protocol                   = "*"
           source_port_range          = "*"
           destination_port_range     = "*"
-          source_address_prefix      = "10.0.8.0/22" # Private subnet CIDR
+          source_address_prefix      = "10.0.16.0/20" # Private subnet CIDR
           destination_address_prefix = "*"
           description                = "Deny all other outbound traffic"
         }
@@ -388,7 +388,7 @@ variable "network_security_groups" {
           protocol                   = "*"
           source_port_range          = "*"
           destination_port_range     = "*"
-          source_address_prefix      = "10.0.12.0/24" # Public subnet CIDR
+          source_address_prefix      = "10.0.32.0/24" # Public subnet CIDR
           destination_address_prefix = "*"
           description                = "Deny all other outbound traffic"
         }
