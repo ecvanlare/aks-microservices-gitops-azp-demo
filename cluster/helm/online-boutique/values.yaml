@@ -23,7 +23,7 @@ adservice:
       memory: 300Mi
   image:
     repository: adservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 9555
@@ -42,7 +42,7 @@ cartservice:
       memory: 256Mi
   image:
     repository: cartservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 7070
@@ -70,7 +70,7 @@ checkoutservice:
       memory: 128Mi
   image:
     repository: checkoutservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 5050
@@ -94,7 +94,7 @@ currencyservice:
       memory: 256Mi
   image:
     repository: currencyservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 7000
@@ -113,7 +113,7 @@ emailservice:
       memory: 128Mi
   image:
     repository: emailservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 8080
@@ -132,7 +132,7 @@ frontend:
       memory: 128Mi
   image:
     repository: frontend
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 8080
@@ -167,7 +167,7 @@ paymentservice:
       memory: 256Mi
   image:
     repository: paymentservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 50051
@@ -185,7 +185,7 @@ productcatalogservice:
       memory: 128Mi
   image:
     repository: productcatalogservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 3550
@@ -203,7 +203,7 @@ recommendationservice:
       memory: 450Mi
   image:
     repository: recommendationservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 8080
@@ -250,7 +250,7 @@ shippingservice:
       memory: 128Mi
   image:
     repository: shippingservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 50051
@@ -261,7 +261,7 @@ shoppingassistantservice:
   replicaCount: 1
   image:
     repository: shoppingassistantservice
-    tag: 0.1.0-alpha.210
+    tag: 0.1.0-alpha.244
   service:
     type: ClusterIP
     port: 8080
@@ -286,6 +286,7 @@ ingress:
 ssl:
   enabled: true
   clusterIssuer: "letsencrypt-prod" # References the cluster-level issuer
+  sslRedirect: false
 # Infrastructure dependencies
 cert-manager:
   enabled: true
