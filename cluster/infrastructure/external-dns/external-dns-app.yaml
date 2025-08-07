@@ -34,9 +34,15 @@ spec:
             memory: 100Mi
         env:
           - name: CF_API_TOKEN
-            value: "ix2sv-NeOqnk7MQi1ZiPHIJJmhgNae6L6uexPVDN"
+            valueFrom:
+              secretKeyRef:
+                name: external-dns-secret
+                key: api-token
           - name: CF_ZONE_ID
-            value: "3b92c2482c1ccf5f87e36c519680666d"
+            valueFrom:
+              secretKeyRef:
+                name: external-dns-secret
+                key: zone-id
   destination:
     server: https://kubernetes.default.svc
     namespace: external-dns

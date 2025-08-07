@@ -29,6 +29,7 @@ spec:
             proxy-connect-timeout: "5"
             proxy-send-timeout: "60"
             proxy-read-timeout: "60"
+            ssl-redirect: "true"
           metrics:
             enabled: true
           nodeSelector: {}

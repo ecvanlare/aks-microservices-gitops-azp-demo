@@ -42,11 +42,12 @@ variable "node_pool" {
 variable "network" {
   description = "Network configuration"
   type = object({
-    plugin         = string
-    policy         = string
-    subnet_id      = string
-    service_cidr   = string
-    dns_service_ip = string
+    plugin            = string
+    policy            = string
+    private_subnet_id = string
+    public_subnet_id  = string
+    service_cidr      = string
+    dns_service_ip    = string
   })
 }
 

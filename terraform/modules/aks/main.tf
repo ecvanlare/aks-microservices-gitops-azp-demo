@@ -11,7 +11,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     os_disk_size_gb             = var.node_pool.os_disk_size_gb
     min_count                   = var.node_pool.min_count
     max_count                   = var.node_pool.max_count
-    vnet_subnet_id              = var.network.subnet_id
+    vnet_subnet_id              = var.network.private_subnet_id
     max_pods                    = var.node_pool.max_pods
     auto_scaling_enabled        = var.node_pool.auto_scaling_enabled
     node_labels                 = var.node_pool.node_labels
@@ -70,7 +70,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
   min_count                   = var.user_node_pool.min_count
   max_count                   = var.user_node_pool.max_count
   os_disk_size_gb             = var.user_node_pool.os_disk_size_gb
-  vnet_subnet_id              = var.network.subnet_id
+  vnet_subnet_id              = var.network.private_subnet_id
   max_pods                    = var.user_node_pool.max_pods
   auto_scaling_enabled        = var.user_node_pool.auto_scaling_enabled
   temporary_name_for_rotation = "temp${var.user_node_pool.name}"
@@ -87,7 +87,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
   min_count                   = var.ingress_node_pool.min_count
   max_count                   = var.ingress_node_pool.max_count
   os_disk_size_gb             = var.ingress_node_pool.os_disk_size_gb
-  vnet_subnet_id              = var.network.subnet_id
+  vnet_subnet_id              = var.network.public_subnet_id
   max_pods                    = var.ingress_node_pool.max_pods
   auto_scaling_enabled        = var.ingress_node_pool.auto_scaling_enabled
   temporary_name_for_rotation = "temp${var.ingress_node_pool.name}"

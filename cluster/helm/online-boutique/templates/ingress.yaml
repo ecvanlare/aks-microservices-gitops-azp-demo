@@ -9,7 +9,7 @@ metadata:
     {{- if .Values.ssl.enabled }}
     cert-manager.io/cluster-issuer: {{ .Values.ssl.clusterIssuer | quote }}
     {{- end }}
-    nginx.ingress.kubernetes.io/ssl-redirect: "{{- if .Values.ssl.enabled }}true{{- else }}false{{- end }}"
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{- if .Values.ssl.sslRedirect }}true{{- else }}false{{- end }}"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"

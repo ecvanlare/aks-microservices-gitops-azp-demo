@@ -27,41 +27,31 @@ variable "address_space" {
 }
 
 # Subnet Variables
-variable "subnet_name" {
-  description = "Name of the AKS subnet"
-  type        = string
-}
-
-variable "subnet_address_prefixes" {
-  description = "Address prefixes for the AKS subnet"
-  type        = list(string)
-}
-
-variable "service_endpoints" {
-  description = "Service endpoints for the subnet"
-  type        = list(string)
-  default     = []
+variable "subnets" {
+  description = "Map of subnet configurations"
+  type = map(object({
+    name              = string
+    address_prefixes  = list(string)
+    service_endpoints = list(string)
+  }))
 }
 
 # Network Security Group Variables
-variable "nsg_name" {
-  description = "Name of the Network Security Group"
-  type        = string
-}
-
-variable "security_rules" {
-  description = "Map of security rules to be applied to the NSG"
+variable "network_security_groups" {
+  description = "Network security group configurations"
   type = map(object({
-    priority                   = number
-    direction                  = string
-    access                     = string
-    protocol                   = string
-    source_port_range          = string
-    destination_port_range     = string
-    source_address_prefix      = string
-    destination_address_prefix = string
-    description                = string
+    name = string
+    rules = map(object({
+      priority                   = number
+      direction                  = string
+      access                     = string
+      protocol                   = string
+      source_port_range          = string
+      destination_port_range     = string
+      source_address_prefix      = string
+      destination_address_prefix = string
+      description                = string
+    }))
   }))
-  default = {}
 }
 
