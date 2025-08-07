@@ -5,10 +5,17 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: admin@ecvlsolutions.com
+    emailSecretRef:
+      name: cert-manager-secret
+      key: email
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
-      - http01:
-          ingress:
-            class: nginx
+      - dns01:
+          cloudflare:
+            emailSecretRef:
+              name: cert-manager-secret
+              key: email
+            apiTokenSecretRef:
+              name: cert-manager-secret
+              key: api-token
