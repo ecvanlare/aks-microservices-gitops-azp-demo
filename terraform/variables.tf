@@ -274,123 +274,230 @@ variable "network_security_groups" {
     private = {
       name = "nsg-aks-private"
       rules = {
-
-        allow_vnet_tcp = {
-          priority                   = 110
+        allow_kubernetes_api = {
+          priority                   = 200
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
-          destination_port_range     = "1-65535"
-          source_address_prefix      = "10.0.0.0/16" # VNet CIDR
-          destination_address_prefix = "10.0.16.0/20" # Private subnet CIDR
-          description                = "Allow TCP traffic from VNet"
+          destination_port_range     = "6443"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow Kubernetes API server access"
         }
-        allow_vnet_udp = {
-          priority                   = 120
+        allow_lb_health_probes = {
+          priority                   = 300
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          source_port_range          = "*"
+          destination_port_range     = "*"
+          source_address_prefix      = "AzureLoadBalancer"
+          destination_address_prefix = "*"
+          description                = "Allow Azure Load Balancer health probes"
+        }
+        allow_kubelet = {
+          priority                   = 400
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "10250"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow Kubelet API access"
+        }
+        allow_nodeport_services = {
+          priority                   = 500
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "30000-32767"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow NodePort services"
+        }
+        allow_ingress_health = {
+          priority                   = 600
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "10254"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow Ingress Controller health checks"
+        }
+        allow_pod_communication = {
+          priority                   = 700
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "1024-65535"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow internal pod TCP communication"
+        }
+        allow_dns = {
+          priority                   = 800
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Udp"
           source_port_range          = "*"
-          destination_port_range     = "1-65535"
-          source_address_prefix      = "10.0.0.0/16" # VNet CIDR
-          destination_address_prefix = "10.0.16.0/20" # Private subnet CIDR
-          description                = "Allow UDP traffic from VNet"
-        }
-
-        deny_inbound = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "*"
-          source_port_range          = "*"
-          destination_port_range     = "*"
-          source_address_prefix      = "*"
-          destination_address_prefix = "10.0.16.0/20" # Private subnet CIDR
-          description                = "Deny all other inbound traffic"
-        }
-        deny_outbound = {
-          priority                   = 4096
-          direction                  = "Outbound"
-          access                     = "Deny"
-          protocol                   = "*"
-          source_port_range          = "*"
-          destination_port_range     = "*"
-          source_address_prefix      = "10.0.16.0/20" # Private subnet CIDR
+          destination_port_range     = "53"
+          source_address_prefix      = "VirtualNetwork"
           destination_address_prefix = "*"
-          description                = "Deny all other outbound traffic"
+          description                = "Allow DNS traffic"
+        }
+        allow_udp_communication = {
+          priority                   = 900
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Udp"
+          source_port_range          = "*"
+          destination_port_range     = "1024-65535"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow internal UDP communication"
+        }
+        allow_outbound_acr = {
+          priority                   = 2000
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "443"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "AzureContainerRegistry"
+          description                = "Allow outbound HTTPS to ACR"
+        }
+        allow_outbound_keyvault = {
+          priority                   = 2100
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "443"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "AzureKeyVault"
+          description                = "Allow outbound HTTPS to KeyVault"
         }
       }
     }
     public = {
       name = "nsg-aks-public"
       rules = {
-
         allow_internet_http = {
-          priority                   = 110
+          priority                   = 100
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "80"
-          source_address_prefix      = "*"            # Any source (internet)
-          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
-          description                = "Allow HTTP traffic"
+          source_address_prefix      = "Internet"
+          destination_address_prefix = "*"
+          description                = "Allow HTTP traffic from internet"
         }
         allow_internet_https = {
-          priority                   = 120
+          priority                   = 200
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "443"
-          source_address_prefix      = "*"            # Any source (internet)
-          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
-          description                = "Allow HTTPS traffic"
+          source_address_prefix      = "Internet"
+          destination_address_prefix = "*"
+          description                = "Allow HTTPS traffic from internet"
         }
-        allow_cluster_tcp = {
-          priority                   = 130
+        allow_lb_health_probes = {
+          priority                   = 300
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          source_port_range          = "*"
+          destination_port_range     = "*"
+          source_address_prefix      = "AzureLoadBalancer"
+          destination_address_prefix = "*"
+          description                = "Allow Azure Load Balancer health probes"
+        }
+        allow_kubernetes_api = {
+          priority                   = 400
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
-          destination_port_range     = "1-65535"
-          source_address_prefix      = "10.0.16.0/20" # Private subnet CIDR
-          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
-          description                = "Allow cluster TCP traffic"
+          destination_port_range     = "6443"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow Kubernetes API server access"
         }
-        allow_cluster_udp = {
-          priority                   = 140
+        allow_kubelet = {
+          priority                   = 500
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "10250"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow Kubelet API access"
+        }
+        allow_nodeport_services = {
+          priority                   = 600
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "30000-32767"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow NodePort services"
+        }
+        allow_ingress_health = {
+          priority                   = 700
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "10254"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow Ingress Controller health checks"
+        }
+        allow_pod_communication = {
+          priority                   = 800
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "1024-65535"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow internal pod TCP communication"
+        }
+        allow_dns = {
+          priority                   = 900
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Udp"
           source_port_range          = "*"
-          destination_port_range     = "1-65535"
-          source_address_prefix      = "10.0.16.0/20" # Private subnet CIDR
-          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
-          description                = "Allow cluster UDP traffic"
-        }
-        deny_inbound = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "*"
-          source_port_range          = "*"
-          destination_port_range     = "*"
-          source_address_prefix      = "*"
-          destination_address_prefix = "10.0.32.0/24" # Public subnet CIDR
-          description                = "Deny all other inbound traffic"
-        }
-        deny_outbound = {
-          priority                   = 4096
-          direction                  = "Outbound"
-          access                     = "Deny"
-          protocol                   = "*"
-          source_port_range          = "*"
-          destination_port_range     = "*"
-          source_address_prefix      = "10.0.32.0/24" # Public subnet CIDR
+          destination_port_range     = "53"
+          source_address_prefix      = "VirtualNetwork"
           destination_address_prefix = "*"
-          description                = "Deny all other outbound traffic"
+          description                = "Allow DNS traffic"
+        }
+        allow_udp_communication = {
+          priority                   = 1000
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Udp"
+          source_port_range          = "*"
+          destination_port_range     = "1024-65535"
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "*"
+          description                = "Allow internal UDP communication"
         }
       }
     }
