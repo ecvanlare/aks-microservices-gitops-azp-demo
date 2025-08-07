@@ -63,12 +63,12 @@ variable "subnets" {
   default = {
     aks-private = {
       name              = "snet-aks-private"
-      address_prefixes  = ["10.0.16.0/20"] # Larger range: 10.0.16.0 - 10.0.31.255
+      address_prefixes  = ["10.0.16.0/20"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
     aks-public = {
       name              = "snet-aks-public"
-      address_prefixes  = ["10.0.32.0/24"] # Non-overlapping: 10.0.32.0 - 10.0.32.255
+      address_prefixes  = ["10.0.32.0/24"]
       service_endpoints = ["Microsoft.ContainerRegistry"]
     }
   }
