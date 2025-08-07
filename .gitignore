@@ -56,3 +56,7 @@ terraform.rc
 
 # Ignore Terraform plan files
 *.tfplan
+
+# Ignore scripts with actual secret values
+scripts/upload-secrets-to-keyvault.sh
+scripts/upload-secrets-to-kubernetes.sh
