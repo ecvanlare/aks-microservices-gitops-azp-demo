@@ -1,6 +1,6 @@
 # Azure Key Vault for storing all sensitive values
 
-resource "azurerm_key_vault" "main" {
+resource "azurerm_key_vault" "this" {
   name                        = var.key_vault_name
   location                    = var.location
   resource_group_name         = var.resource_group_name
@@ -20,16 +20,16 @@ resource "azurerm_key_vault" "main" {
 }
 
 # Azure RBAC role assignments
-resource "azurerm_role_assignment" "terraform_keyvault_admin" {
+resource "azurerm_role_assignment" "terraform_admin" {
 
-  scope                = azurerm_key_vault.main.id
+  scope                = azurerm_key_vault.this.id
   role_definition_name = var.terraform_role_name
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
-resource "azurerm_role_assignment" "aks_keyvault_secrets_user" {
+resource "azurerm_role_assignment" "aks_secrets_user" {
 
-  scope                = azurerm_key_vault.main.id
+  scope                = azurerm_key_vault.this.id
   role_definition_name = var.aks_role_name
   principal_id         = var.aks_managed_identity_object_id
 }

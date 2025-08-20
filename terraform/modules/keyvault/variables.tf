@@ -21,21 +21,25 @@ variable "aks_managed_identity_object_id" {
 variable "enable_rbac_authorization" {
   description = "Enable Azure RBAC authorization instead of access policies"
   type        = bool
+  default     = true
 }
 
 variable "soft_delete_retention_days" {
   description = "Soft delete retention days for Key Vault"
   type        = number
+  default     = 7
 }
 
 variable "purge_protection_enabled" {
   description = "Enable purge protection for Key Vault"
   type        = bool
+  default     = false
 }
 
 variable "sku_name" {
   description = "SKU name for Key Vault"
   type        = string
+  default     = "standard"
 }
 
 variable "network_acls" {

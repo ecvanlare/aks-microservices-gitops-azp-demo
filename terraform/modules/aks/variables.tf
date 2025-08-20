@@ -21,6 +21,7 @@ variable "dns_prefix" {
 variable "private_cluster_enabled" {
   description = "Whether to enable private cluster"
   type        = bool
+  default     = true
 }
 
 # Node Pool Configuration
@@ -76,11 +77,13 @@ variable "kubelet_identity_object_id" {
 variable "load_balancer_sku" {
   description = "The SKU of the load balancer"
   type        = string
+  default     = "Standard"
 }
 
 variable "outbound_type" {
   description = "The outbound type for the cluster"
   type        = string
+  default     = "loadBalancer"
 }
 
 # RBAC Configuration
@@ -137,6 +140,7 @@ variable "ingress_node_pool" {
 variable "enable_cluster_autoscaler" {
   description = "Whether to enable cluster autoscaler"
   type        = bool
+  default     = false
 }
 
 variable "autoscaler_profile" {
