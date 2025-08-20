@@ -15,12 +15,14 @@ resource "azurerm_storage_account" "tfstate" {
   allow_nested_items_to_be_public = false
 
   blob_properties {
+    versioning_enabled = var.storage_blob_versioning_enabled
+
     delete_retention_policy {
       days = var.storage_soft_delete_retention_days
     }
   }
 
-  tags = merge(var.tags, var.storage_account_tags)
+  tags = var.tags
 }
 
 resource "azurerm_storage_container" "tfstate" {
