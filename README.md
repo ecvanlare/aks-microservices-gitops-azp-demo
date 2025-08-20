@@ -56,7 +56,6 @@ This project implements Google's Online Boutique, a cloud-native microservices d
 | Trivy | Container vulnerability scanning |
 | TFLint | Terraform static analysis |
 | Checkov | Infrastructure-as-Code security scanning |
-| Azure Policy | Kubernetes cluster security policies |
 | yamllint | YAML syntax validation |
 | shellcheck | Shell script analysis |
 | Prettier | Code formatting |
@@ -199,6 +198,17 @@ Quick Start:
 1. Copy `env.template` to `.env` in the root directory
 2. Configure environment variables
 3. Run `docker-compose up` to start all services
+
+## Next Steps
+
+The next steps I will be implementing to enhance this platform for enterprise production workloads:
+
+### High Priority
+1. **Availability Zones** - Configure AKS node pools across multiple zones for regional redundancy
+2. **Azure Policy** - Enable Kubernetes policy add-on for governance and compliance
+3. **Uptime SLA** - Enable AKS uptime SLA for 99.95% availability guarantees
+4. **Azure Backup** - Implement backup for cluster configurations and application data
+5. **Network Policies** - Enable Kubernetes network policies for pod-to-pod communication control
 
 ## License
 
