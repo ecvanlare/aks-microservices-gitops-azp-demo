@@ -1,5 +1,4 @@
-# Horizontal Pod Autoscaler Configuration for Online Boutique
-# This enables application-level scaling based on CPU/memory usage
+# Horizontal Pod Autoscaler Configuration based on CPU/memory usage
 
 {{- if .Values.hpa.enabled }}
 {{- if .Values.hpa.frontend.enabled }}
