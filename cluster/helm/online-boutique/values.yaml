@@ -261,7 +261,7 @@ shoppingassistantservice:
   replicaCount: 1
   image:
     repository: shoppingassistantservice
-    tag: 0.1.0-alpha.214
+    tag: 0.1.0-alpha.216
   service:
     type: ClusterIP
     port: 8080
