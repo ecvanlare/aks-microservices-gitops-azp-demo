@@ -46,7 +46,7 @@ variable "network" {
     plugin            = string
     policy            = string
     private_subnet_id = string
-    public_subnet_id  = string
+    ingress_subnet_id = string
     service_cidr      = string
     dns_service_ip    = string
   })

@@ -87,7 +87,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "ingress" {
   min_count                   = var.ingress_node_pool.min_count
   max_count                   = var.ingress_node_pool.max_count
   os_disk_size_gb             = var.ingress_node_pool.os_disk_size_gb
-  vnet_subnet_id              = var.network.public_subnet_id
+  vnet_subnet_id              = var.network.ingress_subnet_id
   max_pods                    = var.ingress_node_pool.max_pods
   auto_scaling_enabled        = var.ingress_node_pool.auto_scaling_enabled
   temporary_name_for_rotation = "temp${var.ingress_node_pool.name}"

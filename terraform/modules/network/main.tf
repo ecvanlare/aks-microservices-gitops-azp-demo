@@ -74,15 +74,8 @@ resource "azurerm_network_security_group" "this" {
 }
 
 # Associate NSGs with subnets
-locals {
-  subnet_nsg_map = {
-    "aks-private" = "private"
-    "aks-public"  = "public"
-  }
-}
-
 resource "azurerm_subnet_network_security_group_association" "this" {
-  for_each = local.subnet_nsg_map
+  for_each = var.subnet_nsg_map
 
   subnet_id                 = azurerm_subnet.this[each.key].id
   network_security_group_id = azurerm_network_security_group.this[each.value].id
