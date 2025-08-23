@@ -66,8 +66,8 @@ variable "subnets" {
       address_prefixes  = ["10.0.16.0/20"]
       service_endpoints = ["Microsoft.ContainerRegistry", "Microsoft.KeyVault"]
     }
-    aks-public = {
-      name              = "snet-aks-public"
+    aks-ingress = {
+      name              = "snet-aks-ingress"
       address_prefixes  = ["10.0.32.0/24"]
       service_endpoints = ["Microsoft.ContainerRegistry"]
     }
@@ -386,8 +386,8 @@ variable "network_security_groups" {
         }
       }
     }
-    public = {
-      name = "nsg-aks-public"
+    ingress = {
+      name = "nsg-aks-ingress"
       rules = {
         allow_internet_http = {
           priority                   = 100
@@ -501,6 +501,16 @@ variable "network_security_groups" {
         }
       }
     }
+  }
+}
+
+# Subnet to NSG mapping
+variable "subnet_nsg_map" {
+  description = "Map of subnet names to NSG names"
+  type        = map(string)
+  default = {
+    "aks-private" = "private"
+    "aks-ingress" = "ingress"
   }
 }
 

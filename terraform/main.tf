@@ -65,6 +65,9 @@ module "network" {
 
   # Network Security Groups
   network_security_groups = var.network_security_groups
+
+  # Subnet to NSG mapping
+  subnet_nsg_map = var.subnet_nsg_map
 }
 
 # =============================================================================
@@ -172,7 +175,7 @@ module "aks" {
     plugin            = var.aks_network_plugin
     policy            = null
     private_subnet_id = module.network.private_subnet_id
-    public_subnet_id  = module.network.public_subnet_id
+    ingress_subnet_id = module.network.ingress_subnet_id
     service_cidr      = var.aks_service_cidr
     dns_service_ip    = var.aks_dns_service_ip
   }
