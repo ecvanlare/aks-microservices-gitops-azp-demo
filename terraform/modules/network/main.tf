@@ -1,4 +1,4 @@
-resource "azurerm_virtual_network" "vnet" {
+resource "azurerm_virtual_network" "this" {
   name                = var.vnet_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -6,12 +6,12 @@ resource "azurerm_virtual_network" "vnet" {
   tags                = var.tags
 }
 
-resource "azurerm_subnet" "subnets" {
+resource "azurerm_subnet" "this" {
   for_each = var.subnets
 
   name                 = each.value.name
   resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vnet.name
+  virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = each.value.address_prefixes
   service_endpoints    = each.value.service_endpoints
 }
@@ -43,12 +43,12 @@ resource "azurerm_nat_gateway_public_ip_association" "main" {
 
 # Associate NAT Gateway with private subnet
 resource "azurerm_subnet_nat_gateway_association" "private" {
-  subnet_id      = azurerm_subnet.subnets["aks-private"].id
+  subnet_id      = azurerm_subnet.this["aks-private"].id
   nat_gateway_id = azurerm_nat_gateway.main.id
 }
 
 # Network Security Groups
-resource "azurerm_network_security_group" "nsg" {
+resource "azurerm_network_security_group" "this" {
   for_each = var.network_security_groups
 
   name                = each.value.name
@@ -81,9 +81,9 @@ locals {
   }
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg_association" {
+resource "azurerm_subnet_network_security_group_association" "this" {
   for_each = local.subnet_nsg_map
 
-  subnet_id                 = azurerm_subnet.subnets[each.key].id
-  network_security_group_id = azurerm_network_security_group.nsg[each.value].id
+  subnet_id                 = azurerm_subnet.this[each.key].id
+  network_security_group_id = azurerm_network_security_group.this[each.value].id
 } 

@@ -16,11 +16,13 @@ variable "location" {
 variable "sku" {
   description = "SKU of the container registry"
   type        = string
+  default     = "Basic"
 }
 
 variable "admin_enabled" {
   description = "Enable admin access to the container registry"
   type        = bool
+  default     = false
 }
 
 variable "tags" {

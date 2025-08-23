@@ -1,4 +1,4 @@
-resource "azurerm_kubernetes_cluster" "aks" {
+resource "azurerm_kubernetes_cluster" "this" {
   name                    = var.name
   location                = var.location
   resource_group_name     = var.resource_group_name
@@ -63,9 +63,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 # User node pool for workload separation
-resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
+resource "azurerm_kubernetes_cluster_node_pool" "user" {
   name                        = var.user_node_pool.name
-  kubernetes_cluster_id       = azurerm_kubernetes_cluster.aks.id
+  kubernetes_cluster_id       = azurerm_kubernetes_cluster.this.id
   vm_size                     = var.user_node_pool.vm_size
   min_count                   = var.user_node_pool.min_count
   max_count                   = var.user_node_pool.max_count
@@ -80,9 +80,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
 }
 
 # Dedicated ingress node pool for ingress controllers
-resource "azurerm_kubernetes_cluster_node_pool" "ingress_node_pool" {
+resource "azurerm_kubernetes_cluster_node_pool" "ingress" {
   name                        = var.ingress_node_pool.name
-  kubernetes_cluster_id       = azurerm_kubernetes_cluster.aks.id
+  kubernetes_cluster_id       = azurerm_kubernetes_cluster.this.id
   vm_size                     = var.ingress_node_pool.vm_size
   min_count                   = var.ingress_node_pool.min_count
   max_count                   = var.ingress_node_pool.max_count

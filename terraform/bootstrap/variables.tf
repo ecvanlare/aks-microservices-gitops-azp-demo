@@ -28,6 +28,12 @@ variable "storage_container_access_type" {
   default     = "private"
 }
 
+variable "storage_blob_versioning_enabled" {
+  description = "Enable blob versioning for enhanced data protection"
+  type        = bool
+  default     = true
+}
+
 variable "storage_soft_delete_retention_days" {
   description = "Number of days to retain deleted blobs for soft delete protection"
   type        = number
