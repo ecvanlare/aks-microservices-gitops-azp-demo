@@ -197,7 +197,11 @@ variable "aks_network_plugin" {
   default     = "azure"
 }
 
-
+variable "aks_network_policy" {
+  description = "Network policy for AKS"
+  type        = string
+  default     = "azure"
+}
 
 variable "aks_service_cidr" {
   description = "Service CIDR for AKS cluster"
