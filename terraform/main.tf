@@ -65,6 +65,9 @@ module "network" {
 
   # Network Security Groups
   network_security_groups = var.network_security_groups
+
+  # Subnet to NSG mapping
+  subnet_nsg_map = var.subnet_nsg_map
 }
 
 # =============================================================================
@@ -162,61 +165,80 @@ module "aks" {
   dns_prefix              = var.aks_dns_prefix
   private_cluster_enabled = var.aks_private_cluster_enabled
 
-  # Node Pools Configuration
-  node_pool         = var.aks_node_pool
-  user_node_pool    = var.aks_user_node_pool
-  ingress_node_pool = var.aks_ingress_node_pool
+  # Default Node Pool Configuration
+  default_node_pool = {
+    name                 = var.aks_node_pool.name
+    vm_size              = var.aks_node_pool.vm_size
+    os_disk_size_gb      = var.aks_node_pool.os_disk_size_gb
+    min_count            = var.aks_node_pool.min_count
+    max_count            = var.aks_node_pool.max_count
+    max_pods             = var.aks_node_pool.max_pods
+    subnet_id            = module.network.private_subnet_id
+    node_labels          = var.aks_node_pool.node_labels
+    auto_scaling_enabled = var.aks_node_pool.auto_scaling_enabled
+  }
 
-  # Network Configuration
-  network = {
+  # Network Profile Configuration
+  network_profile = {
     plugin            = var.aks_network_plugin
-    policy            = null
-    private_subnet_id = module.network.private_subnet_id
-    public_subnet_id  = module.network.public_subnet_id
+    policy            = var.aks_network_policy
     service_cidr      = var.aks_service_cidr
     dns_service_ip    = var.aks_dns_service_ip
+    load_balancer_sku = var.aks_load_balancer_sku
+    outbound_type     = var.aks_outbound_type
   }
-  load_balancer_sku = var.aks_load_balancer_sku
-  outbound_type     = var.aks_outbound_type
+
+  # Identity Configuration
+  cluster_identity_id = azurerm_user_assigned_identity.identities["cluster"].id
+
+  kubelet_identity = {
+    user_assigned_identity_id = azurerm_user_assigned_identity.identities["kubelet"].id
+    client_id                 = azurerm_user_assigned_identity.identities["kubelet"].client_id
+    object_id                 = azurerm_user_assigned_identity.identities["kubelet"].principal_id
+  }
+
+  # RBAC Configuration
+  admin_group_object_id = azuread_group.aks_groups["admins"].object_id
+  azure_rbac_enabled    = true
 
   # Cluster Autoscaler Configuration
   enable_cluster_autoscaler = var.aks_enable_cluster_autoscaler
   autoscaler_profile        = var.aks_autoscaler_profile
 
-  # Identity Configuration
-  cluster_identity_id        = azurerm_user_assigned_identity.identities["cluster"].id
-  kubelet_identity_id        = azurerm_user_assigned_identity.identities["kubelet"].id
-  kubelet_identity_client_id = azurerm_user_assigned_identity.identities["kubelet"].client_id
-  kubelet_identity_object_id = azurerm_user_assigned_identity.identities["kubelet"].principal_id
-
-  # RBAC Configuration
-  aad_rbac = {
-    admin_group_object_ids = [azuread_group.aks_groups["admins"].object_id]
-    azure_rbac_enabled     = true
-    user_groups = [
-      {
-        name      = var.admin_group_name
-        object_id = azuread_group.aks_groups["admins"].object_id
-        roles     = [var.admin_role]
-      },
-      {
-        name      = var.developer_group_name
-        object_id = azuread_group.aks_groups["developers"].object_id
-        roles     = [var.developer_role]
-      },
-      {
-        name      = var.viewer_group_name
-        object_id = azuread_group.aks_groups["viewers"].object_id
-        roles     = [var.viewer_role]
-      }
-    ]
+  # Additional Node Pools Configuration
+  additional_node_pools = {
+    user = {
+      name                 = var.aks_user_node_pool.name
+      vm_size              = var.aks_user_node_pool.vm_size
+      os_disk_size_gb      = var.aks_user_node_pool.os_disk_size_gb
+      min_count            = var.aks_user_node_pool.min_count
+      max_count            = var.aks_user_node_pool.max_count
+      max_pods             = var.aks_user_node_pool.max_pods
+      subnet_id            = module.network.private_subnet_id
+      node_labels          = var.aks_user_node_pool.node_labels
+      node_taints          = var.aks_user_node_pool.node_taints
+      auto_scaling_enabled = var.aks_user_node_pool.auto_scaling_enabled
+      tags                 = var.tags
+    }
+    ingress = {
+      name                 = var.aks_ingress_node_pool.name
+      vm_size              = var.aks_ingress_node_pool.vm_size
+      os_disk_size_gb      = var.aks_ingress_node_pool.os_disk_size_gb
+      min_count            = var.aks_ingress_node_pool.min_count
+      max_count            = var.aks_ingress_node_pool.max_count
+      max_pods             = var.aks_ingress_node_pool.max_pods
+      subnet_id            = module.network.ingress_subnet_id
+      node_labels          = var.aks_ingress_node_pool.node_labels
+      node_taints          = var.aks_ingress_node_pool.node_taints
+      auto_scaling_enabled = var.aks_ingress_node_pool.auto_scaling_enabled
+      tags                 = var.tags
+    }
   }
-
-  tags = var.tags
 
   depends_on = [
     module.cluster_kubelet_operator,
-    module.aks_network_contributor
+    module.aks_network_contributor,
+    azurerm_user_assigned_identity.identities
   ]
 }
 

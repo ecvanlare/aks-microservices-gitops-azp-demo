@@ -20,9 +20,9 @@ output "private_subnet_id" {
   value       = module.network.private_subnet_id
 }
 
-output "public_subnet_id" {
-  description = "The ID of the public subnet"
-  value       = module.network.public_subnet_id
+output "ingress_subnet_id" {
+  description = "The ID of the ingress subnet"
+  value       = module.network.ingress_subnet_id
 }
 
 output "private_nsg_id" {
@@ -30,9 +30,9 @@ output "private_nsg_id" {
   value       = module.network.private_nsg_id
 }
 
-output "public_nsg_id" {
-  description = "ID of the public subnet NSG"
-  value       = module.network.public_nsg_id
+output "ingress_nsg_id" {
+  description = "ID of the ingress subnet NSG"
+  value       = module.network.ingress_nsg_id
 }
 
 # AKS Outputs

@@ -55,3 +55,10 @@ variable "network_security_groups" {
   }))
 }
 
+# Subnet to NSG mapping
+variable "subnet_nsg_map" {
+  description = "Map of subnet names to NSG names"
+  type        = map(string)
+  default     = {}
+}
+
