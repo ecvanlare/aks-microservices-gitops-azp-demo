@@ -1,1 +1,3 @@
+{{- if .Values.enabled -}}
 {{ include "microservice.deployment" . }}
+{{- end }}
