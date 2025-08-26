@@ -218,6 +218,7 @@ module "aks" {
       node_labels          = var.aks_user_node_pool.node_labels
       node_taints          = var.aks_user_node_pool.node_taints
       auto_scaling_enabled = var.aks_user_node_pool.auto_scaling_enabled
+      tags                 = var.tags
     }
     ingress = {
       name                 = var.aks_ingress_node_pool.name
@@ -230,10 +231,9 @@ module "aks" {
       node_labels          = var.aks_ingress_node_pool.node_labels
       node_taints          = var.aks_ingress_node_pool.node_taints
       auto_scaling_enabled = var.aks_ingress_node_pool.auto_scaling_enabled
+      tags                 = var.tags
     }
   }
-
-  tags = var.tags
 
   depends_on = [
     module.cluster_kubelet_operator,
