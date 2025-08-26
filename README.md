@@ -2,7 +2,9 @@
 
 ## Overview
 
-This project implements Google's Online Boutique, a cloud-native microservices demo application for an e-commerce website, on a production-grade **Azure Kubernetes Service (AKS)** cluster. It showcases modern cloud-native practices using **Azure Pipelines** for CI/CD, **Terraform** for infrastructure management, and **ArgoCD** for GitOps-based deployments. The implementation includes **Azure Container Registry (ACR)** for container management, **NGINX Ingress Controller** for traffic routing, **Cert-Manager** for SSL automation, **ExternalDNS** for DNS management, and **Prometheus** & **Grafana** for comprehensive monitoring.
+This project implements **Google's Online Boutique** (licensed from Google under Apache License 2.0) on a production-grade **Azure Kubernetes Service (AKS)** cluster. My objective was to build a complete production-ready solution to host this demo application using modern cloud-native practices.
+
+The solution showcases **Azure Pipelines** for CI/CD, **Terraform** for infrastructure, **ArgoCD** for GitOps, **ACR** for container management, **NGINX Ingress** for traffic routing, **Cert-Manager** for SSL automation, **ExternalDNS** for DNS management, and **Prometheus** & **Grafana** for monitoring.
 
 ## Table of Contents
 
@@ -211,4 +213,4 @@ The next steps I will be implementing to enhance this platform for enterprise pr
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project builds upon **[Google's Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo)** which is licensed under Apache License 2.0. Please refer to Google's original repository for licensing terms and conditions.

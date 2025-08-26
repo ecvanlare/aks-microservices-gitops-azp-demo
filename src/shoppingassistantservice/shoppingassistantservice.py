@@ -118,4 +118,3 @@ if __name__ == "__main__":
     # Create an instance of flask server when called directly
     app = create_app()
     app.run(host='0.0.0.0', port=8080)
-
