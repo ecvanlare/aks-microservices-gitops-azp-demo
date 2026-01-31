@@ -111,7 +111,7 @@ protobuf==4.25.0
     #   grpcio-status
     #   opentelemetry-proto
     #   proto-plus
-pyasn1==0.5.0
+pyasn1==0.6.2
     # via
     #   pyasn1-modules
     #   rsa
