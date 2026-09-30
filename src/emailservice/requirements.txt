@@ -111,7 +111,7 @@ protobuf==4.25.0
     #   grpcio-status
     #   opentelemetry-proto
     #   proto-plus
-pyasn1==0.5.0
+pyasn1==0.6.2
     # via
     #   pyasn1-modules
     #   rsa
@@ -132,7 +132,7 @@ typing-extensions==4.8.0
     # via opentelemetry-sdk
 uritemplate==4.1.1
     # via google-api-python-client
-urllib3==2.0.7
+urllib3==2.6.3
     # via requests
 wrapt==1.16.0
     # via
